@@ -39,7 +39,7 @@
 		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url"
-			value="https://devweb.iutmetz.univ-lorraine.fr/" />
+			value="https://devweb.iutmetz.univ-lorraine.fr:3306/projetQualDev" />
 		<property name="username" value="brahmia6u_appli" />
 		<property name="password" value="32113491" />
 		<!-- Nécessaire, sinon les test se font quand même -->
