@@ -6,12 +6,12 @@
 	<!-- * Fichier de configuration utilisé par le framework SPRING * -->
 	<!-- ************************************************************ -->
 
-	<!-- Cf http://docs.spring.io/spring/docs/current/spring-framework-reference/html/orm.html 
+	<!-- Cf http://docs.spring.io/spring/docs/current/spring-framework-reference/html/orm.html
 		pour de l'aide sur ce fichier -->
 
 	<!-- ============= DAO (Test) ============= -->
 
-	<!-- La DAO utilisée les tests. Utilise la balise <property> qui signifie 
+	<!-- La DAO utilisée les tests. Utilise la balise <property> qui signifie
 		que l'injection est faite par un setter (et non par un argument du constructeur). -->
 	<bean id="daoHibernate" class="com.iut.banque.dao.DaoHibernate"
 		scope="singleton">
@@ -45,7 +45,7 @@
 		<!-- Nécessaire, sinon les test se font quand même -->
 		<property name="defaultAutoCommit" value="false" />
 	</bean>
-	
+
 	<!-- ============= Gestion des transactions ============= -->
 
 	<!-- Le gestionnaire de transaction nécessaire pour l'annotation @Transactionnal -->
