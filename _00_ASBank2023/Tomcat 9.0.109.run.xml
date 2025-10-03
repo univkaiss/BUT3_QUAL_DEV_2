@@ -1,16 +1,17 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Tomcat 9.0.109" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.109" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="zulu-1.8" nameIsGenerated="true">
-    <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8080/" />
+  <configuration default="false" name="Tomcat 9.0.109" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.109" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="temurin-1.8" nameIsGenerated="true">
+    <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8081/_00_ASBank2023" />
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
-      <artifact name="_00_ASBank2023:war exploded">
+      <artifact name="_00_ASBank2023:war">
         <settings>
-          <option name="CONTEXT_PATH" value="/_00_ASBank2023_war_exploded" />
+          <option name="CONTEXT_PATH" value="/_00_ASBank2023" />
         </settings>
       </artifact>
     </deployment>
     <server-settings>
       <option name="BASE_DIRECTORY_NAME" value="a8655aaf-5090-42a7-b6f1-da9dc6d32130" />
+      <option name="HTTP_PORT" value="8081" />
     </server-settings>
     <predefined_log_file enabled="true" id="Tomcat" />
     <predefined_log_file enabled="true" id="Tomcat Catalina" />
