@@ -1,186 +1,183 @@
-# Installation et configuration Maven, JDK 8, Tomcat et IntelliJ sur MacBook
+ASBank2023 - Installation et Configuration sur MacBook
 
-Cette documentation explique pas à pas comment installer et configurer **Maven**, **JDK 8 (Zulu)**, **Tomcat** et **IntelliJ IDEA** sur MacBook, y compris la configuration des runs Maven et la résolution des problèmes fréquents.
+Cette documentation explique pas à pas comment installer et configurer Maven, JDK 8 (Zulu), Tomcat 9 et IntelliJ IDEA Ultimate sur un MacBook pour le projet ASBank2023.
 
----
+⸻
 
-## 1️⃣ Installation de Java JDK 8
+📋 Pré-requis
+	•	MacBook (ARM ou Intel)
+	•	Homebrew installé
+	•	IntelliJ IDEA Ultimate (licence étudiante)
 
-Installer Zulu 8 via Homebrew :
+⸻
 
-⚠️ Sur Mac ARM, `openjdk@8` n’est pas disponible via Homebrew. **Zulu 8 est compatible.**
+1️⃣ Installation de Java JDK 8 (Zulu)
 
-```bash
+Installation
+
 brew install --cask zulu8
-```
 
-Vérifier l’installation :
+Vérification
 
-```bash
 /usr/libexec/java_home -V
-```
 
-Exemple de sortie :
-```
-1.8.0_372 (arm64) "Zulu 8" /Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home
-```
+Configuration des variables d’environnement
 
-Configurer la variable d’environnement :
+echo 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home' >> ~/.zshrc
+echo 'export PATH=$JAVA_HOME/bin:$PATH' >> ~/.zshrc
+source ~/.zshrc
 
-```bash
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home
-export PATH=$JAVA_HOME/bin:$PATH
-```
+Vérification finale
 
----
+java -version
+javac -version
 
-## 2️⃣ Installation de Maven
 
-Installer Maven :
+⸻
 
-```bash
+2️⃣ Installation de Maven
+
+Installation via Homebrew
+
 brew install maven
-```
 
-Vérifier la version :
+Vérification
 
-```bash
 mvn -v
-```
 
-Exemple :
-```
-Apache Maven 3.9.11
-Java version: 1.8.0_372, vendor: Azul Systems, Inc.
-```
 
----
+⸻
 
-## 3️⃣ Préparer le projet Maven
+3️⃣ Installation de Tomcat 9
 
-Vérifier que ton projet a un `pom.xml` configuré pour Java 8 :
+Téléchargement et installation
 
-```xml
-<build>
-    <plugins>
-        <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.11.0</version>
-            <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
-            </configuration>
-        </plugin>
-        <plugin>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>2.6</version>
-            <configuration>
-                <warSourceDirectory>WebContent</warSourceDirectory>
-                <failOnMissingWebXml>false</failOnMissingWebXml>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
-```
+wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.68/bin/apache-tomcat-9.0.68.tar.gz
+tar -xzf apache-tomcat-9.0.68.tar.gz
+sudo mv apache-tomcat-9.0.68 /usr/local/tomcat9
 
-Ajouter les dépendances nécessaires : **Spring, Struts, Hibernate, MySQL, etc.**
+Configuration environnement
 
----
+echo 'export CATALINA_HOME=/usr/local/tomcat9' >> ~/.zshrc
+echo 'export PATH=$CATALINA_HOME/bin:$PATH' >> ~/.zshrc
+source ~/.zshrc
 
-## 4️⃣ Installer et configurer Tomcat
+Test de démarrage
 
-Télécharger **Tomcat 9** depuis Apache Tomcat et décompresser dans :
+$CATALINA_HOME/bin/startup.sh
 
-```
-~/Documents/apache-tomcat-9.0.109
-```
+Accéder à http://localhost:8080
 
-Donner les permissions d’exécution aux scripts :
+Arrêt de Tomcat
 
-```bash
-cd ~/Documents/apache-tomcat-9.0.109/bin
-chmod +x *.sh
-```
+$CATALINA_HOME/bin/shutdown.sh
 
-Tester Tomcat :
 
-```bash
-./startup.sh
-```
+⸻
 
-Accéder à [http://localhost:8080](http://localhost:8080).
+4️⃣ Installation d’IntelliJ IDEA Ultimate
+	•	Télécharger depuis JetBrains Student License
+	•	Installer l’application
+	•	Lancer IntelliJ IDEA
+	•	Sélectionner New Project → Maven
+	•	Ajouter JDK 8 : /Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home
 
----
+⸻
 
-## 5️⃣ Configurer IntelliJ IDEA
+5️⃣ Configuration du projet dans IntelliJ
+	•	Importer le projet : File → Open → 00_ASBank2023 → Open as Project
+	•	Configurer le SDK : File → Project Structure → Project SDK : zulu-8, Project language level : 8
+	•	Configurer le compiler : File → Settings → Build, Execution, Deployment → Compiler → Java Compiler → Target bytecode version 8
 
-### 5.1 Configurer le JDK
-- **File → Project Structure → Project → Project SDK → Add JDK → Zulu 8**
+⸻
 
-### 5.2 Configurer Tomcat
-- **Run → Edit Configurations… → + → Tomcat Server → Local**
-- Configurer :
-  - **Tomcat Home** : `~/Documents/apache-tomcat-9.0.109`
-  - **Deployment → Artifact** : WAR du projet
-  - **JDK** : 1.8 (Zulu 8)
-- **Apply → OK**
+6️⃣ Configuration de Tomcat dans IntelliJ
+	•	Ajouter serveur : Run → Edit Configurations → + → Tomcat Server → Local
+	•	Configurer serveur : Tomcat Home : /usr/local/tomcat9, URL : http://localhost:8080/_00_ASBank2023/
+	•	Ajouter déploiement : Deployment tab → + → Artifact → 00_ASBank2023:war exploded, Application context : /_00_ASBank2023
+	•	Run configuration prête
 
----
+⸻
 
-## 6️⃣ Configurer un Run Maven dans IntelliJ
+7️⃣ Configuration Maven dans IntelliJ
+	•	Vérifier goals : Maven panel → Lifecycle → clean → install -DskipTests
+	•	Configurer run Maven : Run → Edit Configurations → + → Maven → Command line : clean install -DskipTests
+	•	Exécution via terminal IntelliJ : mvn clean install -DskipTests
 
-- **Run → Edit Configurations… → + → Maven**
-- Remplir :
-  - **Name** : `Maven Clean & Compile`
-  - **Working directory** : racine du projet
-  - **Command line** : `clean compile` (ou `clean package`, `tomcat7:deploy`, etc.)
-  - **JDK** : 1.8 (Zulu 8)
-- **Apply → OK**
+⸻
 
----
+8️⃣ Configuration de la base de données
 
-## 📌 Commandes Maven utiles
+Installation MySQL
 
-| Nom configuration  | Command line Maven   | Description                         |
-|--------------------|----------------------|-------------------------------------|
-| Clean & Compile    | `clean compile`     | Nettoie et compile le projet        |
-| Build WAR          | `clean package`     | Compile et génère le WAR            |
-| Deploy Tomcat      | `tomcat7:deploy`    | Déploie sur Tomcat                  |
-| Run tests          | `test`              | Exécute les tests unitaires         |
+brew install mysql
+brew services start mysql
 
----
+Sécurisation
 
-## ⚠️ Problèmes fréquents & Solutions
+mysql_secure_installation
 
-| Problème                             | Solution                                                                 |
-|--------------------------------------|---------------------------------------------------------------------------|
-| Permission denied sur catalina.sh    | `chmod +x catalina.sh`                                                   |
-| Maven compile avec warnings Java 8   | `<source>1.8</source> <target>1.8</target>` ou `<release>8</release>`    |
-| JDK incorrect / options obsolètes    | Vérifier `JAVA_HOME` vers **Zulu 8**                                      |
-| MySQL Connector déplacé              | Utiliser `com.mysql:mysql-connector-j`                                    |
-| Tomcat Maven Plugin introuvable      | Utiliser `tomcat7-maven-plugin:2.2` ou plugin compatible Tomcat 8+        |
-| Warnings JAXB                        | Remplacer `com.sun.xml.bind` par `javax.xml.bind:jaxb-api` si possible    |
+Configuration applicationContext.xml
 
----
+<bean id="dataSource" scope="singleton" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+    <property name="url" value="jdbc:mysql://localhost:3306/banklut?useSSL=false" />
+    <property name="username" value="root" />
+    <property name="password" value="root" />
+</bean>
 
-## 8️⃣ Vérifications finales
+Import des données
 
-- Run **Maven Clean & Compile** → pas d’erreurs  
-- Run **Maven Build WAR** → fichier WAR généré dans `target/`  
-- Run **Tomcat via IntelliJ** → application accessible sur [http://localhost:8080/ASBank-2023](http://localhost:8080/ASBank-2023)
+mysql -u root -p < script/dumpSQL.sql
+mysql -u root -p < script/dumpSQL_UnitTest.sql
 
----
 
-## ✅ Conclusion
+⸻
 
-Documentation complète pour un MacBook, avec **JDK 8, Maven, Tomcat, IntelliJ, runs Maven intégrés et gestion des warnings/erreurs classiques**.
+9️⃣ Démarrage complet de l’application
+	1.	Build Maven : mvn clean install -DskipTests
+	2.	Démarrer Tomcat via IntelliJ : sélectionner configuration Tomcat 9.0.68 → Run
+	3.	Accès à l’application : http://localhost:8080/_00_ASBank2023/
 
----
+⸻
 
-## 🔍 Dépannage rapide (check-list)
+🔧 Résolution des problèmes courants
+	•	JDK non reconnu : vérifier /usr/libexec/java_home -V et redémarrer IntelliJ
+	•	Port 8080 déjà utilisé : sudo lsof -ti:8080 | xargs kill -9
+	•	Erreur de déploiement Tomcat : File → Invalidate Caches and Restart, Build → Rebuild Project
+	•	Connexion base de données : vérifier MySQL, brew services restart mysql
+	•	Artifact non trouvé : File → Project Structure → Artifacts → + → Web Application: Exploded → From Modules
 
-- [ ] Vérifier que `JAVA_HOME` pointe vers **Zulu 8** (`echo $JAVA_HOME`)  
-- [ ] Vérifier que Tomcat a les bons droits (`chmod +x *.sh`)  
-- [ ] Vérifier la version Maven (`mvn -v`)  
-- [ ] Vérifier que le WAR est bien généré (`target/*.war`)  
-- [ ] Vérifier les logs IntelliJ/Tomcat en cas d’erreur (`catalina.out`)  
+⸻
+
+📝 Vérification finale
+	•	JDK 8 configuré et reconnu
+	•	Maven build successful
+	•	Tomcat démarre sans erreur
+	•	Application accessible sur http://localhost:8080/_00_ASBank2023/
+	•	Page de login s’affiche
+	•	Connexion base de données fonctionnelle
+
+Commandes de vérification :
+
+java -version
+mvn -v
+curl http://localhost:8080
+mysql -u root -p -e "SHOW DATABASES;"
+
+
+⸻
+
+🚀 Démarrage rapide après configuration
+
+# Démarrer MySQL
+brew services start mysql
+
+	•	Lancer IntelliJ et exécuter la configuration Tomcat 9.0.68
+	•	Accéder à : http://localhost:8080/_00_ASBank2023/
+
+⸻
+
+📞 Support
+
+En cas de problème, vérifier la console IntelliJ pour les messages d’erreur détaillés.
