@@ -8,7 +8,6 @@
 
 	<!-- Cf http://docs.spring.io/spring/docs/current/spring-framework-reference/html/orm.html 
 		pour de l'aide sur ce fichier -->
-
 	<!-- ============= DAO (Test) ============= -->
 
 	<!-- La DAO utilisée les tests. Utilise la balise <property> qui signifie 

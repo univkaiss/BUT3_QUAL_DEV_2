@@ -33,6 +33,7 @@
 		<property name="packagesToScan" value="com.iut.banque.modele" />
 	</bean>
 
+
 	<!-- La source de donnée utilisée pour les tests. Contient les infos de 
 		base de la connection -->
 	<bean id="dataSource" scope="singleton"
