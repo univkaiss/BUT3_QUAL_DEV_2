@@ -1,5 +1,6 @@
 package com.iut.banque.controller;
 
+import com.iut.banque.security.PasswordHasherCompact;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -10,10 +11,14 @@ import com.iut.banque.exceptions.TechnicalException;
 import com.iut.banque.facade.BanqueFacade;
 import com.opensymphony.xwork2.ActionSupport;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
 public class CreerUtilisateur extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
 	private BanqueFacade banque;
+	private String submit;
 	private String userId;
 	private String nom;
 	private String prenom;
@@ -24,6 +29,8 @@ public class CreerUtilisateur extends ActionSupport {
 	private String numClient;
 	private String message;
 	private String result;
+
+
 
 	/**
 	 * @return the userId
@@ -115,6 +122,10 @@ public class CreerUtilisateur extends ActionSupport {
 		this.male = male;
 	}
 
+	public void setSubmit(String submit) {
+		this.submit = submit;
+	}
+
 	/**
 	 * @return the user
 	 */
@@ -123,7 +134,7 @@ public class CreerUtilisateur extends ActionSupport {
 	}
 
 	/**
-	 * @param user
+	 * @param client
 	 *            the user to set
 	 */
 	public void setClient(boolean client) {
@@ -158,7 +169,7 @@ public class CreerUtilisateur extends ActionSupport {
 	/**
 	 * Renvoie Le message à afficher si la création d'un utilisateur vient
 	 * d'être essayée.
-	 * 
+	 *
 	 * @return le message de l'action précédente
 	 */
 	public String getMessage() {
@@ -167,7 +178,7 @@ public class CreerUtilisateur extends ActionSupport {
 
 	/**
 	 * Setter du message provenant de l'action précedente.
-	 * 
+	 *
 	 * @param message
 	 */
 	public void setMessage(String message) {
@@ -177,7 +188,7 @@ public class CreerUtilisateur extends ActionSupport {
 	/**
 	 * Le result indique si l'utilisateur vient d'arriver sur la page ou a tenté
 	 * la création d'un utilisateur précedemment.
-	 * 
+	 *
 	 * @return le status de l'action précedente.
 	 */
 	public String getResult() {
@@ -186,7 +197,7 @@ public class CreerUtilisateur extends ActionSupport {
 
 	/**
 	 * Setter du result de l'action précedente
-	 * 
+	 *
 	 * @param result
 	 */
 	public void setResult(String result) {
@@ -195,18 +206,23 @@ public class CreerUtilisateur extends ActionSupport {
 
 	/**
 	 * Création d'un utilisateur.
-	 * 
+	 *
 	 * @return String : le status de l'action
 	 */
 	public String creationUtilisateur() {
 		try {
+
+			String hashedPwd = PasswordHasherCompact.createHashString(userPwd.toCharArray());
 			if (client) {
-				banque.createClient(userId, userPwd, nom, prenom, adresse, male, numClient);
+
+				banque.createClient(userId, hashedPwd, nom, prenom, adresse, male, numClient);
 			} else {
-				banque.createManager(userId, userPwd, nom, prenom, adresse, male);
+
+				banque.createManager(userId, hashedPwd, nom, prenom, adresse, male);
 			}
 			this.message = "Le nouvel utilisateur avec le user id '" + userId + "' a bien été crée.";
 			this.result = "SUCCESS";
+			System.out.println("DEBUG: utilisateur récupéré = " + userId);
 			return "SUCCESS";
 		} catch (IllegalOperationException e) {
 			this.message = "L'identifiant à déjà été assigné à un autre utilisateur de la banque.";
@@ -224,6 +240,10 @@ public class CreerUtilisateur extends ActionSupport {
 			this.message = "Format du numéro de client incorrect.";
 			this.result = "ERROR";
 			return "ERROR";
-		}
-	}
+		} catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -26,7 +26,7 @@
 			list="#{false:'Compte sans découvert',true:'Compte avec découvert'}"
 			value="false" />
 		<s:textfield label="Découvert autorisé" name="decouvertAutorise" />
-		<s:submit name="submit" />
+		<s:submit name="submit" value="Submit"/>
 	</s:form>
 	<s:form name="myForm" action="listeCompteManager" method="POST">
 		<s:submit name="Retour" value="Retour" />

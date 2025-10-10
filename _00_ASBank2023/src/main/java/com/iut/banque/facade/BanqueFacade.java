@@ -20,7 +20,7 @@ public class BanqueFacade {
 
 	/**
 	 * Constructeur de la facade sans paramètre
-	 * 
+	 *
 	 * @return BanqueFacade : avec un nouveau BanqueManager et un nouveau
 	 *         LoginManager
 	 */
@@ -31,7 +31,7 @@ public class BanqueFacade {
 
 	/**
 	 * Getter de l'utilisateur actuellement connecté à l'application
-	 * 
+	 *
 	 * @return Utilisateur : celui qui est connecté
 	 */
 	public Utilisateur getConnectedUser() {
@@ -40,7 +40,7 @@ public class BanqueFacade {
 
 	/**
 	 * Tentative de connection.
-	 * 
+	 *
 	 * @param userCde
 	 *            : le String de l'user qui tente de s'identifier
 	 * @param userPwd
@@ -58,7 +58,7 @@ public class BanqueFacade {
 
 	/**
 	 * Méthode pour créditer un compte d'un montant donné en paramètre
-	 * 
+	 *
 	 * @param compte
 	 *            : un objet de type Compte correspondant au compte qu'on veut
 	 *            créditer
@@ -73,7 +73,7 @@ public class BanqueFacade {
 
 	/**
 	 * Méthode pour débiter un compte d'un montant donné en paramètre
-	 * 
+	 *
 	 * @param compte
 	 *            : un objet de type Compte correspondant au compte qu'on veut
 	 *            débiter
@@ -91,7 +91,7 @@ public class BanqueFacade {
 
 	/**
 	 * Méthode pour récupérer une HashMap avec tous les clients
-	 * 
+	 *
 	 * @return Map<String,Client> : la hashmap correspondant au résultat de la
 	 *         demande
 	 */
@@ -109,7 +109,7 @@ public class BanqueFacade {
 	/**
 	 * Créer un compte sans découvert avec un solde de 0. L'utilisateur connecté
 	 * doit être un gestionnaire.
-	 * 
+	 *
 	 * @param numeroCompte
 	 *            : le numéro du compte à créer
 	 * @param client
@@ -129,7 +129,7 @@ public class BanqueFacade {
 	/**
 	 * Créer un compte avec découvert avec un solde de 0. L'utilisateur connecté
 	 * doit être un gestionnaire.
-	 * 
+	 *
 	 * @param numeroCompte
 	 *            : le numéro du compte à créer
 	 * @param client
@@ -141,7 +141,7 @@ public class BanqueFacade {
 	 *             compte de la base
 	 * @throws IllegalFormatException
 	 *             : si le numeroCompte n'est pas du bon format
-	 * @throws IllegalOperationException 
+	 * @throws IllegalOperationException
 	 */
 	public void createAccount(String numeroCompte, Client client, double decouvertAutorise)
 			throws TechnicalException, IllegalFormatException, IllegalOperationException {
@@ -152,7 +152,7 @@ public class BanqueFacade {
 
 	/**
 	 * Supprime un compte. L'utilisateur connect doit être un gestionnaire.
-	 * 
+	 *
 	 * @param compte
 	 *            : le compte à supprimer
 	 * @throws IllegalOperationException
@@ -169,7 +169,7 @@ public class BanqueFacade {
 
 	/**
 	 * Cr�er un manager. L'utilisateur connecté doit être un gestionnaire.
-	 * 
+	 *
 	 * @param userId
 	 * @param userPwd
 	 * @param nom
@@ -191,9 +191,9 @@ public class BanqueFacade {
 	}
 
 	/**
-	 * 
+	 *
 	 * L'utilisateur connecté doit être un gestionnaire.
-	 * 
+	 *
 	 * @param userId
 	 * @param userPwd
 	 * @param nom
@@ -211,7 +211,7 @@ public class BanqueFacade {
 	 * @throws IllegalArgumentException
 	 */
 	public void createClient(String userId, String userPwd, String nom, String prenom, String adresse, boolean male,
-			String numeroClient)
+							 String numeroClient)
 			throws IllegalOperationException, TechnicalException, IllegalArgumentException, IllegalFormatException {
 		if (loginManager.getConnectedUser() instanceof Gestionnaire) {
 			banqueManager.createClient(userId, userPwd, nom, prenom, adresse, male, numeroClient);
@@ -219,9 +219,9 @@ public class BanqueFacade {
 	}
 
 	/**
-	 * 
+	 *
 	 * L'utilisateur connecté doit être un gestionnaire.
-	 * 
+	 *
 	 * @param u
 	 * @throws IllegalOperationException
 	 *             si l'user est null ou si l'utilisateur n'est pas un
@@ -237,7 +237,7 @@ public class BanqueFacade {
 
 	/**
 	 * L'utilisateur connecté doit être un getstionnaire
-	 * 
+	 *
 	 * Charge la banqueManager avec une map de tous les clients
 	 */
 	public void loadClients() {
@@ -248,7 +248,7 @@ public class BanqueFacade {
 
 	/**
 	 * Méthode pour récupérer un objet compte basé sur son String identidiant
-	 * 
+	 *
 	 * @param idCompte
 	 *            : String correspondant à l'ID du compte qu'on veut récupérer
 	 * @return Compte : objet correspondant à celui demandé
@@ -259,9 +259,9 @@ public class BanqueFacade {
 
 	/**
 	 * L'utilisateur connecté doit être un gestionnaire
-	 * 
+	 *
 	 * Méthode pour changer le découvert autorisé d'un compte
-	 * 
+	 *
 	 * @param compte
 	 *            : CompteAvecDecouvert correspondant au compte qu'on veut
 	 *            modifier
@@ -269,7 +269,7 @@ public class BanqueFacade {
 	 *            : double correspondant au nouveau montant de découvert qu'on
 	 *            veut assigner
 	 * @throws IllegalFormatException
-	 * @throws IllegalOperationException 
+	 * @throws IllegalOperationException
 	 */
 	public void changeDecouvert(CompteAvecDecouvert compte, double nouveauDecouvert) throws IllegalFormatException, IllegalOperationException {
 		if (loginManager.getConnectedUser() instanceof Gestionnaire) {

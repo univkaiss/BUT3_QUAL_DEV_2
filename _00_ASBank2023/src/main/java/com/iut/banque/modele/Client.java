@@ -22,7 +22,7 @@ public class Client extends Utilisateur {
 
 	/**
 	 * Numéro du client.
-	 * 
+	 *
 	 * Celui est unique mais ce n'est pas la clé primaire utilisée par la BDD.
 	 */
 	@Column(name = "numClient", unique = true)
@@ -31,10 +31,10 @@ public class Client extends Utilisateur {
 	/**
 	 * Map des comptes que le client possède. La clé de la Map est le numéro de
 	 * compte.
-	 * 
+	 *
 	 * L'association "one-to-many" signifie que chaque client possède plusieurs
 	 * comptes mais que chaque compte a un unique propriétaire.
-	 * 
+	 *
 	 * FetchType.EAGER signifie que le chargment des comptes n'est pas
 	 * paresseux. Ce n'est pas optimal si il y a beaucoup de comptes, mais cela
 	 * permet de travailler avec les objets Clients en dehors d'une session.
@@ -45,7 +45,7 @@ public class Client extends Utilisateur {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @throws IllegalFormatException
 	 */
 	public void setUserId(String userId) throws IllegalFormatException {
@@ -58,7 +58,7 @@ public class Client extends Utilisateur {
 	/**
 	 * Le numéro du client est unique mais ne correspond pas à l'identifiant de
 	 * l'objet dans la base de données.
-	 * 
+	 *
 	 * @return String, le numéro du client
 	 */
 	public String getNumeroClient() {
@@ -68,7 +68,7 @@ public class Client extends Utilisateur {
 	/**
 	 * Le numéro du client est unique mais ne correspond pas à l'identifiant de
 	 * l'objet dans la base de données.
-	 * 
+	 *
 	 * @param numeroClient
 	 *            : le numéro du client
 	 * @throws IllegalArgumentException
@@ -88,15 +88,15 @@ public class Client extends Utilisateur {
 	/**
 	 * Constructeur de Client avec tous les champs de la classe comme
 	 * paramètres.
-	 * 
+	 *
 	 * Il est préférable d'utiliser une classe implémentant IDao pour créer un
 	 * objet au lieu d'appeler ce constructeur.
-	 * 
+	 *
 	 * @throws IllegalFormatException
 	 * @throws IllegalArgumentException
 	 */
 	public Client(String nom, String prenom, String adresse, boolean homme, String usrId, String usrPwd,
-			String numeroClient) throws IllegalArgumentException, IllegalFormatException {
+				  String numeroClient) throws IllegalArgumentException, IllegalFormatException {
 		super(nom, prenom, adresse, homme, null, usrPwd);
 		setUserId(usrId);
 		setNumeroClient(numeroClient);
@@ -105,9 +105,9 @@ public class Client extends Utilisateur {
 
 	/**
 	 * Constructeur sans paramètre de Client.
-	 * 
+	 *
 	 * Nécessaire pour Hibernate.
-	 * 
+	 *
 	 * Il est préférable d'utiliser une classe implémentant IDao pour créer un
 	 * objet au lieu d'appeler ce constructeur.
 	 */
@@ -117,7 +117,7 @@ public class Client extends Utilisateur {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -128,7 +128,7 @@ public class Client extends Utilisateur {
 
 	/**
 	 * Cette méthode est une version plus présentable du toString()
-	 * 
+	 *
 	 * @return String, l'identité du client
 	 */
 	public String getIdentity() {
@@ -137,7 +137,7 @@ public class Client extends Utilisateur {
 
 	/**
 	 * Getter pour l'ensemble des comptes possedés par le client.
-	 * 
+	 *
 	 * @return Map<String, Compte>, la map retournée a pour clés les numéro de
 	 *         compte et pour valeurs les objets Comptes.
 	 */
@@ -147,7 +147,7 @@ public class Client extends Utilisateur {
 
 	/**
 	 * Setter pour l'ensemble des comptes possedés par le client.
-	 * 
+	 *
 	 * @param accounts
 	 *            : la map passée en argument doit avoir pour clés les numéro de
 	 *            compte et pour valeurs les objets Comptes.
@@ -158,7 +158,7 @@ public class Client extends Utilisateur {
 
 	/**
 	 * Ajoute un compte parmis la liste de ceux du client.
-	 * 
+	 *
 	 * @param compte
 	 *            : le compte à ajouter
 	 */
@@ -172,7 +172,7 @@ public class Client extends Utilisateur {
 	 * point, une lettre au moins, chiffre entre 1 et 9, et éventuellement une
 	 * succession de chiffres entre 0 et 9 supplémentaires (Par exemple :
 	 * d.dupont123)
-	 * 
+	 *
 	 * @param s
 	 *            : String d'entrée qu'on veut comparer au format attendu
 	 * @return boolean : résultat de la comparaison. True si le format est
@@ -186,7 +186,7 @@ public class Client extends Utilisateur {
 	 * Fonction qui va vérifier le string d'entrée s'il correspond au format
 	 * attendu pour un numéro de client, à savoir, 9 chiffres successifs (Par
 	 * exemple 1234567890)
-	 * 
+	 *
 	 * @param s
 	 *            : String d'entrée qu'on veut comparer au format attendu
 	 * @return boolean : résultat de la comparaison. True si le format est
@@ -199,7 +199,7 @@ public class Client extends Utilisateur {
 	/**
 	 * Fonction qui va vérifier si le client a au moins un compte à découvert.
 	 * Renvoie true si un ou plus, false sinon
-	 * 
+	 *
 	 * @return boolean : résultat de l'interrogation
 	 */
 	public boolean possedeComptesADecouvert() {
@@ -215,7 +215,7 @@ public class Client extends Utilisateur {
 
 	/**
 	 * Renvoie tous les comptes avec un solde différent de zéro
-	 * 
+	 *
 	 * @return Map<String, Compte> une map des comptes (key = id du compte,
 	 *         value = compte)
 	 */

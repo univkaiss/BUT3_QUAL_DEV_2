@@ -17,7 +17,7 @@ public class Banque {
 
 	/**
 	 * Getter du map de clients
-	 * 
+	 *
 	 * @return Map<String, Client> : correspondant au champ clients
 	 */
 	public Map<String, Client> getClients() {
@@ -26,8 +26,8 @@ public class Banque {
 
 	/**
 	 * Setter du map de clients
-	 * 
-	 * @param accounts
+	 *
+	 * @param clients
 	 *            : Map<String,Client> correpondant au Map qu'on veut assigner
 	 */
 	public void setClients(Map<String, Client> clients) {
@@ -36,7 +36,7 @@ public class Banque {
 
 	/**
 	 * Getter du map de clients
-	 * 
+	 *
 	 * @return Map<String, Gestionnaire> : correspondant au champ gestionnaires
 	 */
 	public Map<String, Gestionnaire> getGestionnaires() {
@@ -45,7 +45,7 @@ public class Banque {
 
 	/**
 	 * Setter du map de gestionnaires
-	 * 
+	 *
 	 * @param gestionnaires
 	 *            : Map<String,Gestionnaire> correpondant au Map qu'on veut
 	 *            assigner
@@ -56,7 +56,7 @@ public class Banque {
 
 	/**
 	 * Getter du map de comptes
-	 * 
+	 *
 	 * @return Map<String, Compte> : correspondant au champ accounts
 	 */
 	public Map<String, Compte> getAccounts() {
@@ -65,7 +65,7 @@ public class Banque {
 
 	/**
 	 * Setter du map de comptes
-	 * 
+	 *
 	 * @param accounts
 	 *            : Map<String,Compte> correpondant au Map qu'on veut assigner
 	 */
