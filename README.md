@@ -1,6 +1,6 @@
 # ASBank2023 - Installation et Configuration sur MacBook
 
-Cette documentation explique pas à pas comment installer et configurer Maven, JDK 8 (Zulu), Tomcat 9 et IntelliJ IDEA Ultimate sur un MacBook pour le projet ASBank2023.
+Cette documentation explique pas à pas comment installer et configurer Maven, JDK 8 (Zulu), Tomcat 9 et IntelliJ IDEA Ultimate sur un MacBook pour le projet **ASBank2023**.
 
 ---
 
@@ -83,7 +83,7 @@ source ~/.zshrc
 $CATALINA_HOME/bin/startup.sh
 ```
 
-Accéder à http://localhost:8080
+Accéder à [http://localhost:8080](http://localhost:8080)
 
 ### Arrêt de Tomcat
 
@@ -194,8 +194,14 @@ mysql -u root -p < script/dumpSQL_UnitTest.sql
 
 ```bash
 java -version
+
+# Vérifier Maven
 mvn -v
+
+# Vérifier Tomcat
 curl http://localhost:8080
+
+# Vérifier MySQL
 mysql -u root -p -e "SHOW DATABASES;"
 ```
 

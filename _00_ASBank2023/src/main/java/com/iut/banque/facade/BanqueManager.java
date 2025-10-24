@@ -2,6 +2,8 @@ package com.iut.banque.facade;
 
 import java.util.Map;
 
+
+
 import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.InsufficientFundsException;
@@ -19,9 +21,10 @@ public class BanqueManager {
 	private Banque bank;
 	private IDao dao;
 
+
 	/**
 	 * Constructeur du BanqueManager
-	 * 
+	 *
 	 * @return BanqueManager : un nouvel objet BanqueManager
 	 */
 	public BanqueManager() {
@@ -48,9 +51,9 @@ public class BanqueManager {
 
 	/**
 	 * Setter pour la DAO.
-	 * 
+	 *
 	 * Utilisé par Spring par Injection de Dependence
-	 * 
+	 *
 	 * @param dao
 	 *            : la dao nécessaire pour le BanqueManager
 	 */
@@ -58,12 +61,14 @@ public class BanqueManager {
 		this.dao = dao;
 	}
 
+
+
 	/**
 	 * Méthode pour créditer un compte en faisant appel à la méthode créditer de
 	 * l'objet bank pour mettre à jour localement, et ensuite appeler la méthode
 	 * updateAccount de la DAO pour mettre à jour les données dans la base de
 	 * données
-	 * 
+	 *
 	 * @param compte
 	 *            : un objet de type compte représentant le compte à créditer
 	 * @param montant
@@ -81,7 +86,7 @@ public class BanqueManager {
 	 * l'objet bank pour mettre à jour localement, et ensuite appeler la méthode
 	 * updateAccount de la DAO pour mettre à jour les données dans la base de
 	 * données
-	 * 
+	 *
 	 * @param compte
 	 *            : un objet de type compte repr�sentant le compte à créditer
 	 * @param montant
@@ -113,7 +118,7 @@ public class BanqueManager {
 
 	/**
 	 * Cette méthode renvoie tous les clients de la banque
-	 * 
+	 *
 	 * @return la liste de tous les clients
 	 */
 	public Map<String, Client> getAllClients() {
@@ -122,7 +127,7 @@ public class BanqueManager {
 
 	/**
 	 * Cette méthode renvoie tous les gestionnaires de la banque
-	 * 
+	 *
 	 * @return la liste de tous les clients
 	 */
 	public Map<String, Client> getAllManagers() {
@@ -132,7 +137,7 @@ public class BanqueManager {
 	/**
 	 * Cette méthode appelle la DAO pour cr�er un compte sans découvert dans la
 	 * BdD
-	 * 
+	 *
 	 * @param numeroCompte
 	 *            String correspondant au numéro de compte à créer
 	 * @param client
@@ -148,7 +153,7 @@ public class BanqueManager {
 	/**
 	 * Cette méthode appelle la DAO pour créer un compte avec découvert dans la
 	 * BdD
-	 * 
+	 *
 	 * @param numeroCompte
 	 *            String correspondant au numéro de compte à créer
 	 * @param client
@@ -159,7 +164,7 @@ public class BanqueManager {
 	 *            nouveau compte
 	 * @throws TechnicalException
 	 * @throws IllegalFormatException
-	 * @throws IllegalOperationException 
+	 * @throws IllegalOperationException
 	 */
 	public void createAccount(String numeroCompte, Client client, double decouvertAutorise)
 			throws TechnicalException, IllegalFormatException, IllegalOperationException {
@@ -169,7 +174,7 @@ public class BanqueManager {
 	/**
 	 * Méthode qui va appeler la DAO pour supprimer le compte passé en paramètre
 	 * dans la mesure du possible
-	 * 
+	 *
 	 * @param c
 	 *            Compte correspondant à l'objet à supprimer
 	 * @throws IllegalOperationException
@@ -188,7 +193,7 @@ public class BanqueManager {
 
 	/**
 	 * Méthode qui va appeler la DAO pour créer un nouveau manager dans la BdD
-	 * 
+	 *
 	 * @param userId
 	 *            String pour le userId à utiliser
 	 * @param userPwd
@@ -209,12 +214,13 @@ public class BanqueManager {
 	 */
 	public void createManager(String userId, String userPwd, String nom, String prenom, String adresse, boolean male)
 			throws TechnicalException, IllegalArgumentException, IllegalFormatException {
+
 		dao.createUser(nom, prenom, adresse, male, userId, userPwd, true, null);
 	}
 
 	/**
 	 * Méthode qui va appeler la DAO pour créer un nouveau client dans la BdD
-	 * 
+	 *
 	 * @param userId
 	 *            String pour le userId à utiliser
 	 * @param userPwd
@@ -237,8 +243,9 @@ public class BanqueManager {
 	 * @throws IllegalArgumentException
 	 */
 	public void createClient(String userId, String userPwd, String nom, String prenom, String adresse, boolean male,
-			String numeroClient)
+							 String numeroClient)
 			throws IllegalOperationException, TechnicalException, IllegalArgumentException, IllegalFormatException {
+
 		Map<String, Client> liste = this.getAllClients();
 		for (Map.Entry<String, Client> entry : liste.entrySet()) {
 			if (entry.getValue().getNumeroClient().equals(numeroClient)) {
@@ -252,7 +259,7 @@ public class BanqueManager {
 
 	/**
 	 * Méthode qui va appeler la DAO pour supprimer un utilisateur
-	 * 
+	 *
 	 * @param u
 	 *            Utilisateur correspondant à l'objet Utilisateur à supprimer
 	 * @throws TechnicalException
@@ -278,7 +285,7 @@ public class BanqueManager {
 
 	/**
 	 * Change le découvert d'un compte
-	 * 
+	 *
 	 * @param compte
 	 * @param nouveauDecouvert
 	 * @throws IllegalFormatException

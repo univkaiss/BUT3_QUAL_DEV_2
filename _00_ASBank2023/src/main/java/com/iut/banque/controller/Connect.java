@@ -8,6 +8,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.opensymphony.xwork2.ActionSupport;
 
+
 import com.iut.banque.constants.LoginConstants;
 import com.iut.banque.facade.BanqueFacade;
 import com.iut.banque.modele.Client;
@@ -20,6 +21,7 @@ public class Connect extends ActionSupport {
 	private String userCde;
 	private String userPwd;
 	private BanqueFacade banque;
+
 
 	/**
 	 * Constructeur de la classe Connect

@@ -21,10 +21,10 @@ import com.iut.banque.modele.Utilisateur;
 
 /**
  * Implémentation de IDao utilisant Hibernate.
- * 
+ *
  * Les transactions sont gerés par Spring et utilise le transaction manager
  * défini dans l'application Context.
- * 
+ *
  * Par défaut, la propagation des transactions est REQUIRED, ce qui signifie que
  * si une transaction est déjà commencé elle va être réutilisée. Cela est util
  * pour les tests unitaires de la DAO.
@@ -41,10 +41,10 @@ public class DaoHibernate implements IDao {
 
 	/**
 	 * Setter pour la SessionFactory.
-	 * 
+	 *
 	 * Cette méthode permet à Spring d'injecter la factory au moment de la
 	 * construction de la DAO.
-	 * 
+	 *
 	 * @param sessionFactory
 	 *            : la session factory nécessaire à la gestion des sessions
 	 */
@@ -54,11 +54,11 @@ public class DaoHibernate implements IDao {
 
 	/**
 	 * {@inheritDoc}
-	 * @throws IllegalOperationException 
+	 * @throws IllegalOperationException
 	 */
 	@Override
 	public CompteAvecDecouvert createCompteAvecDecouvert(double solde, String numeroCompte, double decouvertAutorise,
-			Client client) throws TechnicalException, IllegalFormatException, IllegalOperationException {
+														 Client client) throws TechnicalException, IllegalFormatException, IllegalOperationException {
 		Session session = sessionFactory.getCurrentSession();
 		CompteAvecDecouvert compte = session.get(CompteAvecDecouvert.class, numeroCompte);
 		if (compte != null) {
@@ -138,13 +138,13 @@ public class DaoHibernate implements IDao {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * @throws IllegalFormatException
 	 * @throws IllegalArgumentException
 	 */
 	@Override
 	public Utilisateur createUser(String nom, String prenom, String adresse, boolean male, String userId,
-			String userPwd, boolean manager, String numClient)
+								  String userPwd, boolean manager, String numClient)
 			throws TechnicalException, IllegalArgumentException, IllegalFormatException {
 		Session session = sessionFactory.getCurrentSession();
 

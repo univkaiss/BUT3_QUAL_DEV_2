@@ -29,9 +29,10 @@
 		<s:radio label="Sexe" name="male" list="#{true:'Homme',false:'Femme'}"
 			value="true" />
 		<s:radio label="Type" name="client"
-			list="#{true:'Client',false:'Manager'}" value="true" />
+				 list="#{true:'Client',false:'Manager'}" value="true" />
 		<s:textfield label="Numéro de client" name="numClient" />
-		<s:submit name="submit" />
+
+		<s:submit name="submit" value="submit"/>
 	</s:form>
 	<s:form name="myForm" action="retourTableauDeBordManager" method="POST">
 		<s:submit name="Retour" value="Retour" />
