@@ -10,175 +10,135 @@ import com.iut.banque.modele.Compte;
 import com.iut.banque.modele.CompteAvecDecouvert;
 import com.iut.banque.modele.CompteSansDecouvert;
 import com.iut.banque.modele.Gestionnaire;
+import com.iut.banque.modele.UserData;
 import com.iut.banque.modele.Utilisateur;
 
 public interface IDao {
 
 	/**
-	 * Méthode pour créer un compte avec découvert dans la base de données
-	 * 
-	 * @param Multiple
-	 *            : Données correspondant à la création d'un compte avec
-	 *            découvert
-	 * @return CompteAvecDecouvert : l'objet compte qui a été implémenté dans la
-	 *         base. Envoie une exception en cas d'erreur
-	 * @throws TechnicalException
-	 *             : si le numéro de compte existe déjà IllegalFormatException : si
-	 *             l'appel du constructeur du CompteSansDecouvert échoue
-	 * @throws IllegalOperationException 
+	 * Crée un compte avec découvert dans la base de données.
+	 *
+	 * @param solde : le solde initial du compte
+	 * @param numeroCompte : le numéro du compte
+	 * @param decouvertAutorise : le découvert autorisé
+	 * @param client : le client propriétaire du compte
+	 * @return le compte créé
+	 * @throws TechnicalException : si le numéro de compte existe déjà
+	 * @throws IllegalFormatException : si les données du compte sont invalides
+	 * @throws IllegalOperationException : si l'opération est interdite
 	 */
 	CompteAvecDecouvert createCompteAvecDecouvert(double solde,
-			String numeroCompte, double decouvertAutorise, Client client)
+												  String numeroCompte,
+												  double decouvertAutorise,
+												  Client client)
 			throws TechnicalException, IllegalFormatException, IllegalOperationException;
 
 	/**
-	 * Méthode pour créer un compte sans découvert dans la base de données
-	 * 
-	 * @param Multiple
-	 *            : Données correspondant à la création d'un compte sans
-	 *            découvert
-	 * @return CompteSansD�ecouvert : l'objet compte qui a été implémenté dans
-	 *         la base. Envoie une exception en cas d'erreur
-	 * @throws TechnicalException
-	 *             : si le numéro de compte existe déjà IllegalFormatException : si
-	 *             l'appel du constructeur du CompteSansDecouvert échoue
+	 * Crée un compte sans découvert dans la base de données.
+	 *
+	 * @param solde : le solde initial du compte
+	 * @param numeroCompte : le numéro du compte
+	 * @param client : le client propriétaire du compte
+	 * @return le compte créé
+	 * @throws TechnicalException : si le numéro de compte existe déjà
+	 * @throws IllegalFormatException : si les données du compte sont invalides
 	 */
 	CompteSansDecouvert createCompteSansDecouvert(double solde,
-			String numeroCompte, Client client) throws TechnicalException,
-			IllegalFormatException;
+												  String numeroCompte,
+												  Client client)
+			throws TechnicalException, IllegalFormatException;
 
 	/**
-	 * Méthode pour mettre à jour un compte dans la base de données basé sur
-	 * l'objet Compte passé en paramètre
-	 * 
-	 * @param c
-	 *            : un objet de type Compte correspondant à celui qu'on veut
-	 *            mettre à jour (qui peut être soit CompteAvecDecouvert ou
-	 *            CompteSansDecouvert)
+	 * Met à jour un compte existant dans la base de données.
+	 *
+	 * @param c : le compte à mettre à jour
 	 */
 	void updateAccount(Compte c);
 
 	/**
-	 * Méthode pour supprimer un compte dans la base basé sur l'objet Compte
-	 * passé en paramètre
-	 * 
-	 * @param c
-	 *            : un objet de type Compte correspondant à celui qu'on veut
-	 *            supprimer (qui peut être soit CompteAvecDecouvert ou
-	 *            CompteSansDecouvert)
-	 * @throws TechnicalException
-	 *             , si le compte est null ou si le compte n'est pas un compte
-	 *             persistant.
+	 * Supprime un compte existant dans la base de données.
+	 *
+	 * @param c : le compte à supprimer
+	 * @throws TechnicalException : si le compte est null ou non persistant
 	 */
 	void deleteAccount(Compte c) throws TechnicalException;
 
 	/**
-	 * Méthode pour récupérer sous forme de hashmap les comptes du client basé
-	 * sur son ID passé en paramêtre. La clé du map correspont au numéro de
-	 * compte, et les données sont les objets Compte contenant les données
-	 * 
-	 * @param id
-	 *            : String avec l'id de l'utilisateur a qui on veut récupérer la
-	 *            liste des comptes
-	 * @return Map<String, Compte> la liste des comptes du client si l'id passé
-	 *         en paramétre était correct, null sinon
+	 * Récupère tous les comptes d'un client.
+	 *
+	 * @param id : l'identifiant du client
+	 * @return la liste des comptes du client, null si l'id est invalide
 	 */
 	Map<String, Compte> getAccountsByClientId(String id);
 
 	/**
-	 * Méthode pour récupérer un compte basé sur son identifiant
-	 * 
-	 * @param id
-	 *            : String avec l'id du compte duquel on veut récupérer l'objet
-	 *            Compte correspondant
-	 * @return Compte : le compte correspondant à l'id du paramètre. Sera null
-	 *         si l'id n'existe pas
+	 * Récupère un compte par son identifiant.
+	 *
+	 * @param id : l'identifiant du compte
+	 * @return le compte correspondant, null si inexistant
 	 */
 	Compte getAccountById(String id);
 
 	/**
-	 * Méthode pour créer un utilisateur (Client ou Gestionnaire)
-	 * 
-	 * @param Multiple
-	 *            : Tous les champs importants pour créer un utilisateur
-	 * @throws TechnicalException
-	 *             : Si l'id fourni en paramètre est déjà assigné à un autre
-	 *             utilisateur de la base
-	 * @throws IllegalFormatException 
-	 * @throws IllegalArgumentException 
+	 * Crée un utilisateur (Client ou Gestionnaire) dans la base.
+	 *
+	 * @param data : objet UserData contenant toutes les informations nécessaires
+	 * @return l'utilisateur créé
+	 * @throws TechnicalException : si l'identifiant est déjà utilisé
+	 * @throws IllegalFormatException : si les données sont invalides
+	 * @throws IllegalArgumentException : si un argument est incorrect
 	 */
-	Utilisateur createUser(String nom, String prenom, String adresse,
-			boolean male, String usrId, String usrPwd, boolean manager,
-			String numClient) throws TechnicalException, IllegalArgumentException, IllegalFormatException;
+	Utilisateur createUser(UserData data)
+			throws TechnicalException, IllegalArgumentException, IllegalFormatException;
 
 	/**
-	 * Méthode pour supprimer un utilisateur (Client ou Gestionnaire)
-	 * 
-	 * @param u
-	 *            : un objet de type Utilisateur (Client ou Gestionnaire)
-	 *            correpondant à celui qu'on veut supprimer
-	 * @throws TechnicalException
-	 *             , si l'user est null ou si l'utilisateur n'est pas un
-	 *             utilisateur persistant.
+	 * Supprime un utilisateur (Client ou Gestionnaire) de la base.
+	 *
+	 * @param u : l'utilisateur à supprimer
+	 * @throws TechnicalException : si l'utilisateur est null ou non persistant
 	 */
 	void deleteUser(Utilisateur u) throws TechnicalException;
 
 	/**
-	 * Méthode pour mettre à jour un utilisateur (Client ou Gestionnaire)
-	 * 
-	 * @param u
-	 *            : un objet de type Utilisateur (Client ou Gestionnaire)
-	 *            correspondant à celui qu'on veut mettre à jour
+	 * Met à jour un utilisateur existant.
+	 *
+	 * @param u : l'utilisateur à mettre à jour
 	 */
 	void updateUser(Utilisateur u);
 
 	/**
-	 * Méthode pour vérifier la connection de l'utilisateur. Confronte le mot de
-	 * passe en paramètre à celui dans la base de données pour l'utilisateur
-	 * passé en paramètre
-	 * 
-	 * @param userId
-	 *            : un String correspondant au userId à qui on veut vérifier le
-	 *            mot de passe
-	 * @param userPwd
-	 *            : un String correspondant au mot de passe qu'on veut
-	 *            confronter avec le contenu de la base de donn�es
-	 * @return Boolean : le résultat de la requête. Vrai si les mots de passes
-	 *         correspondent, faux sinon
+	 * Vérifie les identifiants d'un utilisateur.
+	 *
+	 * @param usrId : l'identifiant de l'utilisateur
+	 * @param usrPwd : le mot de passe à comparer
+	 * @return true si le mot de passe correspond, false sinon
 	 */
-	public boolean isUserAllowed(String usrId, String usrPwd);
+	boolean isUserAllowed(String usrId, String usrPwd);
 
 	/**
-	 * Méthode pour récupérer un utilisateur basé sur son identifiant
-	 * 
-	 * @param id
-	 *            : un String correspondant à l'id de l'utilisateur auquel on
-	 *            veut récupérer son objet Utilisateur correspondant
-	 * @return Utilisateur : l'utilisateur correspondant à l'id du paramètre.
-	 *         Sera null si l'id n'existe pas
+	 * Récupère un utilisateur par son identifiant.
+	 *
+	 * @param id : l'identifiant de l'utilisateur
+	 * @return l'utilisateur correspondant, null si inexistant
 	 */
 	Utilisateur getUserById(String id);
 
 	/**
-	 * Méthode pour récupérer HashMap de tous les comptes de la banque
-	 * 
-	 * @return Map<String, Compte> : la HashMap correspondant à tous les comptes
-	 *         de la banque. Le string est le numéro de compte, et le Compte,
-	 *         son objet Compte associé
+	 * Récupère tous les clients de la banque.
+	 *
+	 * @return une map avec clé = ID client et valeur = Client
 	 */
 	Map<String, Client> getAllClients();
 
 	/**
-	 * Méthode pour récupérer HashMap de tous les gestionnaires de la banque
-	 * 
-	 * @return Map<String, Gestionnaire> : la HashMap correspondant à tous les
-	 *         gestionnaires de la banque. Le string est le numéro de compte, et
-	 *         le Gestionnaire, son objet Gestionnaire associé
+	 * Récupère tous les gestionnaires de la banque.
+	 *
+	 * @return une map avec clé = ID gestionnaire et valeur = Gestionnaire
 	 */
 	Map<String, Gestionnaire> getAllGestionnaires();
 
 	/**
-	 * Termine la session commencée lors de isUserAllowed
+	 * Termine la session de l'utilisateur courant.
 	 */
 	void disconnect();
 }

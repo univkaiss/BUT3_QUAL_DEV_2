@@ -3,7 +3,9 @@ package com.iut.banque.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import com.iut.banque.modele.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,50 +14,32 @@ import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.TechnicalException;
 import com.iut.banque.interfaces.IDao;
-import com.iut.banque.modele.Client;
-import com.iut.banque.modele.Compte;
-import com.iut.banque.modele.CompteAvecDecouvert;
-import com.iut.banque.modele.CompteSansDecouvert;
-import com.iut.banque.modele.Gestionnaire;
-import com.iut.banque.modele.Utilisateur;
 
 /**
  * Implémentation de IDao utilisant Hibernate.
  *
- * Les transactions sont gerés par Spring et utilise le transaction manager
+ * Les transactions sont gérées par Spring et utilise le transaction manager
  * défini dans l'application Context.
  *
  * Par défaut, la propagation des transactions est REQUIRED, ce qui signifie que
- * si une transaction est déjà commencé elle va être réutilisée. Cela est util
+ * si une transaction est déjà commencée elle va être réutilisée. Cela est utile
  * pour les tests unitaires de la DAO.
  */
 @Transactional
 public class DaoHibernate implements IDao {
 
+	private static final Logger LOGGER = Logger.getLogger(DaoHibernate.class.getName());
 	private SessionFactory sessionFactory;
 
 	public DaoHibernate() {
-		System.out.println("==================");
-		System.out.println("Création de la Dao");
+		LOGGER.info("==================");
+		LOGGER.info("Création de la Dao");
 	}
 
-	/**
-	 * Setter pour la SessionFactory.
-	 *
-	 * Cette méthode permet à Spring d'injecter la factory au moment de la
-	 * construction de la DAO.
-	 *
-	 * @param sessionFactory
-	 *            : la session factory nécessaire à la gestion des sessions
-	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * @throws IllegalOperationException
-	 */
 	@Override
 	public CompteAvecDecouvert createCompteAvecDecouvert(double solde, String numeroCompte, double decouvertAutorise,
 														 Client client) throws TechnicalException, IllegalFormatException, IllegalOperationException {
@@ -72,9 +56,6 @@ public class DaoHibernate implements IDao {
 		return compte;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public CompteSansDecouvert createCompteSansDecouvert(double solde, String numeroCompte, Client client)
 			throws TechnicalException, IllegalFormatException {
@@ -85,37 +66,27 @@ public class DaoHibernate implements IDao {
 		}
 
 		compte = new CompteSansDecouvert(numeroCompte, solde, client);
-		session.save(compte);
 		client.addAccount(compte);
 		session.save(compte);
 
 		return compte;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void updateAccount(Compte c) {
 		Session session = sessionFactory.getCurrentSession();
 		session.update(c);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void deleteAccount(Compte c) throws TechnicalException {
-		Session session = sessionFactory.getCurrentSession();
 		if (c == null) {
 			throw new TechnicalException("Ce compte n'existe plus");
 		}
+		Session session = sessionFactory.getCurrentSession();
 		session.delete(c);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Map<String, Compte> getAccountsByClientId(String id) {
 		Session session = sessionFactory.getCurrentSession();
@@ -123,137 +94,110 @@ public class DaoHibernate implements IDao {
 		if (client != null) {
 			return client.getAccounts();
 		} else {
-			return null;
+			return new HashMap<>();
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Compte getAccountById(String id) {
-		Session session = sessionFactory.getCurrentSession();
-		return session.get(Compte.class, id);
+		return sessionFactory.getCurrentSession().get(Compte.class, id);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws IllegalFormatException
-	 * @throws IllegalArgumentException
-	 */
 	@Override
-	public Utilisateur createUser(String nom, String prenom, String adresse, boolean male, String userId,
-								  String userPwd, boolean manager, String numClient)
+	public Utilisateur createUser(UserData data)
 			throws TechnicalException, IllegalArgumentException, IllegalFormatException {
 		Session session = sessionFactory.getCurrentSession();
 
-		Utilisateur user = session.get(Utilisateur.class, userId);
+		// Vérifie si l'utilisateur existe déjà
+		Utilisateur user = session.get(Utilisateur.class, data.getUsrId());
 		if (user != null) {
 			throw new TechnicalException("User Id déjà utilisé.");
 		}
 
-		if (manager) {
-			user = new Gestionnaire(nom, prenom, adresse, male, userId, userPwd);
+		// Crée un Gestionnaire ou un Client selon le champ manager
+		if (data.isManager()) {
+			user = new Gestionnaire(data.getNom(), data.getPrenom(), data.getAdresse(),
+					data.isMale(), data.getUsrId(), data.getUsrPwd());
 		} else {
-			user = new Client(nom, prenom, adresse, male, userId, userPwd, numClient);
+			user = new Client(data.getNom(), data.getPrenom(), data.getAdresse(),
+					data.isMale(), data.getUsrId(), data.getUsrPwd(),
+					data.getNumClient());
 		}
-		session.save(user);
 
+		session.save(user);
 		return user;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
 	@Override
 	public void deleteUser(Utilisateur u) throws TechnicalException {
-		Session session = sessionFactory.getCurrentSession();
 		if (u == null) {
 			throw new TechnicalException("Cet utilisateur n'existe plus");
 		}
+		Session session = sessionFactory.getCurrentSession();
 		session.delete(u);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void updateUser(Utilisateur u) {
 		Session session = sessionFactory.getCurrentSession();
 		session.update(u);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isUserAllowed(String userId, String userPwd) {
-		Session session = null;
-		if (userId == null || userPwd == null) {
-			return false;
-		} else {
-			session = sessionFactory.openSession();
-			userId = userId.trim();
-			if ("".equals(userId) || "".equals(userPwd)) {
-				return false;
-			} else {
-				session = sessionFactory.getCurrentSession();
-				Utilisateur user = session.get(Utilisateur.class, userId);
-				if (user == null) {
-					return false;
-				}
-				return (userPwd.equals(user.getUserPwd()));
-			}
+		if (userId == null || userPwd == null) return false;
+
+		userId = userId.trim();
+		if ("".equals(userId) || "".equals(userPwd)) return false;
+
+		try (Session session = sessionFactory.openSession()) {
+			Utilisateur user = session.get(Utilisateur.class, userId);
+			if (user == null) return false;
+			return userPwd.equals(user.getUserPwd());
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Utilisateur getUserById(String id) {
-		Session session = sessionFactory.getCurrentSession();
-		Utilisateur user = session.get(Utilisateur.class, id);
-		return user;
+		return sessionFactory.getCurrentSession().get(Utilisateur.class, id);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Map<String, Client> getAllClients() {
-		Session session = sessionFactory.getCurrentSession();
-		@SuppressWarnings("unchecked")
-		List<Object> res = session.createCriteria(Client.class).list();
-		Map<String, Client> ret = new HashMap<String, Client>();
-		for (Object client : res) {
-			ret.put(((Client) client).getUserId(), (Client) client);
+		List<Object> res = sessionFactory.getCurrentSession().createCriteria(Client.class).list();
+		Map<String, Client> ret = new HashMap<>();
+		for (Object obj : res) {
+			Client client = (Client) obj;
+			ret.put(client.getUserId(), client);
 		}
 		return ret;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Map<String, Gestionnaire> getAllGestionnaires() {
-		Session session = sessionFactory.getCurrentSession();
-		@SuppressWarnings("unchecked")
-		List<Object> res = session.createCriteria(Gestionnaire.class).list();
-		Map<String, Gestionnaire> ret = new HashMap<String, Gestionnaire>();
-		for (Object gestionnaire : res) {
-			ret.put(((Gestionnaire) gestionnaire).getUserId(), (Gestionnaire) gestionnaire);
+		List<Object> res = sessionFactory.getCurrentSession().createCriteria(Gestionnaire.class).list();
+		Map<String, Gestionnaire> ret = new HashMap<>();
+		for (Object obj : res) {
+			Gestionnaire gestionnaire = (Gestionnaire) obj;
+			ret.put(gestionnaire.getUserId(), gestionnaire);
 		}
 		return ret;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void disconnect() {
-		System.out.println("Déconnexion de la DAO.");
+		LOGGER.info("Déconnexion de la DAO.");
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			if (session != null && session.isOpen()) {
+				session.close();
+				LOGGER.info("Session Hibernate fermée avec succès.");
+			} else {
+				LOGGER.info("Aucune session ouverte à fermer.");
+			}
+		} catch (Exception e) {
+			LOGGER.severe("Erreur lors de la déconnexion : " + e.getMessage());
+		}
 	}
-
 }

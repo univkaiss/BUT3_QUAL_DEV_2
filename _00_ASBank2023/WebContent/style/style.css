@@ -14,18 +14,16 @@ table
 {
 	margin-right: auto;
 	margin-left: auto;
+	padding : 5px;
+	text-align: center;
+	border: 3px outset blue;
 }
 td
 {
 	border : 1px solid black;
 	text-align: center
 }
-table
-{
-	padding : 5px;
-	text-align: center;
-	border: 3px outset blue;
-}
+
 table>thead
 {
 	background-color: rgb(0,255,255);

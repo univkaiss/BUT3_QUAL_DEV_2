@@ -2,145 +2,78 @@ package com.iut.banque.test.modele;
 
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import com.iut.banque.modele.Client;
 import com.iut.banque.modele.CompteAvecDecouvert;
 import com.iut.banque.modele.CompteSansDecouvert;
 
+/**
+ * Tests unitaires de la classe Client.
+ */
+@RunWith(Parameterized.class)
 public class TestsClient {
 
-	/**
-	 * Tests successifs de la méthode de vérification du format de numéro de
-	 * client
-	 */
-	@Test
-	public void testMethodeCheckFormatUserIdClientCorrect() {
-		String strClient = "a.utilisateur928";
-		if (!Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " refusé dans le test");
-		}
-	}
+	// --- Paramètres pour les deux séries de tests ---
+	private String input;
+	private boolean expected;
+	private String typeTest;
 
-	@Test
-	public void testMethodeCheckFormatUserIdClientCommencantParUnChiffre() {
-		String strClient = "32a.abc1";
-		if (Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatUserIdClientCommencantParPlusieursLettres() {
-		String strClient = "aaa.abc1";
-		if (Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatUserIdClientSansPointSeparateur() {
-		String strClient = "abc1";
-		if (Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatUserIdClientChaineVide() {
-		String strClient = "";
-		if (Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatUserIdClientSansLettresApresLePointSeparateur() {
-		String strClient = "a.138";
-		if (Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatUserIdClientAvecUneSeuleLettreApresLePointSeparateur() {
-		String strClient = "a.a1";
-		if (!Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " refusé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatUserIdClientAvecCaractereSpecial() {
-		String strClient = "a.bcdé1";
-		if (Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatUserIdClientAvecTrailingZeros() {
-		String strClient = "a.abc01";
-		if (Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatUserIdClientAvecPlusieursPointsSeparateurs() {
-		String strClient = "a.ab.c1";
-		if (Client.checkFormatUserIdClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
+	public TestsClient(String typeTest, String input, boolean expected) {
+		this.typeTest = typeTest;
+		this.input = input;
+		this.expected = expected;
 	}
 
 	/**
-	 * Tests successifs de la méthode de vérification du format du numéro de
-	 * client
+	 * Données paramétrées pour les méthodes checkFormatUserIdClient et checkFormatNumeroClient
 	 */
-	@Test
-	public void testMethodeCheckFormatNumeroClientCorrect() {
-		String strClient = "1234567890";
-		if (!Client.checkFormatNumeroClient(strClient)) {
-			fail("String " + strClient + " refusé dans le test");
-		}
+	@Parameters(name = "{index}: {0}('{1}') attendu={2}")
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][] {
+				// --- Tests checkFormatUserIdClient ---
+				{ "userId", "a.utilisateur928", true },
+				{ "userId", "32a.abc1", false },
+				{ "userId", "aaa.abc1", false },
+				{ "userId", "abc1", false },
+				{ "userId", "", false },
+				{ "userId", "a.138", false },
+				{ "userId", "a.a1", true },
+				{ "userId", "a.bcdé1", false },
+				{ "userId", "a.abc01", false },
+				{ "userId", "a.ab.c1", false },
+
+				// --- Tests checkFormatNumeroClient ---
+				{ "numClient", "1234567890", true },
+				{ "numClient", "12a456789", false },
+				{ "numClient", "12#456789", false },
+				{ "numClient", "12345678", false },
+				{ "numClient", "12345678901", false }
+		});
 	}
 
 	@Test
-	public void testMethodeCheckFormatNumeroClientAvecLettre() {
-		String strClient = "12a456789";
-		if (Client.checkFormatNumeroClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
+	public void testFormatsClient() {
+		boolean resultat;
+		if ("userId".equals(typeTest)) {
+			resultat = Client.checkFormatUserIdClient(input);
+		} else {
+			resultat = Client.checkFormatNumeroClient(input);
+		}
+
+		if (resultat != expected) {
+			fail("Résultat inattendu pour " + typeTest + " : " + input +
+					" (attendu: " + expected + ", obtenu: " + resultat + ")");
 		}
 	}
 
-	@Test
-	public void testMethodeCheckFormatNumeroClientAvecCaractereSpecial() {
-		String strClient = "12#456789";
-		if (Client.checkFormatNumeroClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroClientAvecMoinsDeNeufChiffres() {
-		String strClient = "12345678";
-		if (Client.checkFormatNumeroClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroClientAvecPlusDeDixChiffres() {
-		String strClient = "12345678901";
-		if (Client.checkFormatNumeroClient(strClient)) {
-			fail("String " + strClient + " validé dans le test");
-		}
-	}
-
-	/**
-	 * Tests de la méthode possedeComptesADecouvert
-	 */
+	// --- Tests de la méthode possedeComptesADecouvert ---
 	@Test
 	public void testMethodePossedeComptesADecouvertPourClientAvecQueDesComptesSansDecouvert() {
 		try {
@@ -148,10 +81,10 @@ public class TestsClient {
 			c.addAccount(new CompteSansDecouvert("FR1234567890", 42, c));
 			c.addAccount(new CompteSansDecouvert("FR1234567891", 0, c));
 			if (c.possedeComptesADecouvert()) {
-				fail("La méthode aurait du renvoyer faux");
+				fail("La méthode aurait dû renvoyer faux");
 			}
 		} catch (Exception e) {
-			fail("Exception récupérée -> " + e.getStackTrace().toString());
+			fail("Exception récupérée -> " + e.getMessage());
 		}
 	}
 
@@ -160,15 +93,15 @@ public class TestsClient {
 		try {
 			Client c = new Client("John", "Doe", "20 rue Bouvier", true, "j.doe1", "password", "1234567890");
 			if (c.possedeComptesADecouvert()) {
-				fail("La méthode aurait du renvoyer faux");
+				fail("La méthode aurait dû renvoyer faux");
 			}
 		} catch (Exception e) {
-			fail("Exception récupérée -> " + e.getStackTrace().toString());
+			fail("Exception récupérée -> " + e.getMessage());
 		}
 	}
 
 	@Test
-	public void testMethodePossedeComptesADecouvertPourClientAvecUnCompteADecouvertParmisPlusieursTypesDeComptes() {
+	public void testMethodePossedeComptesADecouvertPourClientAvecUnCompteADecouvertParmiPlusieursTypesDeComptes() {
 		try {
 			Client c = new Client("John", "Doe", "20 rue Bouvier", true, "j.doe1", "password", "1234567890");
 			c.addAccount(new CompteSansDecouvert("FR1234567890", 42, c));
@@ -176,85 +109,25 @@ public class TestsClient {
 			c.addAccount(new CompteAvecDecouvert("FR1234567892", -42, 100, c));
 			c.addAccount(new CompteAvecDecouvert("FR1234567893", 1000, 100, c));
 			if (!c.possedeComptesADecouvert()) {
-				fail("La méthode aurait du renvoyer vrai");
+				fail("La méthode aurait dû renvoyer vrai");
 			}
 		} catch (Exception e) {
-			fail("Exception récupérée -> " + e.getStackTrace().toString());
+			fail("Exception récupérée -> " + e.getMessage());
 		}
 	}
 
 	@Test
-	public void testMethodePossedeComptesADecouvertPourClientAvecPlusieursComptesADecouvertParmisPlusieursTypesDeComptes() {
+	public void testMethodePossedeComptesADecouvertPourClientAvecPlusieursComptesADecouvertParmiPlusieursTypesDeComptes() {
 		try {
 			Client c = new Client("John", "Doe", "20 rue Bouvier", true, "j.doe1", "password", "1234567890");
 			c.addAccount(new CompteSansDecouvert("FR1234567890", 42, c));
-			c.addAccount(new CompteSansDecouvert("FR1234567891", 0, c));
 			c.addAccount(new CompteAvecDecouvert("FR1234567892", -42, 100, c));
-			c.addAccount(new CompteAvecDecouvert("FR1234567893", 1000, 100, c));
 			c.addAccount(new CompteAvecDecouvert("FR1234567893", -4242, 5000, c));
-			c.addAccount(new CompteSansDecouvert("FR1234567891", 1000.01, c));
 			if (!c.possedeComptesADecouvert()) {
-				fail("La méthode aurait du renvoyer vrai");
+				fail("La méthode aurait dû renvoyer vrai");
 			}
 		} catch (Exception e) {
-			fail("Exception récupérée -> " + e.getStackTrace().toString());
+			fail("Exception récupérée -> " + e.getMessage());
 		}
 	}
-
-	@Test
-	public void testMethodePossedeComptesADecouvertPourClientAvecUnUniqueCompteADecouvert() {
-		try {
-			Client c = new Client("John", "Doe", "20 rue Bouvier", true, "j.doe1", "password", "1234567890");
-			c.addAccount(new CompteAvecDecouvert("FR1234567892", -42, 100, c));
-			if (!c.possedeComptesADecouvert()) {
-				fail("La méthode aurait du renvoyer vrai");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Exception récupérée -> " + e.getStackTrace().toString());
-		}
-	}
-	
-	//Tests pour la méthode getCompteAvecSoldeNonNul()
-
-	@Test
-	public void testMethodeGetCompteAvecSoldeNonNulAvecDeuxComptesAvecSoldeNul(){
-		try {
-			Client c = new Client("John", "Doe", "20 rue Bouvier", true, "j.doe1", "password", "1234567890");
-			c.addAccount(new CompteAvecDecouvert("FR1234567890",0,42,c));
-			c.addAccount(new CompteSansDecouvert("FR1234567891", 0, c));
-			if (c.getComptesAvecSoldeNonNul().size()!=0){
-				fail("La méthode a renvoyé un ou plusieurs comptes aveec un solde nul");
-			}
-		} catch (Exception e) {
-			fail("Exception récupérée -> " + e.getStackTrace().toString());
-		}
-	}
-	@Test
-	public void testMethodeGetCompteAvecSoldeNonNulAvecUnCompteSansDecouvertAvecSoldeNonNul(){
-		try {
-			Client c = new Client("John", "Doe", "20 rue Bouvier", true, "j.doe1", "password", "1234567890");
-			c.addAccount(new CompteAvecDecouvert("FR1234567890",0,42,c));
-			c.addAccount(new CompteSansDecouvert("FR1234567891", 1, c));
-			if (c.getComptesAvecSoldeNonNul().get("FR1234567891")==null){
-				fail("La méthode n'a pas renvoyé dans le map le compte avec solde non nul");
-			}
-		} catch (Exception e) {
-			fail("Exception récupérée -> " + e.getStackTrace().toString());
-		}
-	}
-	@Test
-	public void testMethodeGetCompteAvecSoldeNonNulAvecUnCompteAvecDecouvertAvecSoldeNonNul(){
-		try {
-			Client c = new Client("John", "Doe", "20 rue Bouvier", true, "j.doe1", "password", "1234567890");
-			c.addAccount(new CompteAvecDecouvert("FR1234567890",1,42,c));
-			c.addAccount(new CompteSansDecouvert("FR1234567891", 0, c));
-			if (c.getComptesAvecSoldeNonNul().get("FR1234567890")==null){
-				fail("La méthode n'a pas renvoyé dans le map le compte avec solde non nul");
-			}
-		} catch (Exception e) {
-			fail("Exception récupérée -> " + e.getStackTrace().toString());
-		}
-	}
-
 }

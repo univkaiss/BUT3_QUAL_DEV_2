@@ -13,7 +13,9 @@ public class Banque {
 	private Map<String, Compte> accounts;
 
 	public Banque() {
+		// Constructeur par défaut requis pour la sérialisation ou les frameworks (ex: Hibernate, Spring)
 	}
+
 
 	/**
 	 * Getter du map de clients

@@ -3,8 +3,14 @@ package com.iut.banque.test.modele;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.modele.Client;
@@ -14,9 +20,19 @@ import com.iut.banque.modele.CompteSansDecouvert;
 /**
  * Tests en rapport avec la méthode "créditer" de la classe Banque
  */
+@RunWith(Parameterized.class)
 public class TestsCompte {
 
 	private Compte compte;
+
+	private String numeroCompteTest;
+	private boolean resultatAttendu;
+
+	public TestsCompte(String numeroCompteTest, boolean resultatAttendu) {
+		this.numeroCompteTest = numeroCompteTest;
+		this.resultatAttendu = resultatAttendu;
+	}
+
 
 	@Before
 	public void setUp() throws IllegalFormatException {
@@ -24,36 +40,49 @@ public class TestsCompte {
 	}
 
 	/**
-	 * Test de la métode crediter
-	 * 
-	 * @throws IllegalFormatException
+	 * Données paramétrées pour tester le format du numéro de compte.
+	 */
+	@Parameters(name = "{index}: checkFormatNumeroCompte({0})={1}")
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][] {
+				{ "FR0123456789", true },     // format correct
+				{ "F0123456789", false },     // une seule lettre
+				{ "0123456789", false },      // aucune lettre
+				{ "FRA0123456789", false },   // trois lettres
+				{ "FR0123A456789", false },   // lettre au milieu
+				{ "FR00123456789", false },   // trop de chiffres
+				{ "FR123456789", false },     // pas assez de chiffres
+				{ "FR0123456789A", false }    // lettre à la fin
+		});
+	}
+
+	/**
+	 * Test de la méthode checkFormatNumeroCompte() avec plusieurs cas
+	 */
+	@Test
+	public void testCheckFormatNumeroCompte() {
+		assertEquals(resultatAttendu, Compte.checkFormatNumeroCompte(numeroCompteTest));
+	}
+
+	/**
+	 * Test de la méthode crediter
 	 */
 	@Test
 	public void testCrediterCompte() throws IllegalFormatException {
-		/*
-		 * Méthode qui va tester la méthode crediter pour un compte quelconque
-		 * (pas important si avec ou sans découvert vu que les deux vont hériter
-		 * de la même méthode).
-		 */
 		compte.crediter(100);
 		assertEquals(100.0, compte.getSolde(), 0.001);
 	}
 
 	/**
-	 * Test de la métode crediter avec un montant négatif
+	 * Test de la méthode crediter avec un montant négatif
 	 */
 	@Test
 	public void testCrediterCompteMontantNegatif() {
-		/*
-		 * Méthode qui va tester la méthode crediter pour un compte quelconque
-		 * (pas important si avec ou sans découvert vu que les deux vont hériter
-		 * de la même méthode) avec un montant négatif, auquel cas il devrait
-		 * attraper un IllegalFormatExcepion
-		 */
 		try {
 			compte.crediter(-100);
 			fail("La méthode n'a pas renvoyé d'exception!");
 		} catch (IllegalFormatException ife) {
+			// Attendu : aucun traitement nécessaire
 		} catch (Exception e) {
 			fail("Exception de type " + e.getClass().getSimpleName()
 					+ " récupérée alors qu'un IllegalFormatException était attendu");
@@ -61,9 +90,7 @@ public class TestsCompte {
 	}
 
 	/**
-	 * Test du constructeur avec un format de compte volontairement faux pour
-	 * tester si une exception est renvoyée. Le détail des tests de conformité
-	 * du format de compte se font après
+	 * Test du constructeur avec un format incorrect
 	 */
 	@Test
 	public void testConstruireCompteAvecFormatNumeroCompteIncorrect() {
@@ -71,73 +98,10 @@ public class TestsCompte {
 			compte = new CompteSansDecouvert("&éþ_ëüú¤", 0, new Client());
 			fail("Exception non renvoyée par le constructeur avec un format de numéro de compte incorrect");
 		} catch (IllegalFormatException ife) {
+			// Attendu : l'exception confirme le comportement attendu
 		} catch (Exception e) {
 			fail("Exception de type " + e.getClass().getSimpleName()
 					+ " récupérée à la place d'une de type IllegalFormatException");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroCompteCorrect() {
-		String strNumCompte = "FR0123456789";
-		if (!Compte.checkFormatNumeroCompte(strNumCompte)) {
-			fail("String " + strNumCompte + " refusée dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroCompteAvecUneSeuleLettreAuDebut() {
-		String strNumCompte = "F0123456789";
-		if (Compte.checkFormatNumeroCompte(strNumCompte)) {
-			fail("String " + strNumCompte + " validée dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroCompteAucuneLettreAuDebut() {
-		String strNumCompte = "0123456789";
-		if (Compte.checkFormatNumeroCompte(strNumCompte)) {
-			fail("String " + strNumCompte + " validée dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroCompteAvecTroisLettresAuDebut() {
-		String strNumCompte = "FRA0123456789";
-		if (Compte.checkFormatNumeroCompte(strNumCompte)) {
-			fail("String " + strNumCompte + " validée dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroCompteAvecLettresAuMillieu() {
-		String strNumCompte = "FR0123A456789";
-		if (Compte.checkFormatNumeroCompte(strNumCompte)) {
-			fail("String " + strNumCompte + " validée dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroCompteAvecPlusDeChiffresQueAttendu() {
-		String strNumCompte = "FR00123456789";
-		if (Compte.checkFormatNumeroCompte(strNumCompte)) {
-			fail("String " + strNumCompte + " validée dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroCompteAvecMoinsDeChiffresQueAttendu() {
-		String strNumCompte = "FR123456789";
-		if (Compte.checkFormatNumeroCompte(strNumCompte)) {
-			fail("String " + strNumCompte + " validée dans le test");
-		}
-	}
-
-	@Test
-	public void testMethodeCheckFormatNumeroCompteAvecLettresALaFin() {
-		String strNumCompte = "FR0123456789A";
-		if (Compte.checkFormatNumeroCompte(strNumCompte)) {
-			fail("String " + strNumCompte + " validée dans le test");
 		}
 	}
 }

@@ -2,6 +2,7 @@ package com.iut.banque.test.facade;
 
 import static org.junit.Assert.fail;
 
+import com.iut.banque.exceptions.TechnicalException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.facade.BanqueManager;
 
-//@RunWith indique à JUnit de prendre le class runner de Spirng
 @RunWith(SpringJUnit4ClassRunner.class)
-// @ContextConfiguration permet de charger le context utilisé pendant les tests.
-// Par défault (si aucun argument n'est précisé), cherche le fichier
-/// src/com/iut/banque/test/TestsDaoHibernate-context.xml
 @ContextConfiguration("classpath:TestsBanqueManager-context.xml")
 @Transactional("transactionManager")
 public class TestsBanqueManager {
@@ -24,7 +21,6 @@ public class TestsBanqueManager {
 	@Autowired
 	private BanqueManager bm;
 
-	// Tests de par rapport à l'ajout d'un client
 	@Test
 	public void TestCreationDunClient() {
 		try {
@@ -32,7 +28,7 @@ public class TestsBanqueManager {
 			bm.createClient("t.test1", "password", "test1nom", "test1prenom", "test town", true, "4242424242");
 		} catch (IllegalOperationException e) {
 			e.printStackTrace();
-			fail("IllegalOperationException récupérée : " + e.getStackTrace());
+			fail("IllegalOperationException récupérée : " + e.getMessage());
 		} catch (Exception te) {
 			te.printStackTrace();
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
@@ -44,23 +40,22 @@ public class TestsBanqueManager {
 		try {
 			bm.loadAllClients();
 			bm.createClient("t.test1", "password", "test1nom", "test1prenom", "test town", true, "0101010101");
-			fail();
+			fail("Une IllegalOperationException aurait dû être récupérée");
 		} catch (IllegalOperationException e) {
+			// Exception attendue : création d’un client avec un numéro de compte déjà existant
 		} catch (Exception te) {
 			te.printStackTrace();
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
 		}
 	}
 
-	// Tests par rapport à la suppression de comptes
 	@Test
 	public void TestSuppressionDunCompteAvecDecouvertAvecSoldeZero() {
 		try {
-
 			bm.deleteAccount(bm.getAccountById("CADV000000"));
 		} catch (IllegalOperationException e) {
 			e.printStackTrace();
-			fail("IllegalOperationException récupérée : " + e.getStackTrace());
+			fail("IllegalOperationException récupérée : " + e.getMessage());
 		} catch (Exception te) {
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
 		}
@@ -72,6 +67,7 @@ public class TestsBanqueManager {
 			bm.deleteAccount(bm.getAccountById("CADNV00000"));
 			fail("Une IllegalOperationException aurait dû être récupérée");
 		} catch (IllegalOperationException e) {
+			// Exception attendue : suppression d’un compte avec solde non nul
 		} catch (Exception te) {
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
 		}
@@ -83,7 +79,7 @@ public class TestsBanqueManager {
 			bm.deleteAccount(bm.getAccountById("CSDV000000"));
 		} catch (IllegalOperationException e) {
 			e.printStackTrace();
-			fail("IllegalOperationException récupérée : " + e.getStackTrace());
+			fail("IllegalOperationException récupérée : " + e.getMessage());
 		} catch (Exception te) {
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
 		}
@@ -95,12 +91,12 @@ public class TestsBanqueManager {
 			bm.deleteAccount(bm.getAccountById("CSDNV00000"));
 			fail("Une IllegalOperationException aurait dû être récupérée");
 		} catch (IllegalOperationException e) {
+			// Exception attendue : suppression d’un compte sans découvert mais solde non nul
 		} catch (Exception te) {
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
 		}
 	}
 
-	// Tests en rapport avec la suppression d'utilisateurs
 	@Test
 	public void TestSuppressionDunUtilisateurSansCompte() {
 		try {
@@ -108,7 +104,7 @@ public class TestsBanqueManager {
 			bm.deleteUser(bm.getUserById("g.pasdecompte"));
 		} catch (IllegalOperationException e) {
 			e.printStackTrace();
-			fail("IllegalOperationException récupérée : " + e.getStackTrace());
+			fail("IllegalOperationException récupérée : " + e.getMessage());
 		} catch (Exception te) {
 			te.printStackTrace();
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
@@ -122,6 +118,7 @@ public class TestsBanqueManager {
 			bm.deleteUser(bm.getUserById("admin"));
 			fail("Une IllegalOperationException aurait dû être récupérée");
 		} catch (IllegalOperationException e) {
+			// Exception attendue : tentative de suppression du dernier gestionnaire
 		} catch (Exception te) {
 			te.printStackTrace();
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
@@ -138,7 +135,7 @@ public class TestsBanqueManager {
 			}
 		} catch (IllegalOperationException e) {
 			e.printStackTrace();
-			fail("IllegalOperationException récupérée : " + e.getStackTrace());
+			fail("IllegalOperationException récupérée : " + e.getMessage());
 		} catch (Exception te) {
 			te.printStackTrace();
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
@@ -151,19 +148,20 @@ public class TestsBanqueManager {
 			bm.deleteUser(bm.getUserById("j.doe1"));
 			fail("Une IllegalOperationException aurait dû être récupérée");
 		} catch (IllegalOperationException e) {
+			// Exception attendue : suppression d’un client avec un compte au solde positif
 		} catch (Exception te) {
 			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
 		}
 	}
 
 	@Test
+
 	public void TestSuppressionDunClientAvecUnCompteAvecDecouvertDeSoldeNegatif() {
 		try {
 			bm.deleteUser(bm.getUserById("j.doe1"));
 			fail("Une IllegalOperationException aurait dû être récupérée");
-		} catch (IllegalOperationException e) {
-		} catch (Exception te) {
-			fail("Une Exception " + te.getClass().getSimpleName() + " a été récupérée");
+		} catch (IllegalOperationException | TechnicalException e) {
+			// Exception attendue : suppression impossible car compte avec découvert négatif
 		}
 	}
 

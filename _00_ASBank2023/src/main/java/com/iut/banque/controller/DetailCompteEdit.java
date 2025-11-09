@@ -3,41 +3,28 @@ package com.iut.banque.controller;
 import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.modele.CompteAvecDecouvert;
+import java.util.logging.Logger;
 
 public class DetailCompteEdit extends DetailCompte {
 
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger(DetailCompteEdit.class.getName());
 	private String decouvertAutorise;
 
-	/**
-	 * Constructeur sans argument de DetailCompteEdit
-	 */
 	public DetailCompteEdit() {
 		super();
-		System.out.println("======================================");
-		System.out.println("Dans le constructeur DetailCompteEdit");
+		LOGGER.info("======================================");
+		LOGGER.info("Dans le constructeur DetailCompteEdit");
 	}
 
-	/**
-	 * @return the decouvertAutorise
-	 */
 	public String getDecouvertAutorise() {
 		return decouvertAutorise;
 	}
 
-	/**
-	 * @param decouvertAutorise
-	 *            the decouvertAutorise to set
-	 */
 	public void setDecouvertAutorise(String decouvertAutorise) {
 		this.decouvertAutorise = decouvertAutorise;
 	}
 
-	/**
-	 * Permet le changement de découvert d'un compte avec découvert.
-	 * 
-	 * @return le status de l'action
-	 */
 	public String changementDecouvert() {
 		if (!(getCompte() instanceof CompteAvecDecouvert)) {
 			return "ERROR";
@@ -55,5 +42,4 @@ public class DetailCompteEdit extends DetailCompte {
 			return "INCOMPATIBLEOVERDRAFT";
 		}
 	}
-
 }

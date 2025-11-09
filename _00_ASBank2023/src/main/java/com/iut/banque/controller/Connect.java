@@ -1,13 +1,13 @@
 package com.iut.banque.controller;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.struts2.ServletActionContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.opensymphony.xwork2.ActionSupport;
-
 
 import com.iut.banque.constants.LoginConstants;
 import com.iut.banque.facade.BanqueFacade;
@@ -18,37 +18,25 @@ import com.iut.banque.modele.Utilisateur;
 public class Connect extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger(Connect.class.getName());
+	private static final String ERROR_RESULT = "ERROR";
+
 	private String userCde;
 	private String userPwd;
-	private BanqueFacade banque;
+	private transient BanqueFacade banque;
 
-
-	/**
-	 * Constructeur de la classe Connect
-	 * 
-	 * @return Un objet de type Connect avec façade BanqueFacade provenant de sa
-	 *         factory
-	 */
 	public Connect() {
-		System.out.println("In Constructor from Connect class ");
+		LOGGER.info("In Constructor from Connect class");
 		ApplicationContext context = WebApplicationContextUtils
 				.getRequiredWebApplicationContext(ServletActionContext.getServletContext());
 		this.banque = (BanqueFacade) context.getBean("banqueFacade");
-
 	}
 
-	/**
-	 * Méthode pour vérifier la connexion de l'utilisateur basé sur les
-	 * paramêtres userCde et userPwd de cette classe
-	 * 
-	 * @return String, le resultat du login; "SUCCESS" si réussi, "ERROR" si
-	 *         échec
-	 */
 	public String login() {
-		System.out.println("Essai de login - 20180512...");
+		LOGGER.info("Essai de login...");
 
 		if (userCde == null || userPwd == null) {
-			return "ERROR";
+			return ERROR_RESULT;
 		}
 		userCde = userCde.trim();
 
@@ -56,89 +44,53 @@ public class Connect extends ActionSupport {
 		try {
 			loginResult = banque.tryLogin(userCde, userPwd);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.severe("Erreur lors de la tentative de login : " + e.getMessage());
 			loginResult = LoginConstants.ERROR;
 		}
 
 		switch (loginResult) {
-		case LoginConstants.USER_IS_CONNECTED:
-			System.out.println("user logged in");
-			return "SUCCESS";
-		case LoginConstants.MANAGER_IS_CONNECTED:
-			System.out.println("manager logged in");
-			return "SUCCESSMANAGER";
-		case LoginConstants.LOGIN_FAILED:
-			System.out.println("login failed");
-			return "ERROR";
-		default:
-			System.out.println("error");
-			return "ERROR";
+			case LoginConstants.USER_IS_CONNECTED:
+				LOGGER.info("User logged in");
+				return "SUCCESS";
+			case LoginConstants.MANAGER_IS_CONNECTED:
+				LOGGER.info("Manager logged in");
+				return "SUCCESSMANAGER";
+			case LoginConstants.LOGIN_FAILED:
+				LOGGER.warning("Login failed");
+				return ERROR_RESULT;
+			default:
+				LOGGER.severe("Unknown login error");
+				return ERROR_RESULT;
 		}
 	}
 
-	/**
-	 * Getter du champ userCde
-	 * 
-	 * @return String, le userCde de la classe
-	 */
 	public String getUserCde() {
 		return userCde;
 	}
 
-	/**
-	 * Setter du champ userCde
-	 * 
-	 * @param userCde
-	 *            : String correspondant au userCode à établir
-	 */
 	public void setUserCde(String userCde) {
 		this.userCde = userCde;
 	}
 
-	/**
-	 * Getter du champ userPwd
-	 * 
-	 * @return String, le userPwd de la classe
-	 */
 	public String getUserPwd() {
 		return userPwd;
 	}
 
-	/**
-	 * Setter du champ userPwd
-	 * 
-	 * @param userPwd
-	 *            : correspondant au pwdCde à établir
-	 */
 	public void setUserPwd(String userPwd) {
 		this.userPwd = userPwd;
 	}
 
-	/**
-	 * Getter du champ utilisateur (uilisé pour récupérer l'utilisateur
-	 * actuellement connecté à l'application)
-	 * 
-	 * @return Utilisateur, l'utilisateur de la classe
-	 */
 	public Utilisateur getConnectedUser() {
 		return banque.getConnectedUser();
 	}
 
-	/**
-	 * Méthode qui va récupérer sous forme de map la liste des comptes du client
-	 * actuellement connecté à l'application
-	 * 
-	 * @return Map<String, Compte> correspondant à l'ID du compte et l'objet
-	 *         Compte associé
-	 */
 	public Map<String, Compte> getAccounts() {
 		return ((Client) banque.getConnectedUser()).getAccounts();
 	}
 
 	public String logout() {
-		System.out.println("Logging out");
+		LOGGER.info("Logging out");
 		banque.logout();
 		return "SUCCESS";
 	}
-
 }

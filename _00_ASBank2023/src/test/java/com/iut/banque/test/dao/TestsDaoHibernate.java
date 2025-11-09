@@ -212,9 +212,7 @@ public class TestsDaoHibernate {
 		try {
 			try {
 				daoHibernate.createUser("NOM", "PRENOM", "ADRESSE", true, "c.new1", "PASS", false, "5544554455");
-			} catch (IllegalArgumentException e) {
-				fail("Il ne devrait pas y avoir d'exception ici");
-			} catch (IllegalFormatException e) {
+			} catch (IllegalArgumentException | IllegalFormatException e) { // ✅ catch fusionné
 				fail("Il ne devrait pas y avoir d'exception ici");
 			}
 			Utilisateur user = daoHibernate.getUserById("c.new1");
@@ -340,8 +338,16 @@ public class TestsDaoHibernate {
 		assertEquals(false, daoHibernate.isUserAllowed("    ", "TEST PASS"));
 	}
 
-	// TODO À implémenter lorsque disconnect() le sera
-	/*
-	 * @Test public void testDisconnect() { fail("Not yet implemented"); }
-	 */
+
+
+	@Test
+	public void testDisconnect() {
+		try {
+			daoHibernate.disconnect();
+			// On vérifie qu'aucune exception n'a été levée
+			assertTrue(true);
+		} catch (Exception e) {
+			fail("disconnect() ne devrait pas lever d'exception : " + e.getMessage());
+		}
+	}
 }

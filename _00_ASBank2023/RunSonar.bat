@@ -1,2 +1,9 @@
+@echo off
+:: Nettoyage et analyse SonarQube
+:: Le token d'accès doit être défini dans une variable d'environnement SONAR_TOKEN
+:: Exemple : setx SONAR_TOKEN "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
-mvn clean verify sonar:sonar -Dsonar.projectKey=SONAR_TOKEN -Dsonar.host.url=http://localhost:9000 -Dsonar.login=b25408ea4d9c870b944f3816b1f0c099d9f9b079
+mvn clean verify sonar:sonar ^
+  -Dsonar.projectKey=MON_PROJET ^
+  -Dsonar.host.url=http://localhost:9000 ^
+  -Dsonar.login=%SONAR_TOKEN%
