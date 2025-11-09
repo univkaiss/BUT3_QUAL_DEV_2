@@ -10,7 +10,6 @@ import com.iut.banque.modele.Compte;
 import com.iut.banque.modele.CompteAvecDecouvert;
 import com.iut.banque.modele.CompteSansDecouvert;
 import com.iut.banque.modele.Gestionnaire;
-import com.iut.banque.modele.UserData;
 import com.iut.banque.modele.Utilisateur;
 
 public interface IDao {
@@ -82,14 +81,25 @@ public interface IDao {
 	/**
 	 * Crée un utilisateur (Client ou Gestionnaire) dans la base.
 	 *
-	 * @param data : objet UserData contenant toutes les informations nécessaires
+	 * @param nom : le nom de l'utilisateur
+	 * @param prenom : le prénom de l'utilisateur
+	 * @param adresse : l'adresse de l'utilisateur
+	 * @param male : true si l'utilisateur est masculin
+	 * @param usrId : identifiant unique de l'utilisateur
+	 * @param usrPwd : mot de passe de l'utilisateur
+	 * @param manager : true si l'utilisateur est un gestionnaire
+	 * @param numClient : numéro client (optionnel pour les gestionnaires)
 	 * @return l'utilisateur créé
 	 * @throws TechnicalException : si l'identifiant est déjà utilisé
 	 * @throws IllegalFormatException : si les données sont invalides
 	 * @throws IllegalArgumentException : si un argument est incorrect
 	 */
-	Utilisateur createUser(UserData data)
+	@SuppressWarnings("java:S107") // SonarQube: autoriser >7 paramètres
+	Utilisateur createUser(String nom, String prenom, String adresse,
+						   boolean male, String usrId, String usrPwd,
+						   boolean manager, String numClient)
 			throws TechnicalException, IllegalArgumentException, IllegalFormatException;
+
 
 	/**
 	 * Supprime un utilisateur (Client ou Gestionnaire) de la base.

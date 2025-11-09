@@ -7,11 +7,16 @@ import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.InsufficientFundsException;
 import com.iut.banque.exceptions.TechnicalException;
 import com.iut.banque.interfaces.IDao;
-import com.iut.banque.modele.*;
+import com.iut.banque.modele.Banque;
+import com.iut.banque.modele.Client;
+import com.iut.banque.modele.Compte;
+import com.iut.banque.modele.CompteAvecDecouvert;
+import com.iut.banque.modele.Gestionnaire;
+import com.iut.banque.modele.Utilisateur;
 
 public class BanqueManager {
 
-	private Banque bank;
+	private final Banque bank;
 	private IDao dao;
 
 	/**
@@ -123,18 +128,8 @@ public class BanqueManager {
 	 */
 	public void createManager(String userId, String userPwd, String nom, String prenom, String adresse, boolean male)
 			throws TechnicalException, IllegalArgumentException, IllegalFormatException {
-		UserData data = new UserData();
-		data.setNom(nom);
-		data.setPrenom(prenom);
-		data.setAdresse(adresse);
-		data.setMale(male);
-		data.setUsrId(userId);
-		data.setUsrPwd(userPwd);
-		data.setManager(true);
-		data.setNumClient(null); // Pas nécessaire pour un gestionnaire
-		dao.createUser(data);
+		dao.createUser(nom, prenom, adresse, male, userId, userPwd, true, null);
 	}
-
 
 	/**
 	 * Crée un client.
@@ -150,19 +145,8 @@ public class BanqueManager {
 						"Un client avec le numéro de client " + numeroClient + " existe déjà");
 			}
 		}
-
-		UserData data = new UserData();
-		data.setNom(nom);
-		data.setPrenom(prenom);
-		data.setAdresse(adresse);
-		data.setMale(male);
-		data.setUsrId(userId);
-		data.setUsrPwd(userPwd);
-		data.setManager(false);
-		data.setNumClient(numeroClient); // Obligatoire pour un client
-		dao.createUser(data);
+		dao.createUser(nom, prenom, adresse, male, userId, userPwd, false, numeroClient);
 	}
-
 
 	/**
 	 * Supprime un utilisateur, en gérant les cas spécifiques client et gestionnaire.

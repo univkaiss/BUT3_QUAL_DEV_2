@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.iut.banque.modele.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +13,12 @@ import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.TechnicalException;
 import com.iut.banque.interfaces.IDao;
+import com.iut.banque.modele.Client;
+import com.iut.banque.modele.Compte;
+import com.iut.banque.modele.CompteAvecDecouvert;
+import com.iut.banque.modele.CompteSansDecouvert;
+import com.iut.banque.modele.Gestionnaire;
+import com.iut.banque.modele.Utilisateur;
 
 /**
  * Implémentation de IDao utilisant Hibernate.
@@ -104,30 +109,25 @@ public class DaoHibernate implements IDao {
 	}
 
 	@Override
-	public Utilisateur createUser(UserData data)
+	public Utilisateur createUser(String nom, String prenom, String adresse, boolean male, String userId,
+								  String userPwd, boolean manager, String numClient)
 			throws TechnicalException, IllegalArgumentException, IllegalFormatException {
 		Session session = sessionFactory.getCurrentSession();
 
-		// Vérifie si l'utilisateur existe déjà
-		Utilisateur user = session.get(Utilisateur.class, data.getUsrId());
+		Utilisateur user = session.get(Utilisateur.class, userId);
 		if (user != null) {
 			throw new TechnicalException("User Id déjà utilisé.");
 		}
 
-		// Crée un Gestionnaire ou un Client selon le champ manager
-		if (data.isManager()) {
-			user = new Gestionnaire(data.getNom(), data.getPrenom(), data.getAdresse(),
-					data.isMale(), data.getUsrId(), data.getUsrPwd());
+		if (manager) {
+			user = new Gestionnaire(nom, prenom, adresse, male, userId, userPwd);
 		} else {
-			user = new Client(data.getNom(), data.getPrenom(), data.getAdresse(),
-					data.isMale(), data.getUsrId(), data.getUsrPwd(),
-					data.getNumClient());
+			user = new Client(nom, prenom, adresse, male, userId, userPwd, numClient);
 		}
-
 		session.save(user);
+
 		return user;
 	}
-
 
 	@Override
 	public void deleteUser(Utilisateur u) throws TechnicalException {
@@ -185,19 +185,10 @@ public class DaoHibernate implements IDao {
 		return ret;
 	}
 
+
 	@Override
 	public void disconnect() {
-		LOGGER.info("Déconnexion de la DAO.");
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			if (session != null && session.isOpen()) {
-				session.close();
-				LOGGER.info("Session Hibernate fermée avec succès.");
-			} else {
-				LOGGER.info("Aucune session ouverte à fermer.");
-			}
-		} catch (Exception e) {
-			LOGGER.severe("Erreur lors de la déconnexion : " + e.getMessage());
-		}
+		LOGGER.info("Déconnexion de la DAO (aucune fermeture manuelle de session, Spring gère cela).");
 	}
+
 }
