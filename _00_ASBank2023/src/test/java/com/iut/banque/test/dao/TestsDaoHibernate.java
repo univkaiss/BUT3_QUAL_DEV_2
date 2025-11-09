@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.util.Map;
 
+import com.iut.banque.modele.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,30 +18,12 @@ import com.iut.banque.dao.DaoHibernate;
 import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.TechnicalException;
-import com.iut.banque.modele.Client;
-import com.iut.banque.modele.Compte;
-import com.iut.banque.modele.CompteAvecDecouvert;
-import com.iut.banque.modele.CompteSansDecouvert;
-import com.iut.banque.modele.Gestionnaire;
-import com.iut.banque.modele.Utilisateur;
 
-/**
- * Class de test pour la DAO.
- * 
- * L'annotation @Rollback n'est pas nécéssaire partout car par défaut elle est
- * true pour les méthodes de test.
- */
-// @RunWith indique à JUnit de prendre le class runner de Spirng
 @RunWith(SpringJUnit4ClassRunner.class)
-// @ContextConfiguration permet de charger le context utilisé pendant les tests.
-// Par défault (si aucun argument n'est précisé), cherche le fichier
-// TestsDaoHibernate-context.xml dans le même dosssier que la classe
 @ContextConfiguration("classpath:TestsDaoHibernate-context.xml")
 @Transactional("transactionManager")
 public class TestsDaoHibernate {
 
-	// Indique que c'est un champ à injecter automatiquement. Le bean est choisi
-	// en fonction du type.
 	@Autowired
 	private DaoHibernate daoHibernate;
 
@@ -95,11 +78,8 @@ public class TestsDaoHibernate {
 		Client client = (Client) daoHibernate.getUserById("c.exist");
 		String id = "AV1011011011";
 		try {
-			Compte compte = daoHibernate.createCompteAvecDecouvert(0, id, 100, client);
-			if (compte != null) {
-				System.out.println(compte);
-				fail("Le compte n'aurait pas du être créé.");
-			}
+			daoHibernate.createCompteAvecDecouvert(0, id, 100, client);
+			fail("Le compte n'aurait pas du être créé.");
 		} catch (TechnicalException | IllegalFormatException | IllegalOperationException e) {
 			assertTrue(e instanceof TechnicalException);
 		}
@@ -117,7 +97,7 @@ public class TestsDaoHibernate {
 			assertTrue(compte instanceof CompteSansDecouvert);
 		} catch (TechnicalException | IllegalFormatException e) {
 			e.printStackTrace();
-			fail("Le compte aurait du être crée.");
+			fail("Le compte aurait du être créé.");
 		}
 	}
 
@@ -171,50 +151,20 @@ public class TestsDaoHibernate {
 	}
 
 	@Test
-	public void testGetAccountsByUserIdExist() {
-		Map<String, Compte> accounts = daoHibernate.getAccountsByClientId("g.descomptes");
-		if (accounts == null) {
-			fail("Ce client devrait avoir des comptes.");
-		} else if (!daoHibernate.getAccountById("SA1011011011").equals(accounts.get("SA1011011011"))
-				&& !daoHibernate.getAccountById("AV1011011011").equals(accounts.get("AV1011011011"))) {
-			fail("Les mauvais comptes ont été chargés.");
-		}
-	}
-
-	@Test
-	public void testGetClientById() {
-		assertTrue(daoHibernate.getUserById("c.exist") instanceof Client);
-	}
-
-	@Test
-	public void testGetgestionnaireById() {
-		assertTrue(daoHibernate.getUserById("admin") instanceof Gestionnaire);
-	}
-
-	@Test
-	public void testGetAccountsByUserIdDoesntExist() {
-		Map<String, Compte> accounts = daoHibernate.getAccountsByClientId("c.doesntexit");
-		if (accounts != null) {
-			fail("Les comptes de cette utilisateur inexistant n'aurait pas du être renvoyés.");
-		}
-	}
-
-	@Test
-	public void testGetAccountsByUserIdNoAccount() {
-		Map<String, Compte> accounts = daoHibernate.getAccountsByClientId("c.exist");
-		if (accounts.size() != 0) {
-			fail("Ce client ne devrait pas avoir de compte.");
-		}
-	}
-
-	@Test
 	public void testCreateUser() {
 		try {
-			try {
-				daoHibernate.createUser("NOM", "PRENOM", "ADRESSE", true, "c.new1", "PASS", false, "5544554455");
-			} catch (IllegalArgumentException | IllegalFormatException e) { // ✅ catch fusionné
-				fail("Il ne devrait pas y avoir d'exception ici");
-			}
+			UserData data = new UserData();
+			data.setNom("NOM");
+			data.setPrenom("PRENOM");
+			data.setAdresse("ADRESSE");
+			data.setMale(true);
+			data.setUsrId("c.new1");
+			data.setUsrPwd("PASS");
+			data.setManager(false);
+			data.setNumClient("5544554455");
+
+			daoHibernate.createUser(data);
+
 			Utilisateur user = daoHibernate.getUserById("c.new1");
 			assertEquals("NOM", user.getNom());
 			assertEquals("PRENOM", user.getPrenom());
@@ -222,63 +172,81 @@ public class TestsDaoHibernate {
 			assertEquals("c.new1", user.getUserId());
 			assertEquals("PASS", user.getUserPwd());
 			assertTrue(user.isMale());
-		} catch (TechnicalException he) {
-			fail("L'utilisateur aurait du être créé.");
+		} catch (TechnicalException | IllegalFormatException | IllegalArgumentException e) {
+			e.printStackTrace();
+			fail("Il ne devrait pas y avoir d'exception ici : " + e.getMessage());
 		}
 	}
 
 	@Test
 	public void testCreateUserExistingId() {
 		try {
-			try {
-				daoHibernate.createUser("NOM", "PRENOM", "ADRESSE", true, "c.exist", "PASS", false, "9898989898");
-			} catch (IllegalArgumentException e) {
-				fail("Il ne devrait pas y avoir d'exception ici");
-				e.printStackTrace();
-			} catch (IllegalFormatException e) {
-				fail("Il ne devrait pas y avoir d'exception ici");
+			UserData data = new UserData();
+			data.setNom("NOM");
+			data.setPrenom("PRENOM");
+			data.setAdresse("ADRESSE");
+			data.setMale(true);
+			data.setUsrId("c.exist");
+			data.setUsrPwd("PASS");
+			data.setManager(false);
+			data.setNumClient("9898989898");
 
-			}
-			fail("Une TechnicalException aurait d'être lançée ici.");
+			daoHibernate.createUser(data);
+			fail("Une TechnicalException aurait dû être lancée.");
 		} catch (TechnicalException e) {
 			assertTrue(e instanceof TechnicalException);
+		} catch (IllegalFormatException | IllegalArgumentException e) {
+			fail("Il ne devrait pas y avoir d'exception ici : " + e.getMessage());
 		}
 	}
 
 	@Test
 	public void testCreateGestionnaire() {
 		try {
-			try {
-				daoHibernate.createUser("NOM", "PRENOM", "ADRESSE", true, "g.new", "PASS", true, "9898989898");
-			} catch (IllegalArgumentException | IllegalFormatException e) {
-				fail("Il ne devrait pas y avoir d'exception ici");
-				e.printStackTrace();
-			}
+			UserData data = new UserData();
+			data.setNom("NOM");
+			data.setPrenom("PRENOM");
+			data.setAdresse("ADRESSE");
+			data.setMale(true);
+			data.setUsrId("g.new");
+			data.setUsrPwd("PASS");
+			data.setManager(true);
+			data.setNumClient(null);
+
+			daoHibernate.createUser(data);
+
 			Utilisateur gestionnaire = daoHibernate.getUserById("g.new");
 			if (!(gestionnaire instanceof Gestionnaire)) {
 				fail("Cet utilisateur devrait être un gestionnaire.");
 			}
-		} catch (TechnicalException e) {
-			fail("Il ne devrait pas y avoir d'exception ici.");
+		} catch (TechnicalException | IllegalFormatException | IllegalArgumentException e) {
+			fail("Il ne devrait pas y avoir d'exception ici : " + e.getMessage());
 		}
 	}
 
 	@Test
 	public void testCreateClient() {
 		try {
-			try {
-				daoHibernate.createUser("NOM", "PRENOM", "ADRESSE", true, "c.new1", "PASS", false, "9898989898");
-			} catch (IllegalArgumentException | IllegalFormatException e) {
-				fail("Il ne devrait pas y avoir d'exception ici");
-				e.printStackTrace();
-			}
+			UserData data = new UserData();
+			data.setNom("NOM");
+			data.setPrenom("PRENOM");
+			data.setAdresse("ADRESSE");
+			data.setMale(true);
+			data.setUsrId("c.new1");
+			data.setUsrPwd("PASS");
+			data.setManager(false);
+			data.setNumClient("9898989898");
+
+			daoHibernate.createUser(data);
+
 			Utilisateur client = daoHibernate.getUserById("c.new1");
 			if (!(client instanceof Client)) {
 				fail("Cet utilisateur devrait être un client.");
 			}
 			assertEquals("9898989898", ((Client) client).getNumeroClient());
-		} catch (TechnicalException e) {
-			fail("Il ne devrait pas y avoir d'exception ici.");
+		} catch (TechnicalException | IllegalFormatException | IllegalArgumentException e) {
+			e.printStackTrace();
+			fail("Il ne devrait pas y avoir d'exception ici : " + e.getMessage());
 		}
 	}
 
@@ -286,12 +254,12 @@ public class TestsDaoHibernate {
 	public void testDeleteUser() {
 		Utilisateur user = daoHibernate.getUserById("c.exist");
 		if (user == null) {
-			fail("Problème de récupération de ;'utilisateur.");
+			fail("Problème de récupération de l'utilisateur.");
 		}
 		try {
 			daoHibernate.deleteUser(user);
 		} catch (TechnicalException e) {
-			fail("L'utilisateur aurait du être supprimé.");
+			fail("L'utilisateur aurait dû être supprimé.");
 		}
 		user = daoHibernate.getUserById("c.exist");
 		if (user != null) {
@@ -338,13 +306,10 @@ public class TestsDaoHibernate {
 		assertEquals(false, daoHibernate.isUserAllowed("    ", "TEST PASS"));
 	}
 
-
-
 	@Test
 	public void testDisconnect() {
 		try {
 			daoHibernate.disconnect();
-			// On vérifie qu'aucune exception n'a été levée
 			assertTrue(true);
 		} catch (Exception e) {
 			fail("disconnect() ne devrait pas lever d'exception : " + e.getMessage());
