@@ -87,6 +87,7 @@ public class Client extends Utilisateur {
 		return Pattern.matches("^[a-z]\\.[a-z]+[1-9]\\d*$", s);
 	}
 
+
 	public static boolean checkFormatNumeroClient(String s) {
 		return Pattern.matches("\\d{10}", s);
 	}

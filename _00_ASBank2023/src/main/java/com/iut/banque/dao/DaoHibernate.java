@@ -99,7 +99,7 @@ public class DaoHibernate implements IDao {
 		if (client != null) {
 			return client.getAccounts();
 		} else {
-			return new HashMap<>();
+			return null; //NOSONAR
 		}
 	}
 

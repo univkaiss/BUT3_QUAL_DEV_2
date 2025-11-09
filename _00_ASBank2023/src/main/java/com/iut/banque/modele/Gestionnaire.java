@@ -20,6 +20,7 @@ public class Gestionnaire extends Utilisateur {
 	 * Il est préférable d'utiliser une classe implémentant IDao pour créer un
 	 * objet au lieu d'appeler ce constructeur.
 	 * @throws IllegalFormatException
+	 *        : si l'identifiant est vide.
 	 */
 	public Gestionnaire(String nom, String prenom, String adresse, boolean homme, String usrId, String usrPwd) throws IllegalFormatException {
 		super(nom, prenom, adresse, homme, usrId, usrPwd);

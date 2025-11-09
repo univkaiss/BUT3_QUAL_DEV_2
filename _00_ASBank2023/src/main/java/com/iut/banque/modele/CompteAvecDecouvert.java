@@ -18,7 +18,7 @@ public class CompteAvecDecouvert extends Compte {
 
 	/**
 	 * Le découvert autorisé sur le compte. Il doit rester positif.
-	 * 
+
 	 * Le solde ne peut pas aller en dessous de l'opposé de ce nombre. C'est à
 	 * dire que la somme du decouvert et du solde doit être positive.
 	 */
@@ -62,7 +62,8 @@ public class CompteAvecDecouvert extends Compte {
 	 *             : si le découvert autorisé est inférieur à 0
 	 * @throws IllegalFormatException
 	 *             : si le numero de compte ne respecte pas le format
-	 * @throws IllegalOperationException 
+	 * @throws IllegalOperationException
+	 *             : si le découvert autorisé est incompatible avec le solde initial
 	 */
 	public CompteAvecDecouvert(String numeroCompte, double solde, double decouvertAutorise, Client client)
 			throws IllegalFormatException, IllegalOperationException {
