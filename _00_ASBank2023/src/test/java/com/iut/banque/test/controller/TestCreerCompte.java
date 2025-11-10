@@ -35,6 +35,8 @@ public class TestCreerCompte {
         creerCompte = new CreerCompteTestable(banqueFacade);
     }
 
+    // ========== Tests création SANS découvert ==========
+
     @Test
     public void creationSansDecouvert_shouldReturnSuccess_andSetCompte() throws Exception {
         String numero = "ACC123";
@@ -81,6 +83,27 @@ public class TestCreerCompte {
         verify(banqueFacade).createAccount(numero, client);
     }
 
+    // ========== Tests création AVEC découvert ==========
+
+    @Test
+    public void creationAvecDecouvert_success_shouldReturnSuccess() throws Exception {
+        String numero = "ACC_DEC_OK";
+        double dec = 200.0;
+        when(banqueFacade.getCompte(numero)).thenReturn(compte);
+
+        creerCompte.setNumeroCompte(numero);
+        creerCompte.setClient(client);
+        creerCompte.setAvecDecouvert(true);
+        creerCompte.setDecouvertAutorise(dec);
+
+        String res = creerCompte.creationCompte();
+
+        assertEquals("SUCCESS", res);
+        verify(banqueFacade).createAccount(numero, client, dec);
+        verify(banqueFacade).getCompte(numero);
+        assertSame(compte, creerCompte.getCompte());
+    }
+
     @Test
     public void creationAvecDecouvert_whenIllegalOperation_shouldReturnError() throws Exception {
         String numero = "ACC_DEC";
@@ -116,24 +139,111 @@ public class TestCreerCompte {
     }
 
     @Test
-    public void setMessage_shouldMapConstantsToUserMessages() {
-        // NONUNIQUEID
+    public void creationAvecDecouvert_whenIllegalFormat_shouldReturnInvalidFormat() throws Exception {
+        String numero = "ACC_DEC3";
+        double dec = -50.0;
+        doThrow(new IllegalFormatException("bad format")).when(banqueFacade).createAccount(numero, client, dec);
+
+        creerCompte.setNumeroCompte(numero);
+        creerCompte.setClient(client);
+        creerCompte.setAvecDecouvert(true);
+        creerCompte.setDecouvertAutorise(dec);
+
+        String res = creerCompte.creationCompte();
+
+        assertEquals("INVALIDFORMAT", res);
+        verify(banqueFacade).createAccount(numero, client, dec);
+    }
+
+    // ========== Tests setMessage ==========
+
+    @Test
+    public void setMessage_nonUniqueId_shouldSetCorrectMessage() {
         creerCompte.setMessage("NONUNIQUEID");
         assertEquals("Ce numéro de compte existe déjà !", creerCompte.getMessage());
+    }
 
-        // INVALIDFORMAT
+    @Test
+    public void setMessage_invalidFormat_shouldSetCorrectMessage() {
         creerCompte.setMessage("INVALIDFORMAT");
         assertEquals("Ce numéro de compte n'est pas dans un format valide !", creerCompte.getMessage());
+    }
 
-        // SUCCESS with compte.numero
+    @Test
+    public void setMessage_success_withCompte_shouldSetCorrectMessage() {
         when(compte.getNumeroCompte()).thenReturn("ACC_OK");
         creerCompte.setCompte(compte);
         creerCompte.setMessage("SUCCESS");
         assertEquals("Le compte ACC_OK a bien été créé.", creerCompte.getMessage());
+    }
 
-        // default
+    @Test
+    public void setMessage_success_withoutCompte_shouldUseNumeroCompte() {
+        creerCompte.setNumeroCompte("ACC_TEST");
+        creerCompte.setMessage("SUCCESS");
+        assertEquals("Le compte ACC_TEST a bien été créé.", creerCompte.getMessage());
+    }
+
+    @Test
+    public void setMessage_success_withCompteNull_shouldUseNumeroCompte() {
+        creerCompte.setCompte(null);
+        creerCompte.setNumeroCompte("ACC_NULL");
+        creerCompte.setMessage("SUCCESS");
+        assertEquals("Le compte ACC_NULL a bien été créé.", creerCompte.getMessage());
+    }
+
+    @Test
+    public void setMessage_success_withCompteNumeroNull_shouldUseNumeroCompte() {
+        when(compte.getNumeroCompte()).thenReturn(null);
+        creerCompte.setCompte(compte);
+        creerCompte.setNumeroCompte("ACC_NUMERO_NULL");
+        creerCompte.setMessage("SUCCESS");
+        assertEquals("Le compte ACC_NUMERO_NULL a bien été créé.", creerCompte.getMessage());
+    }
+
+    @Test
+    public void setMessage_unknown_shouldSetDefaultMessage() {
         creerCompte.setMessage("SOMETHING_ELSE");
         assertEquals("Une erreur inconnue est survenue.", creerCompte.getMessage());
+    }
+
+    // ========== Tests Getters/Setters ==========
+
+    @Test
+    public void testGettersAndSetters() {
+        // NumeroCompte
+        creerCompte.setNumeroCompte("TEST123");
+        assertEquals("TEST123", creerCompte.getNumeroCompte());
+
+        // Client
+        creerCompte.setClient(client);
+        assertSame(client, creerCompte.getClient());
+
+        // AvecDecouvert
+        creerCompte.setAvecDecouvert(true);
+        assertTrue(creerCompte.isAvecDecouvert());
+        creerCompte.setAvecDecouvert(false);
+        assertFalse(creerCompte.isAvecDecouvert());
+
+        // DecouvertAutorise
+        creerCompte.setDecouvertAutorise(500.0);
+        assertEquals(500.0, creerCompte.getDecouvertAutorise(), 0.01);
+
+        // Compte
+        creerCompte.setCompte(compte);
+        assertSame(compte, creerCompte.getCompte());
+
+        // Error
+        creerCompte.setError(true);
+        assertTrue(creerCompte.isError());
+        creerCompte.setError(false);
+        assertFalse(creerCompte.isError());
+
+        // Result
+        creerCompte.setResult(true);
+        assertTrue(creerCompte.isResult());
+        creerCompte.setResult(false);
+        assertFalse(creerCompte.isResult());
     }
 
     /**
@@ -147,6 +257,8 @@ public class TestCreerCompte {
         private double decouvertAutorise;
         private Compte compte;
         private String message;
+        private boolean error;
+        private boolean result;
 
         public CreerCompteTestable(BanqueFacade banqueFacade) {
             this.banqueFacade = banqueFacade;
@@ -155,18 +267,33 @@ public class TestCreerCompte {
         public String creationCompte() {
             try {
                 if (avecDecouvert) {
-                    banqueFacade.createAccount(numeroCompte, client, decouvertAutorise);
+                    String createResult = createAccountWithDecouvert();
+                    if ("SUCCESS".equals(createResult)) {
+                        this.compte = banqueFacade.getCompte(numeroCompte);
+                    }
+                    return createResult;
                 } else {
                     banqueFacade.createAccount(numeroCompte, client);
                 }
-                compte = banqueFacade.getCompte(numeroCompte);
+                this.compte = banqueFacade.getCompte(numeroCompte);
                 return "SUCCESS";
             } catch (TechnicalException e) {
                 return "NONUNIQUEID";
             } catch (IllegalFormatException e) {
                 return "INVALIDFORMAT";
+            }
+        }
+
+        private String createAccountWithDecouvert() {
+            try {
+                banqueFacade.createAccount(numeroCompte, client, decouvertAutorise);
+                return "SUCCESS";
             } catch (IllegalOperationException e) {
                 return "ERROR";
+            } catch (TechnicalException e) {
+                return "NONUNIQUEID";
+            } catch (IllegalFormatException e) {
+                return "INVALIDFORMAT";
             }
         }
 
@@ -179,12 +306,12 @@ public class TestCreerCompte {
                     this.message = "Ce numéro de compte n'est pas dans un format valide !";
                     break;
                 case "SUCCESS":
-                    if (compte != null) {
-                        this.message = "Le compte " + compte.getNumeroCompte() + " a bien été créé.";
-                    }
+                    String num = (compte != null && compte.getNumeroCompte() != null) ? compte.getNumeroCompte() : numeroCompte;
+                    this.message = "Le compte " + num + " a bien été créé.";
                     break;
                 default:
                     this.message = "Une erreur inconnue est survenue.";
+                    break;
             }
         }
 
@@ -200,5 +327,9 @@ public class TestCreerCompte {
         public Compte getCompte() { return compte; }
         public void setCompte(Compte compte) { this.compte = compte; }
         public String getMessage() { return message; }
+        public boolean isError() { return error; }
+        public void setError(boolean error) { this.error = error; }
+        public boolean isResult() { return result; }
+        public void setResult(boolean result) { this.result = result; }
     }
 }

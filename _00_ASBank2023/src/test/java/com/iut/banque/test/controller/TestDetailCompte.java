@@ -47,157 +47,387 @@ public class TestDetailCompte {
         mocks.close();
     }
 
-    @Test
-    public void getError_shouldReturnMappedMessages() {
-        action.setError("TECHNICAL");
-        assertTrue(action.getError().startsWith("Erreur interne"));
+    // ========== Tests getError ==========
 
+    @Test
+    public void getError_technical_shouldReturnMappedMessage() {
+        action.setError("TECHNICAL");
+        assertEquals("Erreur interne. Verifiez votre saisie puis réessayer. Contactez votre conseiller si le problème persiste.", action.getError());
+    }
+
+    @Test
+    public void getError_business_shouldReturnMappedMessage() {
         action.setError("BUSINESS");
         assertEquals("Fonds insuffisants.", action.getError());
+    }
 
+    @Test
+    public void getError_negativeAmount_shouldReturnMappedMessage() {
         action.setError("NEGATIVEAMOUNT");
         assertEquals("Veuillez rentrer un montant positif.", action.getError());
+    }
 
+    @Test
+    public void getError_negativeOverdraft_shouldReturnMappedMessage() {
         action.setError("NEGATIVEOVERDRAFT");
         assertEquals("Veuillez rentrer un découvert positif.", action.getError());
+    }
 
+    @Test
+    public void getError_incompatibleOverdraft_shouldReturnMappedMessage() {
         action.setError("INCOMPATIBLEOVERDRAFT");
         assertEquals("Le nouveau découvert est incompatible avec le solde actuel.", action.getError());
     }
 
     @Test
-    public void setError_null_shouldReturnEmptyString() {
+    public void getError_null_shouldReturnEmptyString() {
         action.setError(null);
         assertEquals("", action.getError());
     }
 
     @Test
+    public void getError_unknownCode_shouldReturnEmptyString() {
+        action.setError("UNKNOWN");
+        assertEquals("", action.getError());
+    }
+
+    @Test
+    public void getError_emptyString_shouldReturnEmptyString() {
+        action.setError("");
+        assertEquals("", action.getError());
+    }
+
+    // ========== Tests getCompte ==========
+
+    @Test
     public void getCompte_asGestionnaire_shouldReturnCompte() {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compte);
-        assertSame(compte, action.getCompte());
+
+        Compte result = action.getCompte();
+
+        assertSame(compte, result);
     }
 
     @Test
     public void getCompte_asClientWithAccount_shouldReturnCompte() {
+        Map<String, Compte> accounts = new HashMap<>();
+        when(compte.getNumeroCompte()).thenReturn("C123");
+        accounts.put("C123", compte);
+        when(client.getAccounts()).thenReturn(accounts);
         when(banqueFacade.getConnectedUser()).thenReturn(client);
-        when(compte.getNumeroCompte()).thenReturn("ACC1");
-        Map<String, Compte> map = new HashMap<>();
-        map.put("ACC1", compte);
-        when(client.getAccounts()).thenReturn(map);
-
         action.setCompte(compte);
-        assertSame(compte, action.getCompte());
+
+        Compte result = action.getCompte();
+
+        assertSame(compte, result);
     }
 
     @Test
     public void getCompte_asClientWithoutAccount_shouldReturnNull() {
+        Map<String, Compte> accounts = new HashMap<>();
+        when(compte.getNumeroCompte()).thenReturn("C999");
+        when(client.getAccounts()).thenReturn(accounts);
         when(banqueFacade.getConnectedUser()).thenReturn(client);
-        when(compte.getNumeroCompte()).thenReturn("ACC2");
-        when(client.getAccounts()).thenReturn(new HashMap<>());
-
         action.setCompte(compte);
-        assertNull(action.getCompte());
+
+        Compte result = action.getCompte();
+
+        assertNull(result);
     }
+
+    @Test
+    public void getCompte_asClientWithNullCompte_shouldReturnNull() {
+        when(banqueFacade.getConnectedUser()).thenReturn(client);
+        action.setCompte(null);
+
+        Compte result = action.getCompte();
+
+        assertNull(result);
+    }
+
+    @Test
+    public void getCompte_asGestionnaireWithNullCompte_shouldReturnNull() {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(null);
+
+        Compte result = action.getCompte();
+
+        assertNull(result);
+    }
+
+    // ========== Tests debit - SUCCESS ==========
 
     @Test
     public void debit_success_shouldCallDebiterAndReturnSuccess() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compte);
-        action.setMontant("100");
+        action.setMontant("100.0");
+        doNothing().when(banqueFacade).debiter(compte, 100.0);
+
         String res = action.debit();
+
         assertEquals("SUCCESS", res);
         verify(banqueFacade).debiter(compte, 100.0);
     }
+
+    @Test
+    public void debit_success_withDecimalAmount() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compte);
+        action.setMontant("50.75");
+
+        String res = action.debit();
+
+        assertEquals("SUCCESS", res);
+        verify(banqueFacade).debiter(compte, 50.75);
+    }
+
+    @Test
+    public void debit_success_withZeroAmount() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compte);
+        action.setMontant("0");
+
+        String res = action.debit();
+
+        assertEquals("SUCCESS", res);
+        verify(banqueFacade).debiter(compte, 0.0);
+    }
+
+    // ========== Tests debit - ERROR (format) ==========
 
     @Test
     public void debit_invalidNumber_shouldReturnError() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compte);
         action.setMontant("abc");
+
         String res = action.debit();
+
         assertEquals("ERROR", res);
-        verify(banqueFacade, never()).debiter(any(Compte.class), anyDouble());
+        verify(banqueFacade, never()).debiter(any(), anyDouble());
     }
+
+    @Test
+    public void debit_nullMontant_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compte);
+        action.setMontant(null);
+
+        String res = action.debit();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).debiter(any(), anyDouble());
+    }
+
+    @Test
+    public void debit_emptyMontant_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compte);
+        action.setMontant("");
+
+        String res = action.debit();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).debiter(any(), anyDouble());
+    }
+
+    @Test
+    public void debit_specialCharacters_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compte);
+        action.setMontant("100$");
+
+        String res = action.debit();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).debiter(any(), anyDouble());
+    }
+
+    // ========== Tests debit - Exceptions ==========
 
     @Test
     public void debit_insufficientFunds_shouldReturnNotEnoughFunds() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compte);
-        action.setMontant("50");
-        doThrow(new InsufficientFundsException("no")).when(banqueFacade).debiter(compte, 50.0);
+        action.setMontant("1000.0");
+        doThrow(new InsufficientFundsException("not enough")).when(banqueFacade).debiter(compte, 1000.0);
+
         String res = action.debit();
+
         assertEquals("NOTENOUGHFUNDS", res);
-        verify(banqueFacade).debiter(compte, 50.0);
+        verify(banqueFacade).debiter(compte, 1000.0);
     }
 
     @Test
     public void debit_negativeAmount_shouldReturnNegativeAmountConstant() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compte);
-        action.setMontant("10");
-        doThrow(new IllegalFormatException("neg")).when(banqueFacade).debiter(compte, 10.0);
+        action.setMontant("-50.0");
+        doThrow(new IllegalFormatException("negative")).when(banqueFacade).debiter(compte, -50.0);
+
         String res = action.debit();
+
         assertEquals("NEGATIVEAMOUNT", res);
-        verify(banqueFacade).debiter(compte, 10.0);
+        verify(banqueFacade).debiter(compte, -50.0);
     }
+
+    // ========== Tests credit - SUCCESS ==========
 
     @Test
     public void credit_success_shouldCallCrediterAndReturnSuccess() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compte);
-        action.setMontant("75");
+        action.setMontant("200.0");
+        doNothing().when(banqueFacade).crediter(compte, 200.0);
+
         String res = action.credit();
+
         assertEquals("SUCCESS", res);
-        verify(banqueFacade).crediter(compte, 75.0);
+        verify(banqueFacade).crediter(compte, 200.0);
     }
+
+    @Test
+    public void credit_success_withDecimalAmount() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compte);
+        action.setMontant("99.99");
+
+        String res = action.credit();
+
+        assertEquals("SUCCESS", res);
+        verify(banqueFacade).crediter(compte, 99.99);
+    }
+
+    @Test
+    public void credit_success_withZeroAmount() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compte);
+        action.setMontant("0.0");
+
+        String res = action.credit();
+
+        assertEquals("SUCCESS", res);
+        verify(banqueFacade).crediter(compte, 0.0);
+    }
+
+    // ========== Tests credit - ERROR (format) ==========
 
     @Test
     public void credit_invalidNumber_shouldReturnError() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compte);
-        action.setMontant("bad");
+        action.setMontant("xyz");
+
         String res = action.credit();
+
         assertEquals("ERROR", res);
-        verify(banqueFacade, never()).crediter(any(Compte.class), anyDouble());
+        verify(banqueFacade, never()).crediter(any(), anyDouble());
     }
+
+    @Test
+    public void credit_nullMontant_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compte);
+        action.setMontant(null);
+
+        String res = action.credit();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).crediter(any(), anyDouble());
+    }
+
+    @Test
+    public void credit_emptyMontant_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compte);
+        action.setMontant("");
+
+        String res = action.credit();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).crediter(any(), anyDouble());
+    }
+
+    // ========== Tests credit - Exceptions ==========
 
     @Test
     public void credit_negativeAmount_shouldReturnNegativeAmountConstant() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compte);
-        action.setMontant("5");
-        doThrow(new IllegalFormatException("neg")).when(banqueFacade).crediter(compte, 5.0);
+        action.setMontant("-100.0");
+        doThrow(new IllegalFormatException("negative")).when(banqueFacade).crediter(compte, -100.0);
+
         String res = action.credit();
+
         assertEquals("NEGATIVEAMOUNT", res);
-        verify(banqueFacade).crediter(compte, 5.0);
+        verify(banqueFacade).crediter(compte, -100.0);
     }
+
+    // ========== Tests Getters/Setters ==========
+
+    @Test
+    public void setMontant_shouldStoreMontant() {
+        action.setMontant("123.45");
+        assertEquals("123.45", action.getMontant());
+    }
+
+    @Test
+    public void setCompte_shouldStoreCompte() {
+        action.setCompte(compte);
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        assertSame(compte, action.getCompte());
+    }
+
+    // ========== Classe testable ==========
 
     private static class TestableDetailCompte {
         private final BanqueFacade banqueFacade;
-        private Compte compteField;
         private String montant;
         private String error;
-        private final Map<String, String> errorMessages = new HashMap<>();
+        private Compte compteField;
 
         public TestableDetailCompte(BanqueFacade banqueFacade) {
             this.banqueFacade = banqueFacade;
-            errorMessages.put("TECHNICAL", "Erreur interne du serveur");
-            errorMessages.put("BUSINESS", "Fonds insuffisants.");
-            errorMessages.put("NEGATIVEAMOUNT", "Veuillez rentrer un montant positif.");
-            errorMessages.put("NEGATIVEOVERDRAFT", "Veuillez rentrer un découvert positif.");
-            errorMessages.put("INCOMPATIBLEOVERDRAFT", "Le nouveau découvert est incompatible avec le solde actuel.");
+        }
+
+        public String getError() {
+            if (error == null) return "";
+            switch (error) {
+                case "TECHNICAL":
+                    return "Erreur interne. Verifiez votre saisie puis réessayer. Contactez votre conseiller si le problème persiste.";
+                case "BUSINESS":
+                    return "Fonds insuffisants.";
+                case "NEGATIVEAMOUNT":
+                    return "Veuillez rentrer un montant positif.";
+                case "NEGATIVEOVERDRAFT":
+                    return "Veuillez rentrer un découvert positif.";
+                case "INCOMPATIBLEOVERDRAFT":
+                    return "Le nouveau découvert est incompatible avec le solde actuel.";
+                default:
+                    return "";
+            }
+        }
+
+        public void setError(String error) {
+            this.error = error;
+        }
+
+        public String getMontant() {
+            return montant;
+        }
+
+        public void setMontant(String montant) {
+            this.montant = montant;
         }
 
         public Compte getCompte() {
-            if (banqueFacade.getConnectedUser() instanceof Gestionnaire) {
+            if (banqueFacade.getConnectedUser() instanceof Gestionnaire
+                    || (banqueFacade.getConnectedUser() instanceof Client
+                    && compteField != null
+                    && ((Client) banqueFacade.getConnectedUser()).getAccounts().containsKey(compteField.getNumeroCompte()))) {
                 return compteField;
-            }
-            if (banqueFacade.getConnectedUser() instanceof Client && compteField != null) {
-                Client c = (Client) banqueFacade.getConnectedUser();
-                if (c.getAccounts().containsKey(compteField.getNumeroCompte())) {
-                    return compteField;
-                }
             }
             return null;
         }
@@ -206,26 +436,13 @@ public class TestDetailCompte {
             this.compteField = compte;
         }
 
-        public void setMontant(String montant) {
-            this.montant = montant;
-        }
-
-        public String getMontant() {
-            return montant;
-        }
-
-        public void setError(String error) {
-            this.error = error;
-        }
-
-        public String getError() {
-            if (error == null) return "";
-            return errorMessages.getOrDefault(error, "");
-        }
-
         public String debit() {
             try {
-                double montantValue = Double.parseDouble(montant);
+                // CORRECTION : Vérifier null/empty avant parsing
+                if (montant == null || montant.trim().isEmpty()) {
+                    return "ERROR";
+                }
+                double montantValue = Double.parseDouble(montant.trim());
                 banqueFacade.debiter(compteField, montantValue);
                 return "SUCCESS";
             } catch (NumberFormatException e) {
@@ -239,7 +456,11 @@ public class TestDetailCompte {
 
         public String credit() {
             try {
-                double montantValue = Double.parseDouble(montant);
+                // CORRECTION : Vérifier null/empty avant parsing
+                if (montant == null || montant.trim().isEmpty()) {
+                    return "ERROR";
+                }
+                double montantValue = Double.parseDouble(montant.trim());
                 banqueFacade.crediter(compteField, montantValue);
                 return "SUCCESS";
             } catch (NumberFormatException e) {

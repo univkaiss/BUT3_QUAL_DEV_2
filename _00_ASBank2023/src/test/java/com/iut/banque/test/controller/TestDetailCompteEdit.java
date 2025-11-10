@@ -14,6 +14,7 @@ import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.facade.BanqueFacade;
 import com.iut.banque.modele.Compte;
 import com.iut.banque.modele.CompteAvecDecouvert;
+import com.iut.banque.modele.CompteSansDecouvert;
 import com.iut.banque.modele.Gestionnaire;
 
 public class TestDetailCompteEdit {
@@ -44,20 +45,97 @@ public class TestDetailCompteEdit {
         mocks.close();
     }
 
+    // ========== Tests Getters/Setters ==========
+
     @Test
-    public void changementDecouvert_success_shouldReturnSuccess() throws Exception {
+    public void gettersAndSetters_shouldWorkCorrectly() {
+        action.setDecouvertAutorise("500.0");
+        assertEquals("500.0", action.getDecouvertAutorise());
+    }
+
+    @Test
+    public void setDecouvertAutorise_null_shouldStoreNull() {
+        action.setDecouvertAutorise(null);
+        assertNull(action.getDecouvertAutorise());
+    }
+
+    @Test
+    public void setDecouvertAutorise_emptyString_shouldStoreEmpty() {
+        action.setDecouvertAutorise("");
+        assertEquals("", action.getDecouvertAutorise());
+    }
+
+    // ========== Tests changementDecouvert - SUCCESS ==========
+
+    @Test
+    public void changementDecouvert_success_withPositiveDecouvert() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        when(compteAvecDecouvert.getSolde()).thenReturn(100.0);
         action.setCompte(compteAvecDecouvert);
-        action.setDecouvertAutorise("150.5");
+        action.setDecouvertAutorise("200.0");
+        doNothing().when(banqueFacade).changeDecouvert(compteAvecDecouvert, 200.0);
 
         String res = action.changementDecouvert();
 
         assertEquals("SUCCESS", res);
-        verify(banqueFacade).changeDecouvert(compteAvecDecouvert, 150.5);
+        verify(banqueFacade).changeDecouvert(compteAvecDecouvert, 200.0);
     }
 
     @Test
-    public void changementDecouvert_notCompteAvecDecouvert_shouldReturnError() throws Exception {
+    public void changementDecouvert_success_withZeroDecouvert() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        when(compteAvecDecouvert.getSolde()).thenReturn(50.0);
+        action.setCompte(compteAvecDecouvert);
+        action.setDecouvertAutorise("0");
+
+        String res = action.changementDecouvert();
+
+        assertEquals("SUCCESS", res);
+        verify(banqueFacade).changeDecouvert(compteAvecDecouvert, 0.0);
+    }
+
+    @Test
+    public void changementDecouvert_success_withLargeDecouvert() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        when(compteAvecDecouvert.getSolde()).thenReturn(1000.0);
+        action.setCompte(compteAvecDecouvert);
+        action.setDecouvertAutorise("9999.99");
+
+        String res = action.changementDecouvert();
+
+        assertEquals("SUCCESS", res);
+        verify(banqueFacade).changeDecouvert(compteAvecDecouvert, 9999.99);
+    }
+
+    // ========== Tests changementDecouvert - ERROR (type compte) ==========
+
+    @Test
+    public void changementDecouvert_compteSansDecouvert_shouldReturnError() throws Exception {
+        CompteSansDecouvert compteSansDecouvert = mock(CompteSansDecouvert.class);
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compteSansDecouvert);
+        action.setDecouvertAutorise("100");
+
+        String res = action.changementDecouvert();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
+    }
+
+    @Test
+    public void changementDecouvert_compteNull_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(null);
+        action.setDecouvertAutorise("100");
+
+        String res = action.changementDecouvert();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
+    }
+
+    @Test
+    public void changementDecouvert_compteGenericNotAvecDecouvert_shouldReturnError() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compte);
         action.setDecouvertAutorise("100");
@@ -65,11 +143,13 @@ public class TestDetailCompteEdit {
         String res = action.changementDecouvert();
 
         assertEquals("ERROR", res);
-        verify(banqueFacade, never()).changeDecouvert(any(CompteAvecDecouvert.class), anyDouble());
+        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
     }
 
+    // ========== Tests changementDecouvert - ERROR (format invalide) ==========
+
     @Test
-    public void changementDecouvert_invalidNumber_shouldReturnError() throws Exception {
+    public void changementDecouvert_invalidNumberFormat_shouldReturnError() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(compteAvecDecouvert);
         action.setDecouvertAutorise("abc");
@@ -77,16 +157,66 @@ public class TestDetailCompteEdit {
         String res = action.changementDecouvert();
 
         assertEquals("ERROR", res);
-        verify(banqueFacade, never()).changeDecouvert(any(CompteAvecDecouvert.class), anyDouble());
+        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
     }
+
+    @Test
+    public void changementDecouvert_emptyString_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compteAvecDecouvert);
+        action.setDecouvertAutorise("");
+
+        String res = action.changementDecouvert();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
+    }
+
+    @Test
+    public void changementDecouvert_null_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compteAvecDecouvert);
+        action.setDecouvertAutorise(null);
+
+        String res = action.changementDecouvert();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
+    }
+
+    @Test
+    public void changementDecouvert_specialCharacters_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compteAvecDecouvert);
+        action.setDecouvertAutorise("100$");
+
+        String res = action.changementDecouvert();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
+    }
+
+    @Test
+    public void changementDecouvert_multipleDecimalPoints_shouldReturnError() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        action.setCompte(compteAvecDecouvert);
+        action.setDecouvertAutorise("100.50.25");
+
+        String res = action.changementDecouvert();
+
+        assertEquals("ERROR", res);
+        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
+    }
+
+    // ========== Tests changementDecouvert - NEGATIVEOVERDRAFT ==========
 
     @Test
     public void changementDecouvert_negativeOverdraft_shouldReturnNegativeOverdraft() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        when(compteAvecDecouvert.getSolde()).thenReturn(100.0);
         action.setCompte(compteAvecDecouvert);
-        action.setDecouvertAutorise("-50");
-
-        doThrow(new IllegalFormatException("neg")).when(banqueFacade).changeDecouvert(eq(compteAvecDecouvert), eq(-50.0));
+        action.setDecouvertAutorise("-50.0");
+        doThrow(new IllegalFormatException("negative")).when(banqueFacade).changeDecouvert(compteAvecDecouvert, -50.0);
 
         String res = action.changementDecouvert();
 
@@ -95,38 +225,75 @@ public class TestDetailCompteEdit {
     }
 
     @Test
+    public void changementDecouvert_veryNegativeOverdraft_shouldReturnNegativeOverdraft() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        when(compteAvecDecouvert.getSolde()).thenReturn(100.0);
+        action.setCompte(compteAvecDecouvert);
+        action.setDecouvertAutorise("-9999.99");
+        doThrow(new IllegalFormatException("negative")).when(banqueFacade).changeDecouvert(compteAvecDecouvert, -9999.99);
+
+        String res = action.changementDecouvert();
+
+        assertEquals("NEGATIVEOVERDRAFT", res);
+    }
+
+    // ========== Tests changementDecouvert - INCOMPATIBLEOVERDRAFT ==========
+
+    @Test
     public void changementDecouvert_incompatibleOverdraft_shouldReturnIncompatible() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        when(compteAvecDecouvert.getSolde()).thenReturn(-200.0);
         action.setCompte(compteAvecDecouvert);
-        action.setDecouvertAutorise("200");
-
-        doThrow(new IllegalOperationException("incompatible")).when(banqueFacade).changeDecouvert(eq(compteAvecDecouvert), eq(200.0));
+        action.setDecouvertAutorise("100.0");
+        doThrow(new IllegalOperationException("incompatible")).when(banqueFacade).changeDecouvert(compteAvecDecouvert, 100.0);
 
         String res = action.changementDecouvert();
 
         assertEquals("INCOMPATIBLEOVERDRAFT", res);
-        verify(banqueFacade).changeDecouvert(compteAvecDecouvert, 200.0);
+        verify(banqueFacade).changeDecouvert(compteAvecDecouvert, 100.0);
     }
+
+    @Test
+    public void changementDecouvert_incompatibleWithBalance_shouldReturnIncompatible() throws Exception {
+        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+        when(compteAvecDecouvert.getSolde()).thenReturn(-500.0);
+        action.setCompte(compteAvecDecouvert);
+        action.setDecouvertAutorise("300.0");
+        doThrow(new IllegalOperationException("balance too low")).when(banqueFacade).changeDecouvert(compteAvecDecouvert, 300.0);
+
+        String res = action.changementDecouvert();
+
+        assertEquals("INCOMPATIBLEOVERDRAFT", res);
+    }
+
+    // ========== Classe testable ==========
 
     private static class TestableDetailCompteEdit {
         private final BanqueFacade banqueFacade;
-        private Compte compteField;
         private String decouvertAutorise;
+        private Compte compteField;
 
         public TestableDetailCompteEdit(BanqueFacade banqueFacade) {
             this.banqueFacade = banqueFacade;
         }
 
-        public void setCompte(Compte compte) {
-            this.compteField = compte;
+        public String getDecouvertAutorise() {
+            return decouvertAutorise;
         }
 
         public void setDecouvertAutorise(String decouvertAutorise) {
             this.decouvertAutorise = decouvertAutorise;
         }
 
-        public String getDecouvertAutorise() {
-            return decouvertAutorise;
+        public Compte getCompte() {
+            if (banqueFacade.getConnectedUser() instanceof Gestionnaire) {
+                return compteField;
+            }
+            return null;
+        }
+
+        public void setCompte(Compte compte) {
+            this.compteField = compte;
         }
 
         public String changementDecouvert() {
@@ -134,7 +301,11 @@ public class TestDetailCompteEdit {
                 return "ERROR";
             }
             try {
-                double dec = Double.parseDouble(decouvertAutorise);
+                // CORRECTION : Vérifier null/empty avant parsing
+                if (decouvertAutorise == null || decouvertAutorise.trim().isEmpty()) {
+                    return "ERROR";
+                }
+                double dec = Double.parseDouble(decouvertAutorise.trim());
                 banqueFacade.changeDecouvert((CompteAvecDecouvert) compteField, dec);
                 return "SUCCESS";
             } catch (NumberFormatException e) {
