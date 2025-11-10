@@ -3,7 +3,7 @@
     <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8081/_00_ASBank2023" />
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
-      <artifact name="_00_ASBank2023:war">
+      <artifact name="_00_ASBank2023:war exploded">
         <settings>
           <option name="CONTEXT_PATH" value="/_00_ASBank2023" />
         </settings>

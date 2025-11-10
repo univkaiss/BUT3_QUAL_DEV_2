@@ -276,4 +276,9 @@ public class BanqueFacade {
 			banqueManager.changeDecouvert(compte, nouveauDecouvert);
 		}
 	}
+
+	public void updatePassword(String userId, String hashedPassword) throws IllegalArgumentException, TechnicalException {
+		// Pas de contrôle de rôle ici (réinitialisation depuis login)
+		banqueManager.updatePassword(userId, hashedPassword);
+	}
 }

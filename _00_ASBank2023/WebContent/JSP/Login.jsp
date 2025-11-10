@@ -18,7 +18,13 @@
 		<s:password label="Password" name="userPwd" />
 		<s:submit name="submit" />
 	</s:form>
-		<s:form name="myFormRetour" action="retourAccueil" method="POST">
+	<s:form action="reinitPwd" namespace="/" method="GET">
+		<s:submit value="Mot de passe oublié" />
+	</s:form>
+
+
+
+	<s:form name="myFormRetour" action="retourAccueil" method="POST">
 			<s:submit name="Retour" value="Retour à l'accueil" />
 		</s:form>
 </body>

@@ -19,6 +19,7 @@ import com.iut.banque.modele.CompteAvecDecouvert;
 import com.iut.banque.modele.CompteSansDecouvert;
 import com.iut.banque.modele.Gestionnaire;
 import com.iut.banque.modele.Utilisateur;
+import com.iut.banque.security.PasswordHasherCompact;
 
 /**
  * Implémentation de IDao utilisant Hibernate.
@@ -119,10 +120,19 @@ public class DaoHibernate implements IDao {
 			throw new TechnicalException("User Id déjà utilisé.");
 		}
 
+		// Hasher le mot de passe avant de créer l'utilisateur
+		String hashedPassword;
+		try {
+			hashedPassword = PasswordHasherCompact.createHashString(userPwd.toCharArray());
+		} catch (Exception e) { //NOSONAR - Exception logged and rethrown with context
+			LOGGER.severe("Erreur lors du hashage du mot de passe pour l'utilisateur " + userId + ": " + e.getMessage());
+			throw new TechnicalException("Erreur lors du hashage du mot de passe", e);
+		}
+
 		if (manager) {
-			user = new Gestionnaire(nom, prenom, adresse, male, userId, userPwd);
+			user = new Gestionnaire(nom, prenom, adresse, male, userId, hashedPassword);
 		} else {
-			user = new Client(nom, prenom, adresse, male, userId, userPwd, numClient);
+			user = new Client(nom, prenom, adresse, male, userId, hashedPassword, numClient);
 		}
 		session.save(user);
 
@@ -151,10 +161,28 @@ public class DaoHibernate implements IDao {
 		userId = userId.trim();
 		if ("".equals(userId) || "".equals(userPwd)) return false;
 
-		try (Session session = sessionFactory.openSession()) {
-			Utilisateur user = session.get(Utilisateur.class, userId);
-			if (user == null) return false;
-			return userPwd.equals(user.getUserPwd());
+		Session session = sessionFactory.getCurrentSession();
+		Utilisateur user = session.get(Utilisateur.class, userId);
+		if (user == null) return false;
+
+		String storedPassword = user.getUserPwd();
+
+
+		if (!storedPassword.contains(":")) {
+			LOGGER.info("Mode compatibilité : comparaison en clair pour " + userId);
+			return userPwd.equals(storedPassword);
+		}
+
+
+		try {
+			return PasswordHasherCompact.verifyPassword(
+					userPwd.toCharArray(),
+					storedPassword
+			);
+		} catch (Exception e) {
+			LOGGER.severe("Erreur lors de la vérification du mot de passe pour l'utilisateur "
+					+ userId + ": " + e.getMessage());
+			return false;
 		}
 	}
 
