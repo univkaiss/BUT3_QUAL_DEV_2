@@ -1,6 +1,6 @@
 package com.iut.banque.controller;
 
-import com.iut.banque.security.PasswordHasherCompact;
+
 import org.apache.struts2.ServletActionContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -11,8 +11,7 @@ import com.iut.banque.exceptions.TechnicalException;
 import com.iut.banque.facade.BanqueFacade;
 import com.opensymphony.xwork2.ActionSupport;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+
 import java.util.logging.Logger;
 
 /**
@@ -69,23 +68,22 @@ public class CreerUtilisateur extends ActionSupport {
 	 * Création d'un utilisateur
 	 *
 	 * @return le status de l'action
-	 * @throws PasswordHashingException si la génération du hash échoue
+
 	 */
-	public String creationUtilisateur() throws PasswordHashingException {
+	@Override
+	public String execute() {
 		try {
-			String hashedPwd = PasswordHasherCompact.createHashString(userPwd.toCharArray());
 
 			if (client) {
-				banque.createClient(userId, hashedPwd, nom, prenom, adresse, male, numClient);
+
+				banque.createClient(userId, userPwd, nom, prenom, adresse, male, numClient);
 			} else {
-				banque.createManager(userId, hashedPwd, nom, prenom, adresse, male);
+
+				banque.createManager(userId, userPwd, nom, prenom, adresse, male);
 			}
 
-
-			this.message = String.format("Le nouvel utilisateur avec le user id '%s' a bien été créé.", userId);
-			this.result = "SUCCESS";
-
 			this.message = String.format("L'utilisateur '%s' a bien été créé.", userId);
+			this.result = "SUCCESS";
 			return "SUCCESS";
 
 		} catch (IllegalOperationException e) {
@@ -104,17 +102,8 @@ public class CreerUtilisateur extends ActionSupport {
 			this.message = "Format du numéro de client incorrect.";
 			this.result = ERROR;
 			return ERROR;
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-			throw new PasswordHashingException("Erreur lors du hashage du mot de passe", e);
 		}
 	}
 
-	/**
-	 * Exception dédiée pour les erreurs de hashage
-	 */
-	public static class PasswordHashingException extends Exception {
-		public PasswordHashingException(String message, Throwable cause) {
-			super(message, cause);
-		}
-	}
+
 }
