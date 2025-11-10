@@ -245,7 +245,27 @@ public class PasswordHasherCompactTest {
         }
     }
 
+    @Test
+    public void testPbkdf2DirectCall() {
+        try {
+            char[] pwd = "DirectTest".toCharArray();
+            byte[] salt = new byte[] { 1, 2, 3, 4, 5, 6 };
+            int iterations = 1000;
+            int keyLength = 160;
 
+            byte[] hash = PasswordHasherCompact.pbkdf2(pwd, salt, iterations, keyLength);
+
+            assertNotNull("Le hash ne devrait pas être null", hash);
+            assertEquals("La longueur du hash devrait être keyLength/8", keyLength / 8, hash.length);
+
+            Arrays.fill(pwd, '\0');
+            Arrays.fill(salt, (byte)0);
+            Arrays.fill(hash, (byte)0);
+
+        } catch (Exception e) {
+            fail("Exception récupérée -> " + e.getMessage());
+        }
+    }
 
     @Test
     public void testPbkdf2Deterministe() {
