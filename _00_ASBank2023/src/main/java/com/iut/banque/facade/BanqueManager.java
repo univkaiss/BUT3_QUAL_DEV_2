@@ -1,3 +1,4 @@
+// language: java
 package com.iut.banque.facade;
 
 import java.util.Map;
@@ -14,108 +15,70 @@ import com.iut.banque.modele.CompteAvecDecouvert;
 import com.iut.banque.modele.Gestionnaire;
 import com.iut.banque.modele.Utilisateur;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service("banqueFacade")
+@Transactional
 public class BanqueManager {
 
 	private final Banque bank;
 	private IDao dao;
 
-	/**
-	 * Constructeur du BanqueManager
-	 *
-	 * @return BanqueManager : un nouvel objet BanqueManager
-	 */
 	public BanqueManager() {
 		super();
-		// L'injection par Spring peut être configurée ultérieurement
 		bank = new Banque();
 	}
 
-	/**
-	 * Méthode utilisée pour les tests unitaires et ne devrait pas être utilisée ailleurs.
-	 */
-	public Compte getAccountById(String id) {
-		return dao.getAccountById(id);
-	}
-
-	/**
-	 * Méthode utilisée pour les tests unitaires et ne devrait pas être utilisée ailleurs.
-	 */
-	public Utilisateur getUserById(String id) {
-		return dao.getUserById(id);
-	}
-
-	/**
-	 * Setter pour la DAO.
-	 * Utilisé par Spring via injection de dépendance.
-	 *
-	 * @param dao la DAO nécessaire pour le BanqueManager
-	 */
+	// setter pour injection DAO (Spring va appeler setDao si configuré)
 	public void setDao(IDao dao) {
 		this.dao = dao;
 	}
 
-	/**
-	 * Créditer un compte, mise à jour en mémoire et en base.
-	 */
+	// méthodes inchangées...
+	public Compte getAccountById(String id) {
+		return dao.getAccountById(id);
+	}
+
+	public Utilisateur getUserById(String id) {
+		return dao.getUserById(id);
+	}
+
 	public void crediter(Compte compte, double montant) throws IllegalFormatException {
 		bank.crediter(compte, montant);
 		dao.updateAccount(compte);
 	}
 
-	/**
-	 * Débiter un compte, mise à jour en mémoire et en base.
-	 */
 	public void debiter(Compte compte, double montant) throws InsufficientFundsException, IllegalFormatException {
 		bank.debiter(compte, montant);
 		dao.updateAccount(compte);
 	}
 
-	/**
-	 * Charge tous les clients depuis la DAO.
-	 */
 	public void loadAllClients() {
 		bank.setClients(dao.getAllClients());
 	}
 
-	/**
-	 * Charge tous les gestionnaires depuis la DAO.
-	 */
 	public void loadAllGestionnaires() {
 		bank.setGestionnaires(dao.getAllGestionnaires());
 	}
 
-	/**
-	 * Retourne tous les clients de la banque.
-	 */
 	public Map<String, Client> getAllClients() {
 		return bank.getClients();
 	}
 
-	/**
-	 * Retourne tous les gestionnaires de la banque.
-	 */
 	public Map<String, Client> getAllManagers() {
 		return bank.getClients();
 	}
 
-	/**
-	 * Crée un compte sans découvert.
-	 */
 	public void createAccount(String numeroCompte, Client client) throws TechnicalException, IllegalFormatException {
 		dao.createCompteSansDecouvert(0, numeroCompte, client);
 	}
 
-	/**
-	 * Crée un compte avec découvert.
-	 */
 	public void createAccount(String numeroCompte, Client client, double decouvertAutorise)
 			throws TechnicalException, IllegalFormatException, IllegalOperationException {
 		dao.createCompteAvecDecouvert(0, numeroCompte, decouvertAutorise, client);
 	}
 
-	/**
-	 * Supprime un compte si son solde est nul.
-	 */
 	public void deleteAccount(Compte c) throws IllegalOperationException, TechnicalException {
 		if (c.getSolde() != 0) {
 			throw new IllegalOperationException("Impossible de supprimer un compte avec un solde différent de 0");
@@ -123,17 +86,11 @@ public class BanqueManager {
 		dao.deleteAccount(c);
 	}
 
-	/**
-	 * Crée un gestionnaire.
-	 */
 	public void createManager(String userId, String userPwd, String nom, String prenom, String adresse, boolean male)
 			throws TechnicalException, IllegalArgumentException, IllegalFormatException {
 		dao.createUser(nom, prenom, adresse, male, userId, userPwd, true, null);
 	}
 
-	/**
-	 * Crée un client.
-	 */
 	public void createClient(String userId, String userPwd, String nom, String prenom, String adresse, boolean male,
 							 String numeroClient)
 			throws IllegalOperationException, TechnicalException, IllegalArgumentException, IllegalFormatException {
@@ -148,9 +105,6 @@ public class BanqueManager {
 		dao.createUser(nom, prenom, adresse, male, userId, userPwd, false, numeroClient);
 	}
 
-	/**
-	 * Supprime un utilisateur, en gérant les cas spécifiques client et gestionnaire.
-	 */
 	public void deleteUser(Utilisateur u) throws IllegalOperationException, TechnicalException {
 		if (u instanceof Client) {
 			Map<String, Compte> liste = ((Client) u).getAccounts();
@@ -164,12 +118,28 @@ public class BanqueManager {
 		dao.deleteUser(u);
 	}
 
-	/**
-	 * Change le découvert d'un compte.
-	 */
 	public void changeDecouvert(CompteAvecDecouvert compte, double nouveauDecouvert)
 			throws IllegalFormatException, IllegalOperationException {
 		bank.changeDecouvert(compte, nouveauDecouvert);
 		dao.updateAccount(compte);
+	}
+
+
+	public void updatePassword(String userId, String hashedPassword) throws IllegalArgumentException, TechnicalException {
+		try {
+			// utilise la méthode existante qui fait appel au DAO
+			Utilisateur u = this.getUserById(userId);
+			if (u == null) {
+				throw new IllegalArgumentException("Utilisateur introuvable : " + userId);
+			}
+			// Adapter le setter si nécessaire (ex: setPassword)
+			u.setUserPwd(hashedPassword);
+			// Utiliser la DAO existante pour persister la modification
+			dao.updateUser(u);
+		} catch (IllegalArgumentException ie) {
+			throw ie;
+		} catch (Exception e) {
+			throw new TechnicalException("Erreur technique lors de la mise à jour du mot de passe", e);
+		}
 	}
 }

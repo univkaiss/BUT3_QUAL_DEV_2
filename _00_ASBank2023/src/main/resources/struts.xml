@@ -297,5 +297,15 @@
 			<result>/JSP/CreerUtilisateur.jsp</result>
 		</action>
 
+		<action name="reinitPwd" class="com.iut.banque.controller.ReinitialiserMotDePasse" method="input">
+			<result name="input">/JSP/ForgotPassword.jsp</result>
+		</action>
+
+		<action name="doReinitPwd" class="com.iut.banque.controller.ReinitialiserMotDePasse" method="submit">
+			<result name="success">/JSP/Login.jsp</result>
+			<result name="input">/JSP/ForgotPassword.jsp</result>
+			<result name="error">/JSP/ForgotPassword.jsp</result>
+		</action>
+
 	</package>
 </struts>
