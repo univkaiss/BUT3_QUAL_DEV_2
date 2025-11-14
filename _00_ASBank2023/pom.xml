@@ -15,16 +15,18 @@
 	</properties>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
+
+		<!-- IMPORTANT : supprimer la copie inutile de src/ qui cassait Maven -->
 		<resources>
 			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
+				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
 
 		<plugins>
+
+			<!-- Compiler Java -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
@@ -34,6 +36,7 @@
 				</configuration>
 			</plugin>
 
+			<!-- Jacoco -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -56,7 +59,7 @@
 				</executions>
 			</plugin>
 
-			<!-- GARDEZ UN SEUL maven-war-plugin -->
+			<!-- Le *SEUL* plugin nécessaire pour WebContent → WAR -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -68,6 +71,7 @@
 				</configuration>
 			</plugin>
 
+			<!-- Gardé pour vos besoins locaux -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
@@ -76,8 +80,10 @@
 					<path>/ASBank-2023</path>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
+
 
 	<dependencies>
 		<dependency>

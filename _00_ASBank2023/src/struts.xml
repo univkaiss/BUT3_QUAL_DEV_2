@@ -275,8 +275,7 @@
 		</action>
 
 		<!-- Ajout d'un utilisateur -->
-		<action name="ajoutUtilisateur" class="com.iut.banque.controller.CreerUtilisateur"
-				method="execute">
+		<action name="ajoutUtilisateur" class="com.iut.banque.controller.CreerUtilisateur" method="execute">
 			<result name="SUCCESS" type="redirectAction">
 				<param name="actionName">urlAjoutUtilisateur</param>
 				<param name="result">SUCCESS</param>
