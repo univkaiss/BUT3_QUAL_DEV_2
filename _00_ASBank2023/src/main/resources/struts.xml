@@ -295,6 +295,7 @@
 
 		<action name="urlAjoutUtilisateur" class="com.iut.banque.controller.CreerUtilisateur">
 			<result>/JSP/CreerUtilisateur.jsp</result>
+			<result name="ERROR">/JSP/CreerUtilisateur.jsp</result>
 		</action>
 
 		<action name="reinitPwd" class="com.iut.banque.controller.ReinitialiserMotDePasse" method="input">
