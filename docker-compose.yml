@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # 1. Votre application Java (Tomcat)
+  asbank-app:
+    build: ./_00_ASBank2023       # Utilise votre Dockerfile existant
+    container_name: asbank-app
+    ports:
+      - "8080:8080"               # Accessible sur http://localhost:8080
+    depends_on:
+      - mysql-db                  # Attend que la BDD soit prête
+    networks:
+      - banque-network
+
+  # 2. La base de données MySQL
+  mysql-db:
+    image: mysql:8.0              # Docker téléchargera ceci automatiquement
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: notre_base  # Nom de la BDD utilisé dans vos scripts
+      MYSQL_USER: kabano
+      MYSQL_PASSWORD: pass123
+    volumes:
+      # C'est ICI que vos scripts sont injectés dans le Docker pour créer les tables
+      - ./_00_ASBank2023/script:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - banque-network
+
+networks:
+  banque-network:
