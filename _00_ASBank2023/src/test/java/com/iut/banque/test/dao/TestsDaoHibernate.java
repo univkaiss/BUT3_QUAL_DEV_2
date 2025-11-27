@@ -81,7 +81,7 @@ public class TestsDaoHibernate {
     @Test
     public void testCreateCompteAvecDecouvert_Success() throws Exception {
         Client client = new Client();
-        String id = "NW1010010001";
+        String id = "NW1010010001"; // Format valide
 
         // Simuler que le compte n'existe pas encore
         when(session.get(CompteAvecDecouvert.class, id)).thenReturn(null);
@@ -175,10 +175,7 @@ public class TestsDaoHibernate {
 
     @Test
     public void testIsUserAllowed_Success() {
-        // On doit simuler un utilisateur avec un mot de passe hashé ou clair selon votre implémentation
-        // Ici on teste le cas "mot de passe en clair" pour simplifier le mock, ou on adapte
         Utilisateur user = mock(Utilisateur.class);
-        // Supposons que le mot de passe stocké soit "secret" (cas compatibilité)
         when(user.getUserPwd()).thenReturn("secret");
 
         when(session.get(Utilisateur.class, "login")).thenReturn(user);
@@ -214,12 +211,17 @@ public class TestsDaoHibernate {
 
     @Test
     public void testGetAllClients() {
-        // Mock de Criteria (Hibernate legacy API)
         when(session.createCriteria(Client.class)).thenReturn(criteria);
 
         List<Object> list = new ArrayList<>();
         Client c1 = new Client();
-        try { c1.setUserId("c1"); } catch(Exception e){}
+        try {
+            // CORRECTION IMPORTANTE : Utiliser un format d'ID valide pour un Client
+            // Regex: ^[a-z]\\.[a-z]+[1-9]\\d*$ (ex: c.client1)
+            c1.setUserId("c.client1");
+        } catch(Exception e){
+            e.printStackTrace();
+        }
         list.add(c1);
 
         when(criteria.list()).thenReturn(list);
@@ -227,7 +229,8 @@ public class TestsDaoHibernate {
         Map<String, Client> res = daoHibernate.getAllClients();
 
         assertEquals(1, res.size());
-        assertTrue(res.containsKey("c1"));
+        // On vérifie avec la clé valide
+        assertTrue(res.containsKey("c.client1"));
     }
 
     @Test
@@ -249,7 +252,6 @@ public class TestsDaoHibernate {
 
     @Test
     public void testDisconnect() {
-        // Juste pour vérifier que ça ne plante pas
         daoHibernate.disconnect();
     }
 
