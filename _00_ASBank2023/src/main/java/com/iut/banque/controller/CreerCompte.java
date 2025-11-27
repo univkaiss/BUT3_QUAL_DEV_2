@@ -56,12 +56,22 @@ public class CreerCompte extends ActionSupport implements Serializable {
 		this.client = client;
 	}
 
-	public CreerCompte() {
-		LOGGER.info("In Constructor from CreerCompte class");
-		ApplicationContext context = WebApplicationContextUtils
-				.getRequiredWebApplicationContext(ServletActionContext.getServletContext());
-		this.banque = (BanqueFacade) context.getBean("banqueFacade");
-	}
+    public CreerCompte() {
+        LOGGER.info("In Constructor from CreerCompte class");
+        try {
+            ApplicationContext context = WebApplicationContextUtils
+                    .getRequiredWebApplicationContext(ServletActionContext.getServletContext());
+            this.banque = (BanqueFacade) context.getBean("banqueFacade");
+        } catch (Exception e) {
+            // En mode test, ceci peut échouer, ce n'est pas grave si on utilise l'autre constructeur
+        }
+    }
+
+    // --- CONSTRUCTEUR 2 : Pour les Tests (NOUVEAU) ---
+    // celui-ci dans TestCreerCompte.java
+    public CreerCompte(BanqueFacade banqueFacade) {
+        this.banque = banqueFacade;
+    }
 
 	public String getNumeroCompte() {
 		return numeroCompte;

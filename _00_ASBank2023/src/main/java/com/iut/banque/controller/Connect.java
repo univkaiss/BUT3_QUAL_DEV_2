@@ -32,6 +32,11 @@ public class Connect extends ActionSupport {
 		this.banque = (BanqueFacade) context.getBean("banqueFacade");
 	}
 
+    // À ajoute dans la classe Connect
+    public Connect(BanqueFacade banqueFacade) {
+        this.banque = banqueFacade;
+    }
+
 	public String login() {
 		LOGGER.info("Essai de login...");
 
