@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.iut.banque.controller.ListeCompteManager;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.TechnicalException;
 import com.iut.banque.facade.BanqueFacade;
@@ -30,12 +31,14 @@ public class TestListeCompteManager {
     private Compte compte;
 
     private AutoCloseable mocks;
-    private TestableListeCompteManager action;
+    // Utilisation de la vraie classe
+    private ListeCompteManager action;
 
     @Before
     public void setUp() {
         mocks = MockitoAnnotations.openMocks(this);
-        action = new TestableListeCompteManager(banqueFacade);
+        // Injection via le nouveau constructeur
+        action = new ListeCompteManager(banqueFacade);
     }
 
     @After
@@ -343,72 +346,5 @@ public class TestListeCompteManager {
         action.setCompte(compte2);
         action.deleteAccount();
         assertEquals("ACC-Y", action.getCompteInfo());
-    }
-
-    // ========== Classe testable ==========
-
-    private static class TestableListeCompteManager {
-        private final BanqueFacade banqueFacade;
-        private Client client;
-        private Compte compte;
-        private String userInfo;
-        private String compteInfo;
-
-        public TestableListeCompteManager(BanqueFacade banqueFacade) {
-            this.banqueFacade = banqueFacade;
-        }
-
-        public Map<String, Client> getAllClients() {
-            banqueFacade.loadClients();
-            return banqueFacade.getAllClients();
-        }
-
-        public void setClient(Client client) {
-            this.client = client;
-        }
-
-        public Client getClient() {
-            return client;
-        }
-
-        public void setCompte(Compte compte) {
-            this.compte = compte;
-        }
-
-        public Compte getCompte() {
-            return compte;
-        }
-
-        public String getUserInfo() {
-            return userInfo;
-        }
-
-        public String getCompteInfo() {
-            return compteInfo;
-        }
-
-        public String deleteUser() {
-            try {
-                this.userInfo = client.getIdentity();
-                banqueFacade.deleteUser(client);
-                return "SUCCESS";
-            } catch (TechnicalException e) {
-                return "ERROR";
-            } catch (IllegalOperationException ioe) {
-                return "NONEMPTYACCOUNT";
-            }
-        }
-
-        public String deleteAccount() {
-            try {
-                this.compteInfo = compte.getNumeroCompte();
-                banqueFacade.deleteAccount(compte);
-                return "SUCCESS";
-            } catch (IllegalOperationException e) {
-                return "NONEMPTYACCOUNT";
-            } catch (TechnicalException e) {
-                return "ERROR";
-            }
-        }
     }
 }

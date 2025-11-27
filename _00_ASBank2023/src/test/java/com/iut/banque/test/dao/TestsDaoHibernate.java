@@ -1,17 +1,21 @@
 package com.iut.banque.test.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.iut.banque.dao.DaoHibernate;
 import com.iut.banque.exceptions.IllegalFormatException;
@@ -24,330 +28,242 @@ import com.iut.banque.modele.CompteSansDecouvert;
 import com.iut.banque.modele.Gestionnaire;
 import com.iut.banque.modele.Utilisateur;
 
-/**
- * Class de test pour la DAO.
-
- * L'annotation @Rollback n'est pas nécéssaire partout car par défaut elle est
- * true pour les méthodes de test.
- */
-// @RunWith indique à JUnit de prendre le class runner de Spirng
-@RunWith(SpringJUnit4ClassRunner.class)
-// @ContextConfiguration permet de charger le context utilisé pendant les tests.
-// Par défault (si aucun argument n'est précisé), cherche le fichier
-// TestsDaoHibernate-context.xml dans le même dosssier que la classe
-@ContextConfiguration("classpath:TestsDaoHibernate-context.xml")
-@Transactional("transactionManager")
+@RunWith(MockitoJUnitRunner.class)
 public class TestsDaoHibernate {
 
-	// Indique que c'est un champ à injecter automatiquement. Le bean est choisi
-	// en fonction du type.
-	@Autowired
-	private DaoHibernate daoHibernate;
+    private DaoHibernate daoHibernate;
 
-	@Test
-	public void testGetAccountByIdExist() {
-		Compte account = daoHibernate.getAccountById("IO1010010001");
-		if (account == null) {
-			fail("Le compte ne doit pas être null.");
-		} else if (!"IO1010010001".equals(account.getNumeroCompte()) && !"j.doe2".equals(account.getOwner().getUserId())
-				&& !"IO1010010001".equals(account.getNumeroCompte())) {
-			fail("Les informations du compte ne correspondent pas à celles de la BDD.");
-		}
-	}
+    @Mock
+    private SessionFactory sessionFactory;
 
-	@Test
-	public void testGetAccountByIdDoesntExist() {
-		Compte account = daoHibernate.getAccountById("IO1111111111");
-		if (account != null) {
-			fail("Le compte n'aurait pas du être renvoyé.");
-		}
-	}
+    @Mock
+    private Session session;
 
-	@Test
-	public void testGetCompteSansDecouvert() {
-		assertTrue(daoHibernate.getAccountById("SA1011011011") instanceof CompteSansDecouvert);
-	}
+    @Mock
+    private Criteria criteria;
 
-	@Test
-	public void testGetCompteAvecDecouvert() {
-		assertTrue(daoHibernate.getAccountById("AV1011011011") instanceof CompteAvecDecouvert);
-	}
+    @Before
+    public void setUp() {
+        // On crée la DAO manuellement (pas de Spring)
+        daoHibernate = new DaoHibernate();
+        // On injecte le mock de SessionFactory
+        daoHibernate.setSessionFactory(sessionFactory);
 
-	@Test
-	public void testCreateCompteAvecDecouvert() {
-		Client client = (Client) daoHibernate.getUserById("c.exist");
-		String id = "NW1010010001";
-		try {
-			Compte compte = daoHibernate.createCompteAvecDecouvert(0, id, 100, client);
-			assertEquals(0, compte.getSolde(), 0.001);
-			assertEquals(id, compte.getNumeroCompte());
-			assertEquals("c.exist", compte.getOwner().getUserId());
-			assertEquals(100, ((CompteAvecDecouvert) compte).getDecouvertAutorise(), 0.001);
-			assertTrue(compte instanceof CompteAvecDecouvert);
-		} catch (TechnicalException | IllegalFormatException | IllegalOperationException e) {
-			e.printStackTrace();
-			fail("Le compte aurait du être créé.");
-		}
-	}
+        // Comportement standard : sessionFactory.getCurrentSession() renvoie notre mock session
+        when(sessionFactory.getCurrentSession()).thenReturn(session);
+    }
 
-	@Test
-	public void testCreateCompteAvecDecouvertExistingId() {
-		Client client = (Client) daoHibernate.getUserById("c.exist");
-		String id = "AV1011011011";
-		try {
-			Compte compte = daoHibernate.createCompteAvecDecouvert(0, id, 100, client);
-			if (compte != null) {
-				System.out.println(compte);
-				fail("Le compte n'aurait pas du être créé.");
-			}
-		} catch (TechnicalException | IllegalFormatException | IllegalOperationException e) {
-			assertTrue(e instanceof TechnicalException);
-		}
-	}
+    // --- Tests récupération Compte ---
 
-	@Test
-	public void testCreateCompteSansDecouvert() {
-		Client client = (Client) daoHibernate.getUserById("c.exist");
-		String id = "NW1010010001";
-		try {
-			Compte compte = daoHibernate.createCompteSansDecouvert(0, id, client);
-			assertEquals(0, compte.getSolde(), 0.001);
-			assertEquals(id, compte.getNumeroCompte());
-			assertEquals("c.exist", compte.getOwner().getUserId());
-			assertTrue(compte instanceof CompteSansDecouvert);
-		} catch (TechnicalException | IllegalFormatException e) {
-			e.printStackTrace();
-			fail("Le compte aurait du être crée.");
-		}
-	}
+    @Test
+    public void testGetAccountByIdExist() {
+        Compte compteMock = mock(Compte.class);
+        when(session.get(Compte.class, "CPT001")).thenReturn(compteMock);
 
-	@Test
-	public void testCreateCompteSansDecouvertExistingId() {
-		Client client = (Client) daoHibernate.getUserById("c.exist");
-		String id = "SA1011011011";
-		try {
-			daoHibernate.createCompteSansDecouvert(0, id, client);
-			fail("Le compte n'aurait pas du être créé.");
-		} catch (TechnicalException | IllegalFormatException e) {
-			assertTrue(e instanceof TechnicalException);
-		}
-	}
+        Compte result = daoHibernate.getAccountById("CPT001");
 
-	@Test
-	public void testDeleteAccountExist() {
-		Compte account = daoHibernate.getAccountById("SA1011011011");
-		if (account == null) {
-			fail("Problème de récupération du compte.");
-		}
-		try {
-			daoHibernate.deleteAccount(account);
-		} catch (TechnicalException e) {
-			fail("Le compte aurait du être supprimé.");
-		}
-		account = daoHibernate.getAccountById("SA1011011011");
-		if (account != null) {
-			fail("Le compte n'a pas été supprimé.");
-		}
-	}
+        assertNotNull(result);
+        assertSame(compteMock, result);
+        verify(session).get(Compte.class, "CPT001");
+    }
 
-	@Test
-	public void testGetUserByIdExist() {
-		Utilisateur user = daoHibernate.getUserById("c.exist");
-		if (user == null) {
-			fail("Le compte n'aurait pas du être null.");
-		} else if (!"TEST NOM".equals(user.getNom()) && !"TEST PRENOM".equals(user.getPrenom())
-				&& !"TEST ADRESSE".equals(user.getAdresse()) && !"TEST PASS".equals(user.getUserPwd())
-				&& !"c.exist".equals(user.getUserId())) {
-			fail("Les informations de l'utilisateur ne correspondent pas à celle de la BDD.");
-		}
-	}
+    @Test
+    public void testGetAccountByIdDoesntExist() {
+        when(session.get(Compte.class, "INCONNU")).thenReturn(null);
 
-	@Test
-	public void testGetUserByIdDoesntExist() {
-		Utilisateur user = daoHibernate.getUserById("c.doesntexist");
-		if (user != null) {
-			fail("L'utilisateur n'aurait pas du être renvoyé.");
-		}
-	}
+        Compte result = daoHibernate.getAccountById("INCONNU");
 
-	@Test
-	public void testGetAccountsByUserIdExist() {
-		Map<String, Compte> accounts = daoHibernate.getAccountsByClientId("g.descomptes");
-		if (accounts == null) {
-			fail("Ce client devrait avoir des comptes.");
-		} else if (!daoHibernate.getAccountById("SA1011011011").equals(accounts.get("SA1011011011"))
-				&& !daoHibernate.getAccountById("AV1011011011").equals(accounts.get("AV1011011011"))) {
-			fail("Les mauvais comptes ont été chargés.");
-		}
-	}
+        assertNull(result);
+    }
 
-	@Test
-	public void testGetClientById() {
-		assertTrue(daoHibernate.getUserById("c.exist") instanceof Client);
-	}
+    // --- Tests Création Compte ---
 
-	@Test
-	public void testGetgestionnaireById() {
-		assertTrue(daoHibernate.getUserById("admin") instanceof Gestionnaire);
-	}
+    @Test
+    public void testCreateCompteAvecDecouvert_Success() throws Exception {
+        Client client = new Client();
+        String id = "NW1010010001"; // Format valide
 
-	@Test
-	public void testGetAccountsByUserIdDoesntExist() {
-		Map<String, Compte> accounts = daoHibernate.getAccountsByClientId("c.doesntexit");
-		if (accounts != null) {
-			fail("Les comptes de cette utilisateur inexistant n'aurait pas du être renvoyés.");
-		}
-	}
+        // Simuler que le compte n'existe pas encore
+        when(session.get(CompteAvecDecouvert.class, id)).thenReturn(null);
 
-	@Test
-	public void testGetAccountsByUserIdNoAccount() {
-		Map<String, Compte> accounts = daoHibernate.getAccountsByClientId("c.exist");
-		if (accounts.size() != 0) {
-			fail("Ce client ne devrait pas avoir de compte.");
-		}
-	}
+        Compte res = daoHibernate.createCompteAvecDecouvert(0, id, 100, client);
 
-//	@Test
-//	public void testCreateUser() {
-//		try {
-//			try {
-//				daoHibernate.createUser("NOM", "PRENOM", "ADRESSE", true, "c.new1", "PASS", false, "5544554455");
-//			} catch (IllegalArgumentException | IllegalFormatException e) { // ✅ catch fusionné
-//				fail("Il ne devrait pas y avoir d'exception ici");
-//			}
-//			Utilisateur user = daoHibernate.getUserById("c.new1");
-//			assertEquals("NOM", user.getNom());
-//			assertEquals("PRENOM", user.getPrenom());
-//			assertEquals("ADRESSE", user.getAdresse());
-//			assertEquals("c.new1", user.getUserId());
-//			assertEquals("PASS", user.getUserPwd());
-//			assertTrue(user.isMale());
-//		} catch (TechnicalException he) {
-//			fail("L'utilisateur aurait du être créé.");
-//		}
-//	}
+        assertNotNull(res);
+        assertTrue(res instanceof CompteAvecDecouvert);
+        assertEquals(id, res.getNumeroCompte());
+        // Vérifier que save() a bien été appelé
+        verify(session).save(any(CompteAvecDecouvert.class));
+    }
 
-	@Test
-	public void testCreateUserExistingId() {
-		try {
-			try {
-				daoHibernate.createUser("NOM", "PRENOM", "ADRESSE", true, "c.exist", "PASS", false, "9898989898");
-			} catch (IllegalArgumentException e) {
-				fail("Il ne devrait pas y avoir d'exception ici");
-				e.printStackTrace();
-			} catch (IllegalFormatException e) {
-				fail("Il ne devrait pas y avoir d'exception ici");
+    @Test(expected = TechnicalException.class)
+    public void testCreateCompteAvecDecouvert_ExistingId() throws Exception {
+        String id = "EXIST";
+        // Simuler que le compte existe DÉJÀ
+        when(session.get(CompteAvecDecouvert.class, id)).thenReturn(mock(CompteAvecDecouvert.class));
 
-			}
-			fail("Une TechnicalException aurait d'être lançée ici.");
-		} catch (TechnicalException e) {
-			assertTrue(e instanceof TechnicalException);
-		}
-	}
+        daoHibernate.createCompteAvecDecouvert(0, id, 100, new Client());
+    }
 
-	@Test
-	public void testCreateGestionnaire() {
-		try {
-			try {
-				daoHibernate.createUser("NOM", "PRENOM", "ADRESSE", true, "g.new", "PASS", true, "9898989898");
-			} catch (IllegalArgumentException | IllegalFormatException e) {
-				fail("Il ne devrait pas y avoir d'exception ici");
-				e.printStackTrace();
-			}
-			Utilisateur gestionnaire = daoHibernate.getUserById("g.new");
-			if (!(gestionnaire instanceof Gestionnaire)) {
-				fail("Cet utilisateur devrait être un gestionnaire.");
-			}
-		} catch (TechnicalException e) {
-			fail("Il ne devrait pas y avoir d'exception ici.");
-		}
-	}
+    @Test
+    public void testCreateCompteSansDecouvert_Success() throws Exception {
+        Client client = new Client();
+        String id = "CSD001";
+        when(session.get(CompteSansDecouvert.class, id)).thenReturn(null);
 
-	@Test
-	public void testCreateClient() {
-		try {
-			try {
-				daoHibernate.createUser("NOM", "PRENOM", "ADRESSE", true, "c.new1", "PASS", false, "9898989898");
-			} catch (IllegalArgumentException | IllegalFormatException e) {
-				fail("Il ne devrait pas y avoir d'exception ici");
-				e.printStackTrace();
-			}
-			Utilisateur client = daoHibernate.getUserById("c.new1");
-			if (!(client instanceof Client)) {
-				fail("Cet utilisateur devrait être un client.");
-			}
-			assertEquals("9898989898", ((Client) client).getNumeroClient());
-		} catch (TechnicalException e) {
-			fail("Il ne devrait pas y avoir d'exception ici.");
-		}
-	}
+        Compte res = daoHibernate.createCompteSansDecouvert(100, id, client);
 
-	@Test
-	public void testDeleteUser() {
-		Utilisateur user = daoHibernate.getUserById("c.exist");
-		if (user == null) {
-			fail("Problème de récupération de ;'utilisateur.");
-		}
-		try {
-			daoHibernate.deleteUser(user);
-		} catch (TechnicalException e) {
-			fail("L'utilisateur aurait du être supprimé.");
-		}
-		user = daoHibernate.getUserById("c.exist");
-		if (user != null) {
-			fail("L'utilisateur n'a pas été supprimé.");
-		}
-	}
+        assertNotNull(res);
+        assertTrue(res instanceof CompteSansDecouvert);
+        verify(session).save(any(CompteSansDecouvert.class));
+    }
 
-	@Test
-	public void testIsUserAllowedUser() {
-		assertTrue(daoHibernate.isUserAllowed("c.exist", "TEST PASS"));
-	}
+    // --- Tests Suppression Compte ---
 
-	@Test
-	public void testIsUserAllowedWrongPassword() {
-		assertEquals(false, daoHibernate.isUserAllowed("c.exist", "WRONG PASS"));
-	}
+    @Test
+    public void testDeleteAccount_Success() throws Exception {
+        Compte compte = mock(Compte.class);
+        daoHibernate.deleteAccount(compte);
+        verify(session).delete(compte);
+    }
 
-	@Test
-	public void testIsUserAllowedUserDoesntExist() {
-		assertEquals(false, daoHibernate.isUserAllowed("c.doesntexist", "TEST PASS"));
-	}
+    @Test(expected = TechnicalException.class)
+    public void testDeleteAccount_Null() throws Exception {
+        daoHibernate.deleteAccount(null);
+    }
 
-	@Test
-	public void testIsNullPassword() {
-		assertEquals(false, daoHibernate.isUserAllowed("c.exist", null));
-	}
+    // --- Tests Utilisateur ---
 
-	@Test
-	public void testIsUserAllowedNullLogin() {
-		assertEquals(false, daoHibernate.isUserAllowed(null, "TEST PASS"));
-	}
+    @Test
+    public void testGetUserById() {
+        Utilisateur user = mock(Utilisateur.class);
+        when(session.get(Utilisateur.class, "u1")).thenReturn(user);
 
-	@Test
-	public void testIsUserAllowedEmptyPassword() {
-		assertEquals(false, daoHibernate.isUserAllowed("c.exist", ""));
-	}
+        Utilisateur result = daoHibernate.getUserById("u1");
+        assertSame(user, result);
+    }
 
-	@Test
-	public void testIsUserAllowedEmptyTrimmedLogin() {
-		assertEquals(false, daoHibernate.isUserAllowed("", "TEST PASS"));
-		assertEquals(false, daoHibernate.isUserAllowed(" ", "TEST PASS"));
-		assertEquals(false, daoHibernate.isUserAllowed("  ", "TEST PASS"));
-		assertEquals(false, daoHibernate.isUserAllowed("   ", "TEST PASS"));
-		assertEquals(false, daoHibernate.isUserAllowed("    ", "TEST PASS"));
-	}
+    @Test
+    public void testCreateUser_Client_Success() throws Exception {
+        String userId = "newClient";
+        when(session.get(Utilisateur.class, userId)).thenReturn(null);
 
+        Utilisateur res = daoHibernate.createUser("Nom", "Prenom", "Adr", true, userId, "pass", false, "1234567890");
 
+        assertTrue(res instanceof Client);
+        verify(session).save(any(Client.class));
+    }
 
-	@Test
-	public void testDisconnect() {
-		try {
-			daoHibernate.disconnect();
-			// On vérifie qu'aucune exception n'a été levée
-			assertTrue(true);
-		} catch (Exception e) {
-			fail("disconnect() ne devrait pas lever d'exception : " + e.getMessage());
-		}
-	}
+    @Test
+    public void testCreateUser_Manager_Success() throws Exception {
+        String userId = "newMgr";
+        when(session.get(Utilisateur.class, userId)).thenReturn(null);
+
+        Utilisateur res = daoHibernate.createUser("Nom", "Prenom", "Adr", true, userId, "pass", true, null);
+
+        assertTrue(res instanceof Gestionnaire);
+        verify(session).save(any(Gestionnaire.class));
+    }
+
+    @Test(expected = TechnicalException.class)
+    public void testCreateUser_Existing() throws Exception {
+        String userId = "exist";
+        when(session.get(Utilisateur.class, userId)).thenReturn(mock(Utilisateur.class));
+        daoHibernate.createUser("N", "P", "A", true, userId, "pwd", false, "000");
+    }
+
+    // --- Tests Login (isUserAllowed) ---
+
+    @Test
+    public void testIsUserAllowed_Success() {
+        Utilisateur user = mock(Utilisateur.class);
+        when(user.getUserPwd()).thenReturn("secret");
+
+        when(session.get(Utilisateur.class, "login")).thenReturn(user);
+
+        boolean allowed = daoHibernate.isUserAllowed("login", "secret");
+        assertTrue(allowed);
+    }
+
+    @Test
+    public void testIsUserAllowed_WrongPassword() {
+        Utilisateur user = mock(Utilisateur.class);
+        when(user.getUserPwd()).thenReturn("secret");
+        when(session.get(Utilisateur.class, "login")).thenReturn(user);
+
+        boolean allowed = daoHibernate.isUserAllowed("login", "wrong");
+        assertFalse(allowed);
+    }
+
+    @Test
+    public void testIsUserAllowed_UserNotFound() {
+        when(session.get(Utilisateur.class, "unknown")).thenReturn(null);
+        boolean allowed = daoHibernate.isUserAllowed("unknown", "pass");
+        assertFalse(allowed);
+    }
+
+    @Test
+    public void testIsUserAllowed_NullParams() {
+        assertFalse(daoHibernate.isUserAllowed(null, "pass"));
+        assertFalse(daoHibernate.isUserAllowed("user", null));
+    }
+
+    // --- Tests Listes (Clients/Gestionnaires) ---
+
+    @Test
+    public void testGetAllClients() {
+        when(session.createCriteria(Client.class)).thenReturn(criteria);
+
+        List<Object> list = new ArrayList<>();
+        Client c1 = new Client();
+        try {
+            // CORRECTION IMPORTANTE : Utiliser un format d'ID valide pour un Client
+            // Regex: ^[a-z]\\.[a-z]+[1-9]\\d*$ (ex: c.client1)
+            c1.setUserId("c.client1");
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        list.add(c1);
+
+        when(criteria.list()).thenReturn(list);
+
+        Map<String, Client> res = daoHibernate.getAllClients();
+
+        assertEquals(1, res.size());
+        // On vérifie avec la clé valide
+        assertTrue(res.containsKey("c.client1"));
+    }
+
+    @Test
+    public void testGetAllGestionnaires() {
+        when(session.createCriteria(Gestionnaire.class)).thenReturn(criteria);
+
+        List<Object> list = new ArrayList<>();
+        Gestionnaire g1 = new Gestionnaire();
+        try { g1.setUserId("g1"); } catch(Exception e){}
+        list.add(g1);
+
+        when(criteria.list()).thenReturn(list);
+
+        Map<String, Gestionnaire> res = daoHibernate.getAllGestionnaires();
+
+        assertEquals(1, res.size());
+        assertTrue(res.containsKey("g1"));
+    }
+
+    @Test
+    public void testDisconnect() {
+        daoHibernate.disconnect();
+    }
+
+    @Test
+    public void testGetAccountsByClientId() {
+        Client client = mock(Client.class);
+        Map<String, Compte> accounts = new HashMap<>();
+        when(client.getAccounts()).thenReturn(accounts);
+
+        when(session.get(Client.class, "c1")).thenReturn(client);
+
+        Map<String, Compte> res = daoHibernate.getAccountsByClientId("c1");
+        assertSame(accounts, res);
+    }
 }

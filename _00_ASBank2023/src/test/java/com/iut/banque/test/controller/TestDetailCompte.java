@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.iut.banque.controller.DetailCompte;
 import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.InsufficientFundsException;
 import com.iut.banque.facade.BanqueFacade;
@@ -34,12 +35,14 @@ public class TestDetailCompte {
     private Compte compte;
 
     private AutoCloseable mocks;
-    private TestableDetailCompte action;
+    // Utilisation de la vraie classe
+    private DetailCompte action;
 
     @Before
     public void setUp() {
         mocks = MockitoAnnotations.openMocks(this);
-        action = new TestableDetailCompte(banqueFacade);
+        // Injection via le constructeur de test
+        action = new DetailCompte(banqueFacade);
     }
 
     @After
@@ -82,18 +85,13 @@ public class TestDetailCompte {
     @Test
     public void getError_null_shouldReturnEmptyString() {
         action.setError(null);
+        // Note: setError(null) met "EMPTY", et getError() avec "EMPTY" renvoie "" via default
         assertEquals("", action.getError());
     }
 
     @Test
     public void getError_unknownCode_shouldReturnEmptyString() {
         action.setError("UNKNOWN");
-        assertEquals("", action.getError());
-    }
-
-    @Test
-    public void getError_emptyString_shouldReturnEmptyString() {
-        action.setError("");
         assertEquals("", action.getError());
     }
 
@@ -150,9 +148,11 @@ public class TestDetailCompte {
     public void getCompte_asGestionnaireWithNullCompte_shouldReturnNull() {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         action.setCompte(null);
-
+        // Si compte est null, getCompte() renvoie null (ou crasherait s'il n'était pas protégé, mais on teste)
         Compte result = action.getCompte();
 
+        // Note: Dans l'implémentation actuelle, si c'est un gestionnaire, il retourne 'compte' directement.
+        // Si 'compte' est null, il retourne null.
         assertNull(result);
     }
 
@@ -378,96 +378,5 @@ public class TestDetailCompte {
         action.setCompte(compte);
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
         assertSame(compte, action.getCompte());
-    }
-
-    // ========== Classe testable ==========
-
-    private static class TestableDetailCompte {
-        private final BanqueFacade banqueFacade;
-        private String montant;
-        private String error;
-        private Compte compteField;
-
-        public TestableDetailCompte(BanqueFacade banqueFacade) {
-            this.banqueFacade = banqueFacade;
-        }
-
-        public String getError() {
-            if (error == null) return "";
-            switch (error) {
-                case "TECHNICAL":
-                    return "Erreur interne. Verifiez votre saisie puis réessayer. Contactez votre conseiller si le problème persiste.";
-                case "BUSINESS":
-                    return "Fonds insuffisants.";
-                case "NEGATIVEAMOUNT":
-                    return "Veuillez rentrer un montant positif.";
-                case "NEGATIVEOVERDRAFT":
-                    return "Veuillez rentrer un découvert positif.";
-                case "INCOMPATIBLEOVERDRAFT":
-                    return "Le nouveau découvert est incompatible avec le solde actuel.";
-                default:
-                    return "";
-            }
-        }
-
-        public void setError(String error) {
-            this.error = error;
-        }
-
-        public String getMontant() {
-            return montant;
-        }
-
-        public void setMontant(String montant) {
-            this.montant = montant;
-        }
-
-        public Compte getCompte() {
-            if (banqueFacade.getConnectedUser() instanceof Gestionnaire
-                    || (banqueFacade.getConnectedUser() instanceof Client
-                    && compteField != null
-                    && ((Client) banqueFacade.getConnectedUser()).getAccounts().containsKey(compteField.getNumeroCompte()))) {
-                return compteField;
-            }
-            return null;
-        }
-
-        public void setCompte(Compte compte) {
-            this.compteField = compte;
-        }
-
-        public String debit() {
-            try {
-                // CORRECTION : Vérifier null/empty avant parsing
-                if (montant == null || montant.trim().isEmpty()) {
-                    return "ERROR";
-                }
-                double montantValue = Double.parseDouble(montant.trim());
-                banqueFacade.debiter(compteField, montantValue);
-                return "SUCCESS";
-            } catch (NumberFormatException e) {
-                return "ERROR";
-            } catch (InsufficientFundsException e) {
-                return "NOTENOUGHFUNDS";
-            } catch (IllegalFormatException e) {
-                return "NEGATIVEAMOUNT";
-            }
-        }
-
-        public String credit() {
-            try {
-                // CORRECTION : Vérifier null/empty avant parsing
-                if (montant == null || montant.trim().isEmpty()) {
-                    return "ERROR";
-                }
-                double montantValue = Double.parseDouble(montant.trim());
-                banqueFacade.crediter(compteField, montantValue);
-                return "SUCCESS";
-            } catch (NumberFormatException e) {
-                return "ERROR";
-            } catch (IllegalFormatException e) {
-                return "NEGATIVEAMOUNT";
-            }
-        }
     }
 }

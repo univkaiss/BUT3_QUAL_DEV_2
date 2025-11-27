@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.iut.banque.controller.CreerUtilisateur;
 import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.TechnicalException;
@@ -20,12 +21,14 @@ public class TestCreerUtilisateur {
     private BanqueFacade banqueFacade;
 
     private AutoCloseable mocks;
-    private TestableCreerUtilisateur action;
+    // Utilisation de la vraie classe
+    private CreerUtilisateur action;
 
     @Before
     public void setUp() {
         mocks = MockitoAnnotations.openMocks(this);
-        action = new TestableCreerUtilisateur(banqueFacade);
+        // Injection via le constructeur de test
+        action = new CreerUtilisateur(banqueFacade);
     }
 
     @After
@@ -98,7 +101,7 @@ public class TestCreerUtilisateur {
         action.setMale(true);
         action.setNumClient("NUM123");
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("SUCCESS", res);
         assertEquals("L'utilisateur 'user1' a bien été créé.", action.getMessage());
@@ -116,7 +119,7 @@ public class TestCreerUtilisateur {
         action.setMale(false);
         action.setNumClient("C456");
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("SUCCESS", res);
         assertEquals("L'utilisateur 'user2' a bien été créé.", action.getMessage());
@@ -134,7 +137,7 @@ public class TestCreerUtilisateur {
         action.setMale(false);
         action.setNumClient("");
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("SUCCESS", res);
         verify(banqueFacade).createClient("", "", "", "", "", false, "");
@@ -151,7 +154,7 @@ public class TestCreerUtilisateur {
         action.setMale(true);
         action.setNumClient("C-001");
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("SUCCESS", res);
         verify(banqueFacade).createClient("user@123", "p@ssw0rd!", "Nom-Composé", "Jean-Pierre", "12 Rue d'Été", true, "C-001");
@@ -169,7 +172,7 @@ public class TestCreerUtilisateur {
         action.setClient(false);
         action.setMale(true);
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("SUCCESS", res);
         assertEquals("L'utilisateur 'mgr1' a bien été créé.", action.getMessage());
@@ -187,7 +190,7 @@ public class TestCreerUtilisateur {
         action.setClient(false);
         action.setMale(false);
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("SUCCESS", res);
         assertEquals("L'utilisateur 'admin2' a bien été créé.", action.getMessage());
@@ -204,7 +207,7 @@ public class TestCreerUtilisateur {
         action.setClient(false);
         action.setMale(true);
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("SUCCESS", res);
         verify(banqueFacade).createManager("", "", "", "", "", true);
@@ -226,7 +229,7 @@ public class TestCreerUtilisateur {
         action.setMale(true);
         action.setNumClient("C");
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("ERROR", res);
         assertEquals("L'identifiant a déjà été assigné à un autre utilisateur de la banque.", action.getMessage());
@@ -249,7 +252,7 @@ public class TestCreerUtilisateur {
         action.setMale(true);
         action.setNumClient("NUM");
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("ERROR", res);
         assertEquals("Le numéro de client est déjà assigné à un autre client.", action.getMessage());
@@ -271,7 +274,7 @@ public class TestCreerUtilisateur {
         action.setMale(true);
         action.setNumClient("C");
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("ERROR", res);
         assertEquals("Le format de l'identifiant est incorrect.", action.getMessage());
@@ -293,7 +296,7 @@ public class TestCreerUtilisateur {
         action.setMale(true);
         action.setNumClient("BAD_FMT");
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("ERROR", res);
         assertEquals("Format du numéro de client incorrect.", action.getMessage());
@@ -303,7 +306,6 @@ public class TestCreerUtilisateur {
 
     @Test
     public void creationUtilisateur_manager_whenIllegalOperation_shouldSetErrorMessage() throws Exception {
-        // CORRECTION : Utiliser doAnswer au lieu de doThrow
         doAnswer(invocation -> {
             throw new IllegalOperationException("id exists");
         }).when(banqueFacade).createManager(anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean());
@@ -316,7 +318,7 @@ public class TestCreerUtilisateur {
         action.setAdresse("a");
         action.setMale(false);
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("ERROR", res);
         assertEquals("L'identifiant a déjà été assigné à un autre utilisateur de la banque.", action.getMessage());
@@ -337,7 +339,7 @@ public class TestCreerUtilisateur {
         action.setAdresse("a");
         action.setMale(true);
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("ERROR", res);
         assertEquals("Le numéro de client est déjà assigné à un autre client.", action.getMessage());
@@ -358,7 +360,7 @@ public class TestCreerUtilisateur {
         action.setAdresse("a");
         action.setMale(false);
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("ERROR", res);
         assertEquals("Le format de l'identifiant est incorrect.", action.getMessage());
@@ -379,7 +381,7 @@ public class TestCreerUtilisateur {
         action.setAdresse("a");
         action.setMale(false);
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("ERROR", res);
         assertEquals("Format du numéro de client incorrect.", action.getMessage());
@@ -398,7 +400,7 @@ public class TestCreerUtilisateur {
         action.setMale(true);
         action.setNumClient("C");
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("SUCCESS", res);
         verify(banqueFacade).createClient(null, "pwd", "n", "p", "a", true, "C");
@@ -414,7 +416,7 @@ public class TestCreerUtilisateur {
         action.setAdresse("a");
         action.setMale(false);
 
-        String res = action.creationUtilisateur();
+        String res = action.execute();
 
         assertEquals("SUCCESS", res);
         verify(banqueFacade).createManager(null, "pwd", "n", "p", "a", false);
@@ -430,73 +432,12 @@ public class TestCreerUtilisateur {
         action.setAdresse("a");
         action.setMale(true);
         action.setNumClient("C1");
-        action.creationUtilisateur();
+        action.execute();
 
         action.setUserId("user2");
         action.setNumClient("C2");
-        action.creationUtilisateur();
+        action.execute();
 
         assertEquals("L'utilisateur 'user2' a bien été créé.", action.getMessage());
-    }
-
-    // ========== Classe testable ==========
-
-    private static class TestableCreerUtilisateur {
-        private final BanqueFacade banqueFacade;
-        private String userId;
-        private String userPwd;
-        private boolean client;
-        private String nom;
-        private String prenom;
-        private String adresse;
-        private boolean male;
-        private String numClient;
-        private String message;
-
-        public TestableCreerUtilisateur(BanqueFacade banqueFacade) {
-            this.banqueFacade = banqueFacade;
-        }
-
-        public String creationUtilisateur() {
-            try {
-                if (client) {
-                    banqueFacade.createClient(userId, userPwd, nom, prenom, adresse, male, numClient);
-                } else {
-                    banqueFacade.createManager(userId, userPwd, nom, prenom, adresse, male);
-                }
-                this.message = String.format("L'utilisateur '%s' a bien été créé.", userId);
-                return "SUCCESS";
-            } catch (IllegalOperationException e) {
-                this.message = "L'identifiant a déjà été assigné à un autre utilisateur de la banque.";
-                return "ERROR";
-            } catch (TechnicalException e) {
-                this.message = "Le numéro de client est déjà assigné à un autre client.";
-                return "ERROR";
-            } catch (IllegalArgumentException e) {
-                this.message = "Le format de l'identifiant est incorrect.";
-                return "ERROR";
-            } catch (IllegalFormatException e) {
-                this.message = "Format du numéro de client incorrect.";
-                return "ERROR";
-            }
-        }
-
-        public void setUserId(String userId) { this.userId = userId; }
-        public String getUserId() { return userId; }
-        public void setUserPwd(String userPwd) { this.userPwd = userPwd; }
-        public String getUserPwd() { return userPwd; }
-        public void setClient(boolean client) { this.client = client; }
-        public boolean isClient() { return client; }
-        public void setNom(String nom) { this.nom = nom; }
-        public String getNom() { return nom; }
-        public void setPrenom(String prenom) { this.prenom = prenom; }
-        public String getPrenom() { return prenom; }
-        public void setAdresse(String adresse) { this.adresse = adresse; }
-        public String getAdresse() { return adresse; }
-        public void setMale(boolean male) { this.male = male; }
-        public boolean isMale() { return male; }
-        public void setNumClient(String numClient) { this.numClient = numClient; }
-        public String getNumClient() { return numClient; }
-        public String getMessage() { return message; }
     }
 }

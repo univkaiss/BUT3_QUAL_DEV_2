@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.iut.banque.controller.DetailCompteEdit;
 import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.facade.BanqueFacade;
@@ -32,12 +33,14 @@ public class TestDetailCompteEdit {
     private CompteAvecDecouvert compteAvecDecouvert;
 
     private AutoCloseable mocks;
-    private TestableDetailCompteEdit action;
+    // Utilisation de la vraie classe
+    private DetailCompteEdit action;
 
     @Before
     public void setUp() {
         mocks = MockitoAnnotations.openMocks(this);
-        action = new TestableDetailCompteEdit(banqueFacade);
+        // Injection via le constructeur de test
+        action = new DetailCompteEdit(banqueFacade);
     }
 
     @After
@@ -264,57 +267,5 @@ public class TestDetailCompteEdit {
         String res = action.changementDecouvert();
 
         assertEquals("INCOMPATIBLEOVERDRAFT", res);
-    }
-
-    // ========== Classe testable ==========
-
-    private static class TestableDetailCompteEdit {
-        private final BanqueFacade banqueFacade;
-        private String decouvertAutorise;
-        private Compte compteField;
-
-        public TestableDetailCompteEdit(BanqueFacade banqueFacade) {
-            this.banqueFacade = banqueFacade;
-        }
-
-        public String getDecouvertAutorise() {
-            return decouvertAutorise;
-        }
-
-        public void setDecouvertAutorise(String decouvertAutorise) {
-            this.decouvertAutorise = decouvertAutorise;
-        }
-
-        public Compte getCompte() {
-            if (banqueFacade.getConnectedUser() instanceof Gestionnaire) {
-                return compteField;
-            }
-            return null;
-        }
-
-        public void setCompte(Compte compte) {
-            this.compteField = compte;
-        }
-
-        public String changementDecouvert() {
-            if (!(compteField instanceof CompteAvecDecouvert)) {
-                return "ERROR";
-            }
-            try {
-                // CORRECTION : Vérifier null/empty avant parsing
-                if (decouvertAutorise == null || decouvertAutorise.trim().isEmpty()) {
-                    return "ERROR";
-                }
-                double dec = Double.parseDouble(decouvertAutorise.trim());
-                banqueFacade.changeDecouvert((CompteAvecDecouvert) compteField, dec);
-                return "SUCCESS";
-            } catch (NumberFormatException e) {
-                return "ERROR";
-            } catch (IllegalFormatException e) {
-                return "NEGATIVEOVERDRAFT";
-            } catch (IllegalOperationException e) {
-                return "INCOMPATIBLEOVERDRAFT";
-            }
-        }
     }
 }

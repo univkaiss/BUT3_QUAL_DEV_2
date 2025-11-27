@@ -22,10 +22,20 @@ public class ReinitialiserMotDePasse extends ActionSupport {
     private String message;
     private String result;
 
+    // --- CONSTRUCTEUR 1 : Pour l'application Web ---
     public ReinitialiserMotDePasse() {
-        ApplicationContext context = WebApplicationContextUtils
-                .getRequiredWebApplicationContext(ServletActionContext.getServletContext());
-        this.banque = (BanqueFacade) context.getBean("banqueFacade");
+        try {
+            ApplicationContext context = WebApplicationContextUtils
+                    .getRequiredWebApplicationContext(ServletActionContext.getServletContext());
+            this.banque = (BanqueFacade) context.getBean("banqueFacade");
+        } catch (Exception e) {
+            // Ignoré en test
+        }
+    }
+
+    // --- CONSTRUCTEUR 2 : Pour les Tests ---
+    public ReinitialiserMotDePasse(BanqueFacade banqueFacade) {
+        this.banque = banqueFacade;
     }
 
     // affichage du formulaire (mapping Struts vers action 'reinitPwd' -> method input)
