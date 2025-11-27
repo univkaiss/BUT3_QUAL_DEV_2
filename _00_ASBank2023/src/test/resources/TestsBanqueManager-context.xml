@@ -40,9 +40,9 @@
 		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
 		<property name="url"
-			value="jdbc:mysql://devbdd.iutmetz.univ-lorraine.fr:3306/brahmia6u_test" />
-		<property name="username" value="brahmia6u_appli" />
-		<property name="password" value="32113491" />
+				  value="jdbc:mysql://mysql-db:3306/notre_base" />
+		<property name="username" value="kabano" />
+		<property name="password" value="pass123" />
 		<!-- Nécessaire, sinon les test se font quand même -->
 		<property name="defaultAutoCommit" value="false" />
 	</bean>
