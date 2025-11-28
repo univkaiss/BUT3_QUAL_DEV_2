@@ -198,52 +198,25 @@ public class TestDetailCompte {
     // ========== Tests debit - ERROR (format) ==========
 
     @Test
-    public void debit_invalidNumber_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compte);
-        action.setMontant("abc");
+    public void debit_shouldReturnError_whenInputIsInvalid() throws Exception {
+        // Liste des cas à tester : lettres, null, vide, caractères spéciaux
+        String[] invalidInputs = {"abc", null, "", "100$"};
 
-        String res = action.debit();
+        for (String input : invalidInputs) {
+            // IMPORTANT : On efface l'historique des appels précédents pour que le verify(never) soit juste
+            clearInvocations(banqueFacade);
 
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).debiter(any(), anyDouble());
+            when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+            action.setCompte(compte);
+            action.setMontant(input);
+
+            String res = action.debit();
+
+            assertEquals("Devrait retourner ERROR pour l'entrée : " + input, "ERROR", res);
+            verify(banqueFacade, never()).debiter(any(), anyDouble());
+        }
     }
 
-    @Test
-    public void debit_nullMontant_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compte);
-        action.setMontant(null);
-
-        String res = action.debit();
-
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).debiter(any(), anyDouble());
-    }
-
-    @Test
-    public void debit_emptyMontant_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compte);
-        action.setMontant("");
-
-        String res = action.debit();
-
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).debiter(any(), anyDouble());
-    }
-
-    @Test
-    public void debit_specialCharacters_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compte);
-        action.setMontant("100$");
-
-        String res = action.debit();
-
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).debiter(any(), anyDouble());
-    }
 
     // ========== Tests debit - Exceptions ==========
 
@@ -315,39 +288,23 @@ public class TestDetailCompte {
     // ========== Tests credit - ERROR (format) ==========
 
     @Test
-    public void credit_invalidNumber_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compte);
-        action.setMontant("xyz");
+    public void credit_shouldReturnError_whenInputIsInvalid() throws Exception {
+        // Liste des cas à tester
+        String[] invalidInputs = {"xyz", null, ""};
 
-        String res = action.credit();
+        for (String input : invalidInputs) {
+            // On nettoie l'historique du mock
+            clearInvocations(banqueFacade);
 
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).crediter(any(), anyDouble());
-    }
+            when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+            action.setCompte(compte);
+            action.setMontant(input);
 
-    @Test
-    public void credit_nullMontant_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compte);
-        action.setMontant(null);
+            String res = action.credit();
 
-        String res = action.credit();
-
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).crediter(any(), anyDouble());
-    }
-
-    @Test
-    public void credit_emptyMontant_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compte);
-        action.setMontant("");
-
-        String res = action.credit();
-
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).crediter(any(), anyDouble());
+            assertEquals("Devrait retourner ERROR pour l'entrée : " + input, "ERROR", res);
+            verify(banqueFacade, never()).crediter(any(), anyDouble());
+        }
     }
 
     // ========== Tests credit - Exceptions ==========

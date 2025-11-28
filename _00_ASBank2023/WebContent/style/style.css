@@ -27,6 +27,8 @@ td
 table>thead
 {
 	background-color: rgb(0,255,255);
+	/* Ajout explicite de la couleur noire pour assurer le contraste sur le cyan */
+	color: black;
 }
 table>thead>tr>td
 {
@@ -43,16 +45,21 @@ table>tbody>tr>td
 .success
 {
 	background-color: rgb(0,255,0);
+	/* CORRECTION : On force le texte en noir pour garantir le contraste sur le vert fluo */
+	color: black;
 }
 .failure
 {
-	background-color:red;
-	color:white;
+	/* CORRECTION : On remplace 'red' par un rouge plus sombre (#b30000)
+       pour que le texte blanc soit lisible (Ratio > 4.5) */
+	background-color: #b30000;
+	color: white;
 }
 .soldeNegatif
 {
 	font-weight: bold;
-	color: red;
+	/* CORRECTION : Idem, on utilise un rouge plus sombre pour la lisibilité sur fond blanc */
+	color: #b30000;
 }
 footer
 {

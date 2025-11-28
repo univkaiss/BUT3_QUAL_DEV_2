@@ -40,7 +40,7 @@ public class TestConnect {
     }
 
     @Test
-    public void testLoginSuccess() throws Exception {
+    public void testLoginSuccess() {
         connect.setUserCde("user123");
         connect.setUserPwd("password");
         when(banqueFacade.tryLogin("user123", "password")).thenReturn(LoginConstants.USER_IS_CONNECTED);
@@ -52,7 +52,7 @@ public class TestConnect {
     }
 
     @Test
-    public void testLoginSuccessManager() throws Exception {
+    public void testLoginSuccessManager()  {
         connect.setUserCde("manager123");
         connect.setUserPwd("managerPass");
         when(banqueFacade.tryLogin("manager123", "managerPass")).thenReturn(LoginConstants.MANAGER_IS_CONNECTED);
@@ -64,7 +64,7 @@ public class TestConnect {
     }
 
     @Test
-    public void testLoginFailedInvalidCredentials() throws Exception {
+    public void testLoginFailedInvalidCredentials()  {
         connect.setUserCde("user123");
         connect.setUserPwd("wrongPassword");
         when(banqueFacade.tryLogin("user123", "wrongPassword")).thenReturn(LoginConstants.LOGIN_FAILED);
@@ -98,7 +98,7 @@ public class TestConnect {
     }
 
     @Test
-    public void testLoginWithWhitespaceUserCode() throws Exception {
+    public void testLoginWithWhitespaceUserCode()  {
         connect.setUserCde("  user123  ");
         connect.setUserPwd("password");
         when(banqueFacade.tryLogin("user123", "password")).thenReturn(LoginConstants.USER_IS_CONNECTED);
@@ -110,7 +110,7 @@ public class TestConnect {
     }
 
     @Test
-    public void testLoginWithException() throws Exception {
+    public void testLoginWithException()  {
         connect.setUserCde("user123");
         connect.setUserPwd("password");
         when(banqueFacade.tryLogin("user123", "password")).thenThrow(new RuntimeException("Database error"));
@@ -122,7 +122,7 @@ public class TestConnect {
     }
 
     @Test
-    public void testLoginWithUnknownResult() throws Exception {
+    public void testLoginWithUnknownResult()  {
         connect.setUserCde("user123");
         connect.setUserPwd("password");
         when(banqueFacade.tryLogin("user123", "password")).thenReturn(999);

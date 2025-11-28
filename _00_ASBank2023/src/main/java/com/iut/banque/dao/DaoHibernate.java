@@ -3,6 +3,7 @@ package com.iut.banque.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hibernate.Session;
@@ -23,10 +24,10 @@ import com.iut.banque.security.PasswordHasherCompact;
 
 /**
  * Implémentation de IDao utilisant Hibernate.
- *
+
  * Les transactions sont gérées par Spring et utilise le transaction manager
  * défini dans l'application Context.
- *
+
  * Par défaut, la propagation des transactions est REQUIRED, ce qui signifie que
  * si une transaction est déjà commencée elle va être réutilisée. Cela est utile
  * pour les tests unitaires de la DAO.
@@ -169,7 +170,8 @@ public class DaoHibernate implements IDao {
 
 
 		if (!storedPassword.contains(":")) {
-			LOGGER.info("Mode compatibilité : comparaison en clair pour " + userId);
+
+			LOGGER.log(Level.INFO, "Mode compatibilité : comparaison en clair pour {0}", userId);
 			return userPwd.equals(storedPassword);
 		}
 

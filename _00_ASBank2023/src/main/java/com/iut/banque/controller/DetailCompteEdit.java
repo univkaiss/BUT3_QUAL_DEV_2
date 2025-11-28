@@ -11,6 +11,8 @@ public class DetailCompteEdit extends DetailCompte {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(DetailCompteEdit.class.getName());
 	private String decouvertAutorise;
+	private static final String RESULT_ERROR = "ERROR";
+
 
     // --- CONSTRUCTEUR 1 : Pour l'application Web ---
     public DetailCompteEdit() {
@@ -34,18 +36,19 @@ public class DetailCompteEdit extends DetailCompte {
 
 	public String changementDecouvert() {
 		if (!(getCompte() instanceof CompteAvecDecouvert)) {
-			return "ERROR";
+			return RESULT_ERROR; // Remplacé ici (1)
 		}
-        if (decouvertAutorise == null || decouvertAutorise.trim().isEmpty()) {
-            return "ERROR";
-        }
+		if (decouvertAutorise == null || decouvertAutorise.trim().isEmpty()) {
+			return RESULT_ERROR; // Remplacé ici (2)
+		}
 		try {
 			Double decouvert = Double.parseDouble(decouvertAutorise);
 			banque.changeDecouvert((CompteAvecDecouvert) getCompte(), decouvert);
 			return "SUCCESS";
 		} catch (NumberFormatException nfe) {
+			// Note : Sonar risque aussi de te demander de remplacer ce printStackTrace par un LOGGER
 			nfe.printStackTrace();
-			return "ERROR";
+			return RESULT_ERROR; // Remplacé ici (3)
 		} catch (IllegalFormatException e) {
 			return "NEGATIVEOVERDRAFT";
 		} catch (IllegalOperationException e) {

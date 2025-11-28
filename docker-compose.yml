@@ -25,7 +25,7 @@ services:
       # C'est ICI que vos scripts sont injectés dans le Docker pour créer les tables
       - ./_00_ASBank2023/script:/docker-entrypoint-initdb.d
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - banque-network
 

@@ -319,7 +319,7 @@ public class TestListeCompteManager {
     // ========== Tests ordres d'appels multiples ==========
 
     @Test
-    public void deleteUser_multipleCalls_shouldUpdateUserInfo() throws Exception {
+    public void deleteUser_multipleCalls_shouldUpdateUserInfo()  {
         Client client2 = mock(Client.class);
         when(client.getIdentity()).thenReturn("USER_A");
         when(client2.getIdentity()).thenReturn("USER_B");
@@ -334,7 +334,7 @@ public class TestListeCompteManager {
     }
 
     @Test
-    public void deleteAccount_multipleCalls_shouldUpdateCompteInfo() throws Exception {
+    public void deleteAccount_multipleCalls_shouldUpdateCompteInfo()  {
         Compte compte2 = mock(Compte.class);
         when(compte.getNumeroCompte()).thenReturn("ACC-X");
         when(compte2.getNumeroCompte()).thenReturn("ACC-Y");

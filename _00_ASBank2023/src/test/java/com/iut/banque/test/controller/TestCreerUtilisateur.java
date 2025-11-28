@@ -423,7 +423,7 @@ public class TestCreerUtilisateur {
     }
 
     @Test
-    public void creationUtilisateur_multipleCalls_shouldPreserveLastMessage() throws Exception {
+    public void creationUtilisateur_multipleCalls_shouldPreserveLastMessage() {
         action.setUserId("user1");
         action.setClient(true);
         action.setUserPwd("pwd");

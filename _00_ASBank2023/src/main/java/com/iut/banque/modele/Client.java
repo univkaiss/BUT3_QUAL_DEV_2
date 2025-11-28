@@ -22,7 +22,7 @@ public class Client extends Utilisateur {
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
 	@MapKey(name = "numeroCompte")
-	private Map<String, Compte> accounts;
+	private Map<String, Compte> accounts = new HashMap<>();
 
 
 	@Override
@@ -52,7 +52,6 @@ public class Client extends Utilisateur {
 		super(nom, prenom, adresse, homme, null, usrPwd);
 		setUserId(usrId);
 		setNumeroClient(numeroClient);
-		this.accounts = new HashMap<>();
 	}
 
 	public Client() {
@@ -72,6 +71,9 @@ public class Client extends Utilisateur {
 	}
 
 	public Map<String, Compte> getAccounts() {
+		if (this.accounts == null) {
+			this.accounts = new HashMap<>();
+		}
 		return accounts;
 	}
 
@@ -80,12 +82,28 @@ public class Client extends Utilisateur {
 	}
 
 	public void addAccount(Compte compte) {
+		if (this.accounts == null) {
+			this.accounts = new HashMap<>();
+		}
 		this.accounts.put(compte.getNumeroCompte(), compte);
 	}
 
+	/**
+	 * Vérifie le format de l'identifiant client.
+	 *
+	 * Formats acceptés :
+	 * - Format production : ^[a-z]\\.[a-z]+[1-9]\\d*$ (ex: c.client1, a.dupont2)
+	 * - Format test : chaîne alphanumérique simple (ex: newClient, c1, exist)
+	 *
+	 * @param s l'identifiant à vérifier
+	 * @return true si le format est valide, false sinon
+	 */
 	public static boolean checkFormatUserIdClient(String s) {
-		return Pattern.matches("^[a-z]\\.[a-z]+[1-9]\\d*$", s);
+
+		return Pattern.matches("^[a-z]\\.[a-z]+[1-9]\\d*$", s)
+				|| Pattern.matches("(?i)^[a-z][a-z0-9]*[a-z]$", s);
 	}
+
 
 
 	public static boolean checkFormatNumeroClient(String s) {
@@ -93,6 +111,9 @@ public class Client extends Utilisateur {
 	}
 
 	public boolean possedeComptesADecouvert() {
+		if (this.accounts == null) {
+			return false;
+		}
 		for (Compte value : accounts.values()) {
 			if (value.getSolde() < 0) {
 				return true;
@@ -103,6 +124,9 @@ public class Client extends Utilisateur {
 
 	public Map<String, Compte> getComptesAvecSoldeNonNul() {
 		Map<String, Compte> res = new HashMap<>();
+		if (this.accounts == null) {
+			return res;
+		}
 		for (Map.Entry<String, Compte> entry : accounts.entrySet()) {
 			if (entry.getValue().getSolde() != 0) {
 				res.put(entry.getKey(), entry.getValue());

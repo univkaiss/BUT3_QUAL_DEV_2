@@ -3,7 +3,7 @@ package com.iut.banque.test.controller;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.After;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +21,7 @@ public class TestReinitialiserMotDePasse {
     @Mock
     private BanqueFacade banqueFacade;
 
-    private AutoCloseable mocks;
+
     private ReinitialiserMotDePasse action;
 
     @Before
@@ -54,7 +54,7 @@ public class TestReinitialiserMotDePasse {
     }
 
     @Test
-    public void submit_emptyUserId_shouldReturnInput() throws Exception {
+    public void submit_emptyUserId_shouldReturnInput()  {
         action.setUserId("   ");
         action.setNewPassword("password123");
 
@@ -65,7 +65,7 @@ public class TestReinitialiserMotDePasse {
     }
 
     @Test
-    public void submit_missingPassword_shouldReturnInput() throws Exception {
+    public void submit_missingPassword_shouldReturnInput()  {
         action.setUserId("user1");
         action.setNewPassword(null);
 

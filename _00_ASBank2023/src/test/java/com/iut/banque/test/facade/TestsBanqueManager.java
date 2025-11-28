@@ -32,7 +32,7 @@ public class TestsBanqueManager {
 
     @Before
     public void setUp() {
-        // Pas besoin d'initialisation complexe, @InjectMocks s'occupe d'injecter la DAO dans le BanqueManager
+        bm.setDao(dao);// Pas besoin d'initialisation complexe, @InjectMocks s'occupe d'injecter la DAO dans le BanqueManager
     }
 
     @Test
@@ -153,7 +153,7 @@ public class TestsBanqueManager {
         // On simule qu'il n'y a qu'un seul gestionnaire
         Map<String, Gestionnaire> managers = new HashMap<>();
         Gestionnaire admin = mock(Gestionnaire.class);
-        when(admin.getUserId()).thenReturn("admin");
+
         managers.put("admin", admin);
 
         when(dao.getAllGestionnaires()).thenReturn(managers);

@@ -36,6 +36,7 @@
 				</configuration>
 			</plugin>
 
+
 			<!-- Jacoco -->
 			<plugin>
 				<groupId>org.jacoco</groupId>

@@ -26,22 +26,26 @@ public class DetailCompte extends ActionSupport {
 	private String error;
 	protected transient Compte compte;
 
-    // --- CONSTRUCTEUR 1 : Pour l'application Web ---
-    public DetailCompte() {
-        LOGGER.info("In Constructor from DetailCompte class");
-        try {
-            ApplicationContext context = WebApplicationContextUtils
-                    .getRequiredWebApplicationContext(ServletActionContext.getServletContext());
-            this.banque = (BanqueFacade) context.getBean("banqueFacade");
-        } catch (Exception e) {
-            // Ignoré en test
-        }
-    }
 
-    // --- CONSTRUCTEUR 2 : Pour les Tests ---
-    public DetailCompte(BanqueFacade banqueFacade) {
-        this.banque = banqueFacade;
-    }
+	// AJOUTE CETTE LIGNE :
+	private static final String RESULT_ERROR = "ERROR";
+
+	// --- CONSTRUCTEUR 1 : Pour l'application Web ---
+	public DetailCompte() {
+		LOGGER.info("In Constructor from DetailCompte class");
+		try {
+			ApplicationContext context = WebApplicationContextUtils
+					.getRequiredWebApplicationContext(ServletActionContext.getServletContext());
+			this.banque = (BanqueFacade) context.getBean("banqueFacade");
+		} catch (Exception e) {
+			// Ignoré en test
+		}
+	}
+
+	// --- CONSTRUCTEUR 2 : Pour les Tests ---
+	public DetailCompte(BanqueFacade banqueFacade) {
+		this.banque = banqueFacade;
+	}
 
 	public String getError() {
 		switch (error) {
@@ -73,6 +77,11 @@ public class DetailCompte extends ActionSupport {
 	}
 
 	public Compte getCompte() {
+		// Vérification si compte est null
+		if (this.compte == null) {
+			return null;
+		}
+
 		if (banque.getConnectedUser() instanceof Gestionnaire
 				|| (banque.getConnectedUser() instanceof Client
 				&& ((Client) banque.getConnectedUser()).getAccounts().containsKey(compte.getNumeroCompte()))) {
@@ -86,13 +95,19 @@ public class DetailCompte extends ActionSupport {
 	}
 
 	public String debit() {
+		// Vérification si montant est null ou vide
+		if (this.montant == null || this.montant.trim().isEmpty()) {
+			LOGGER.warning("Montant null ou vide");
+			return RESULT_ERROR; // Remplacé ici
+		}
+
 		Compte currentCompte = getCompte();
 		try {
 			banque.debiter(currentCompte, Double.parseDouble(montant.trim()));
 			return "SUCCESS";
 		} catch (NumberFormatException e) {
 			LOGGER.severe("Montant invalide : " + e.getMessage());
-			return "ERROR";
+			return RESULT_ERROR; // Remplacé ici
 		} catch (InsufficientFundsException ife) {
 			LOGGER.warning("Fonds insuffisants : " + ife.getMessage());
 			return "NOTENOUGHFUNDS";
@@ -103,13 +118,19 @@ public class DetailCompte extends ActionSupport {
 	}
 
 	public String credit() {
+		// Vérification si montant est null ou vide
+		if (this.montant == null || this.montant.trim().isEmpty()) {
+			LOGGER.warning("Montant null ou vide");
+			return RESULT_ERROR; // Remplacé ici
+		}
+
 		Compte currentCompte = getCompte();
 		try {
 			banque.crediter(currentCompte, Double.parseDouble(montant.trim()));
 			return "SUCCESS";
 		} catch (NumberFormatException e) {
 			LOGGER.severe("Montant invalide : " + e.getMessage());
-			return "ERROR";
+			return RESULT_ERROR; // Remplacé ici
 		} catch (IllegalFormatException e) {
 			LOGGER.warning("Montant négatif : " + e.getMessage());
 			return NEGATIVE_AMOUNT;

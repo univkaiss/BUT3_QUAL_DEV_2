@@ -2,6 +2,7 @@ package com.iut.banque.test.controller;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.clearInvocations;
 
 import org.junit.After;
 import org.junit.Before;
@@ -152,63 +153,26 @@ public class TestDetailCompteEdit {
     // ========== Tests changementDecouvert - ERROR (format invalide) ==========
 
     @Test
-    public void changementDecouvert_invalidNumberFormat_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compteAvecDecouvert);
-        action.setDecouvertAutorise("abc");
+    public void changementDecouvert_shouldReturnError_whenInputIsInvalid() throws Exception {
+        // Liste de toutes les entrées invalides à tester
+        String[] invalidInputs = {"abc", "", null, "100$", "100.50.25"};
 
-        String res = action.changementDecouvert();
+        for (String input : invalidInputs) {
+            // Nettoyage des interactions précédentes pour que verify(never) fonctionne correctement à chaque tour
+            clearInvocations(banqueFacade);
 
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
-    }
+            when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
+            action.setCompte(compteAvecDecouvert);
+            action.setDecouvertAutorise(input);
 
-    @Test
-    public void changementDecouvert_emptyString_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compteAvecDecouvert);
-        action.setDecouvertAutorise("");
+            String res = action.changementDecouvert();
 
-        String res = action.changementDecouvert();
+            // Assertion avec un message pour identifier l'input qui échoue si jamais ça arrive
+            assertEquals("Devrait retourner ERROR pour l'entrée : " + input, "ERROR", res);
 
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
-    }
-
-    @Test
-    public void changementDecouvert_null_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compteAvecDecouvert);
-        action.setDecouvertAutorise(null);
-
-        String res = action.changementDecouvert();
-
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
-    }
-
-    @Test
-    public void changementDecouvert_specialCharacters_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compteAvecDecouvert);
-        action.setDecouvertAutorise("100$");
-
-        String res = action.changementDecouvert();
-
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
-    }
-
-    @Test
-    public void changementDecouvert_multipleDecimalPoints_shouldReturnError() throws Exception {
-        when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(compteAvecDecouvert);
-        action.setDecouvertAutorise("100.50.25");
-
-        String res = action.changementDecouvert();
-
-        assertEquals("ERROR", res);
-        verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
+            // Vérification que la méthode du modèle n'a jamais été appelée
+            verify(banqueFacade, never()).changeDecouvert(any(), anyDouble());
+        }
     }
 
     // ========== Tests changementDecouvert - NEGATIVEOVERDRAFT ==========

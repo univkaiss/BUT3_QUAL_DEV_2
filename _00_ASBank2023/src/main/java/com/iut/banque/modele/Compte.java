@@ -17,13 +17,13 @@ import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.InsufficientFundsException;
 
 /**
- * Classe repr�sentant un compte quelconque.
- * 
- * La strat�gie d'héritage choisie est SINGLE_TABLE. Cela signifie que tous les
+ * Classe représentant un compte quelconque.
+ *
+ * La stratégie d'héritage choisie est SINGLE_TABLE. Cela signifie que tous les
  * objets de cette classe et des classes filles sont enregistrés dans une seule
  * table dans la base de donnée. Les champs non utilisés par la classe sont
  * NULL.
- * 
+ *
  * Lors d'un chargement d'un objet appartenant à une des classes filles, le type
  * de l'objet est choisi grâce à la colonne "avecDecouvert" (c'est une colonne
  * de discrimination).
@@ -36,7 +36,7 @@ public abstract class Compte {
 
 	/**
 	 * L'identifiant unique du compte.
-	 * 
+	 *
 	 * Utilisé comme clé primaire dans la base de données.
 	 */
 	@Id
@@ -51,7 +51,7 @@ public abstract class Compte {
 
 	/**
 	 * Le propriétaire du compte.
-	 * 
+	 *
 	 * L'association "many-to-one" signifie que le compte n'a qu'un seul
 	 * propriétaire mais que chaque client peut avoir plusieurs compte.
 	 */
@@ -61,7 +61,7 @@ public abstract class Compte {
 
 	/**
 	 * Getter du solde.
-	 * 
+	 *
 	 * @return double, le solde du compte
 	 */
 	public double getSolde() {
@@ -70,7 +70,7 @@ public abstract class Compte {
 
 	/**
 	 * Setter du solde.
-	 * 
+	 *
 	 * @param solde
 	 *            : le solde à changer
 	 */
@@ -80,7 +80,7 @@ public abstract class Compte {
 
 	/**
 	 * Getter du numéro de compte.
-	 * 
+	 *
 	 * @return String, le numéro du compte
 	 */
 	public String getNumeroCompte() {
@@ -89,7 +89,7 @@ public abstract class Compte {
 
 	/**
 	 * Getter du client.
-	 * 
+	 *
 	 * @return Client, le client
 	 */
 	public Client getOwner() {
@@ -98,7 +98,7 @@ public abstract class Compte {
 
 	/**
 	 * Setter du numéro de compte.
-	 * 
+	 *
 	 * @param numeroCompte
 	 *            : le numéro de compte à changer
 	 * @throws IllegalFormatException
@@ -117,7 +117,7 @@ public abstract class Compte {
 	/**
 	 * Constructeur de Compte avec tous les champs de la classe comme
 	 * paramètres.
-	 * 
+	 *
 	 * Il est préférable d'utiliser une classe implémentant IDao pour créer un
 	 * objet au lieu d'appeler ce constructeur.
 	 */
@@ -130,9 +130,9 @@ public abstract class Compte {
 
 	/**
 	 * Constructeur de Client sans parametres.
-	 * 
+	 *
 	 * Nécessaire pour Hibernate.
-	 * 
+	 *
 	 * Il est préférable d'utiliser une classe implémentant IDao pour créer un
 	 * objet au lieu d'appeler ce constructeur.
 	 */
@@ -142,7 +142,7 @@ public abstract class Compte {
 
 	/**
 	 * Débite du compte le montant passé en paramètre.
-	 * 
+	 *
 	 * @param montant
 	 *            : le montant à débiter
 	 * @throws InsufficientFundsException
@@ -152,7 +152,7 @@ public abstract class Compte {
 
 	/**
 	 * Crédite sur le compte le montant passé en paramètre.
-	 * 
+	 *
 	 * @param montant
 	 *            : le montant à créditer
 	 * @throws IllegalFormatException
@@ -167,9 +167,9 @@ public abstract class Compte {
 
 	/**
 	 * Getter pour le nom de la classe.
-	 * 
+	 *
 	 * Utilisé pour déterminer le type de compte dans les pages JSP.
-	 * 
+	 *
 	 * @return String, le nom de la classe de l'objet
 	 */
 	public String getClassName() {
@@ -178,7 +178,7 @@ public abstract class Compte {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -188,16 +188,22 @@ public abstract class Compte {
 
 	/**
 	 * Fonction qui va vérifier le string d'entrée si il correspond au format
-	 * attendu pour un numéro de compte, à savoir XX0000000000 avec X des
-	 * lettres de A à Z et 0 des chiffres (Par exemple FR0123456789)
-	 * 
+	 * attendu pour un numéro de compte.
+	 *
+	 * Formats acceptés :
+	 * - XX0000000000 : 2 lettres majuscules suivies de 10 chiffres (ex: FR0123456789, NW1010010001)
+	 * - XXX000 ou plus : 3+ lettres majuscules suivies de chiffres (ex: CSD001, CPT001)
+	 *
 	 * @param s
 	 *            : String d'entrée qu'on veut comparer au format attendu
 	 * @return boolean : résultat de la comparaison. True si le format est
 	 *         correct, false sinon
 	 */
 	public static boolean checkFormatNumeroCompte(String s) {
-		return Pattern.matches("[A-Z]{2}\\d{10}", s);
+		// On retourne directement le résultat de la condition
+		return Pattern.matches("[A-Z]{2}\\d{10}", s)
+				|| Pattern.matches("[A-Z]{3}\\d{3}", s);
 	}
+
 
 }

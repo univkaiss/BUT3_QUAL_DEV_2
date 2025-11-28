@@ -7,8 +7,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.iut.banque.facade.BanqueFacade;
 import com.opensymphony.xwork2.ActionSupport;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
+
 import java.util.logging.Logger;
 
 public class ReinitialiserMotDePasse extends ActionSupport {
@@ -39,12 +38,13 @@ public class ReinitialiserMotDePasse extends ActionSupport {
     }
 
     // affichage du formulaire (mapping Struts vers action 'reinitPwd' -> method input)
+    @Override
     public String input() {
         return INPUT;
     }
 
     // traitement (mapping Struts vers action 'doReinitPwd' -> method submit)
-    public String submit() throws PasswordHashingException {
+    public String submit()  {
         if (userId == null || userId.trim().isEmpty() || newPassword == null || newPassword.isEmpty()) {
             addActionError("Identifiant et nouveau mot de passe requis.");
             return INPUT;
