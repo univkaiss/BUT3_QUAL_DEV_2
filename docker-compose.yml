@@ -18,7 +18,7 @@ services:
     container_name: mysql-db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: notre_base  # Nom de la BDD utilisé dans vos scripts
+      MYSQL_DATABASE: allard19u_coa_banque  # Nom de la BDD utilisé dans vos scripts
       MYSQL_USER: kabano
       MYSQL_PASSWORD: pass123
     volumes:

@@ -90,7 +90,7 @@ public class Client extends Utilisateur {
 
 	/**
 	 * Vérifie le format de l'identifiant client.
-	 *
+
 	 * Formats acceptés :
 	 * - Format production : ^[a-z]\\.[a-z]+[1-9]\\d*$ (ex: c.client1, a.dupont2)
 	 * - Format test : chaîne alphanumérique simple (ex: newClient, c1, exist)
