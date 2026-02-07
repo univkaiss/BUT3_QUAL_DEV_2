@@ -13,6 +13,6 @@ public abstract class LoginConstants {
 
 	// Constructeur privé pour empêcher l'instanciation
 	private LoginConstants() {
-		// Non-instanciable
+		// Non-instanciable test tes test
 	}
 }
