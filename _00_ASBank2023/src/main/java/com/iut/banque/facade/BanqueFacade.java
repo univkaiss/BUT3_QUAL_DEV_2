@@ -165,6 +165,7 @@ public class BanqueFacade {
 		if (loginManager.getConnectedUser() instanceof Gestionnaire) {
 			banqueManager.deleteAccount(compte);
 		}
+
 	}
 
 	/**
