@@ -72,7 +72,7 @@
 						</s:else>
 						<s:if test="(!aDecouvert)">
 							<s:url action="editAccount" var="editAccount">
-								<s:param name="compte">
+								<s:param name="numeroCompte">
 									<s:property value="value.numeroCompte" />
 								</s:param>
 							</s:url>

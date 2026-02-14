@@ -136,6 +136,7 @@
 
 		<action name="editAccount" class="com.iut.banque.controller.DetailCompteEdit">
 			<result name="SUCCESS">/JSP/DetailCompteEdit.jsp</result>
+			<result name="input">/JSP/DetailCompteEdit.jsp</result>
 			<result>/JSP/DetailCompteEdit.jsp</result>
 		</action>
 
@@ -160,6 +161,7 @@
 				<param name="compte">%{compte}</param>
 				<param name="error">INCOMPATIBLEOVERDRAFT</param>
 			</result>
+			<result name="input">/JSP/DetailCompteEdit.jsp</result>
 		</action>
 
 		

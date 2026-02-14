@@ -25,6 +25,8 @@
 			<s:submit name="Retour" value="Retour" />
 		</s:form>
 	</div>
+
+	<s:actionerror />
 	<p>
 		Type de compte :
 		<s:if test="%{compte.className == \"CompteAvecDecouvert\"}">
@@ -49,18 +51,22 @@
 		</s:if>
 		<br />
 	</p>
-	<s:form name="formOperation" action="creditActionEdit" method="post">
+	<s:form action="creditActionEdit" method="post">
 		<s:textfield label="Montant" name="montant" />
-		<input type="hidden" name="compte"
-			value="<s:property value='compte.numeroCompte' />">
+		<s:hidden name="numeroCompte" value="%{compte.numeroCompte}" />
 		<s:submit value="Crediter" />
-		<s:submit value="Debiter" action="debitActionEdit" />
+	</s:form>
+
+	<s:form action="debitActionEdit" method="post">
+		<s:textfield label="Montant" name="montant" />
+		<s:hidden name="numeroCompte" value="%{compte.numeroCompte}" />
+		<s:submit value="Debiter" />
 	</s:form>
 
 	<s:if test="%{compte.className == \"CompteAvecDecouvert\"}">
 		<s:form name="formChangeDecouvertAutorise"
 			action="changerDecouvertAutoriseAction" method="post">
-			<input type="hidden" name="compte"
+			<input type="hidden" name="numeroCompte"
 				value="<s:property value='compte.numeroCompte' />">
 			<s:textfield label="Découvert autorisé" name="decouvertAutorise"
 				value="%{compte.decouvertAutorise}" />

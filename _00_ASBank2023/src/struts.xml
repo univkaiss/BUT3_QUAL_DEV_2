@@ -33,6 +33,8 @@
 			<result name="LOGIN">Login.jsp</result>
 			<result name="MULTI">Multiple.jsp</result>
 			<result name="FAILED">Failed.jsp</result>
+			<!-- Gérer les retours 'input' (validation / conversion) pour les actions dynamiques -->
+			<result name="input">/JSP/{2}.jsp</result>
 		</action>
 
 		<!-- Permet un retour 'static' vers la page principal pour les clients -->
@@ -136,6 +138,7 @@
 
 		<action name="editAccount" class="com.iut.banque.controller.DetailCompteEdit">
 			<result name="SUCCESS">/JSP/DetailCompteEdit.jsp</result>
+			<result name="input">/JSP/DetailCompteEdit.jsp</result>
 			<result>/JSP/DetailCompteEdit.jsp</result>
 		</action>
 
@@ -160,6 +163,7 @@
 				<param name="compte">%{compte}</param>
 				<param name="error">INCOMPATIBLEOVERDRAFT</param>
 			</result>
+			<result name="input">/JSP/DetailCompteEdit.jsp</result>
 		</action>
 
 

@@ -5,6 +5,8 @@
       <map>
         <entry key="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP/CreerCompte.jsp" value="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP" />
         <entry key="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP/CreerUtilisateur.jsp" value="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP" />
+        <entry key="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP/DetailCompteEdit.jsp" value="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP" />
+        <entry key="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP/ListeCompteManager.jsp" value="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP" />
         <entry key="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP/ResultatSuppression.jsp" value="file://$PROJECT_DIR$/_00_ASBank2023/WebContent/JSP" />
       </map>
     </option>

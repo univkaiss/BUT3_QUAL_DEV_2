@@ -34,8 +34,12 @@ public class DetailCompteEdit extends DetailCompte {
 		this.decouvertAutorise = decouvertAutorise;
 	}
 
+	public void setNumeroCompte(String numeroCompte) {this.compte = banque.getCompte(numeroCompte);
+	}
+
 	public String changementDecouvert() {
 		if (!(getCompte() instanceof CompteAvecDecouvert)) {
+			LOGGER.warning("Le compte n'est pas un CompteAvecDecouvert");
 			return RESULT_ERROR; // Remplacé ici (1)
 		}
 		if (decouvertAutorise == null || decouvertAutorise.trim().isEmpty()) {
@@ -46,7 +50,6 @@ public class DetailCompteEdit extends DetailCompte {
 			banque.changeDecouvert((CompteAvecDecouvert) getCompte(), decouvert);
 			return "SUCCESS";
 		} catch (NumberFormatException nfe) {
-			// Note : Sonar risque aussi de te demander de remplacer ce printStackTrace par un LOGGER
 			nfe.printStackTrace();
 			return RESULT_ERROR; // Remplacé ici (3)
 		} catch (IllegalFormatException e) {
@@ -54,5 +57,9 @@ public class DetailCompteEdit extends DetailCompte {
 		} catch (IllegalOperationException e) {
 			return "INCOMPATIBLEOVERDRAFT";
 		}
+	}
+
+	public void editAccount( CompteAvecDecouvert compte) {
+		this.compte = compte;
 	}
 }
