@@ -33,22 +33,16 @@
 			 list="#{true:'Client',false:'Manager'}" value="true" />
 	<s:textfield label="Numéro de client" name="numClient" />
 
-	<s:submit name="submit" value="submit"/>
+	<s:submit value="submit"/>
 </s:form>
 <s:form name="myForm" action="retourTableauDeBordManager" method="POST">
 	<s:submit name="Retour" value="Retour" />
 </s:form>
 
-<s:if test="result != null && result == 'SUCCESS' && message != null && !message.isEmpty()">
-	<div class="success">
-		<s:property value="message" />
-	</div>
-</s:if>
-<s:elseif test="result != null && result == 'ERROR' && message != null && !message.isEmpty()">
-	<div class="failure">
-		<s:property value="message" />
-	</div>
-</s:elseif>
+<s:actionmessage cssClass="success" />
+<s:actionerror cssClass="failure" />
+
+
 </body>
 <jsp:include page="/JSP/Footer.jsp" />
 </html>

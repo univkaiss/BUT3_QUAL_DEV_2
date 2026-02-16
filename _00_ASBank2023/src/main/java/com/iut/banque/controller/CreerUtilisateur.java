@@ -5,9 +5,7 @@ import org.apache.struts2.ServletActionContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.iut.banque.exceptions.IllegalFormatException;
-import com.iut.banque.exceptions.IllegalOperationException;
-import com.iut.banque.exceptions.TechnicalException;
+
 import com.iut.banque.facade.BanqueFacade;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -21,7 +19,7 @@ public class CreerUtilisateur extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(CreerUtilisateur.class.getName());
-	private static final String ERROR = "ERROR";
+
 
 	private transient BanqueFacade banque; // marquée transient
 	private String userId;
@@ -34,6 +32,8 @@ public class CreerUtilisateur extends ActionSupport {
 	private String numClient;
 	private String message;
 	private String result;
+
+	static final String ERREUR = "ERROR";
 
     // --- CONSTRUCTEUR 1 : Pour l'application Web ---
     public CreerUtilisateur() {
@@ -94,39 +94,44 @@ public class CreerUtilisateur extends ActionSupport {
 		return creerUtilisateur();
 	}
 
-	public String creerUtilisateur(){
-		this.result = null;
-		this.message = null;
+	public String creerUtilisateur() {
 		try {
-
 			if (client) {
-
 				banque.createClient(userId, userPwd, nom, prenom, adresse, male, numClient);
 			} else {
-
 				banque.createManager(userId, userPwd, nom, prenom, adresse, male);
 			}
 
-			this.message = String.format("L'utilisateur '%s' a bien été créé.", userId);
 			this.result = "SUCCESS";
+			this.message = String.format("L'utilisateur '%s' a bien été créé.", userId);
+			addActionMessage(this.message);
 			return "SUCCESS";
 
-		} catch (IllegalOperationException e) {
+		} catch (com.iut.banque.exceptions.IllegalOperationException e) {
+			this.result = ERREUR;
 			this.message = "L'identifiant a déjà été assigné à un autre utilisateur de la banque.";
-			this.result = ERROR;
-			return ERROR;
-		} catch (TechnicalException e) {
+			addActionError(this.message);
+			return ERREUR;
+		} catch (com.iut.banque.exceptions.TechnicalException e) {
+			this.result = ERREUR;
 			this.message = "Le numéro de client est déjà assigné à un autre client.";
-			this.result = ERROR;
-			return ERROR;
+			addActionError(this.message);
+			return ERREUR;
 		} catch (IllegalArgumentException e) {
+			this.result = ERREUR;
 			this.message = "Le format de l'identifiant est incorrect.";
-			this.result = ERROR;
-			return ERROR;
-		} catch (IllegalFormatException e) {
+			addActionError(this.message);
+			return ERREUR;
+		} catch (com.iut.banque.exceptions.IllegalFormatException e) {
+			this.result = ERREUR;
 			this.message = "Format du numéro de client incorrect.";
-			this.result = ERROR;
-			return ERROR;
+			addActionError(this.message);
+			return ERREUR;
+		} catch (Exception e) {
+			this.result = ERREUR;
+			this.message = "Une erreur inattendue est survenue.";
+			addActionError(this.message);
+			return ERREUR;
 		}
 	}
 

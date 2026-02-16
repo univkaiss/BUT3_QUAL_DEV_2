@@ -293,20 +293,8 @@
 		<!-- Ajout d'un utilisateur -->
 		<action name="ajoutUtilisateur" class="com.iut.banque.controller.CreerUtilisateur"
 			method="execute">
-			<result name="SUCCESS" type="redirectAction">
-				<param name="actionName">urlAjoutUtilisateur</param>
-				<param name="result">SUCCESS</param>
-				<param name="message">%{message}</param>
-			</result>
-			<result name="ERROR" type="redirectAction">
-				<param name="actionName">urlAjoutUtilisateur</param>
-				<param name="result">ERROR</param>
-				<param name="message">%{message}</param>
-			</result>
-			<result type="redirectAction">
-				<param name="actionName">urlAjoutUtilisateur</param>
-				<param name="result">VANILLA</param>
-			</result>
+			<result name="SUCCESS">/JSP/CreerUtilisateur.jsp</result>
+			<result name="ERROR">/JSP/CreerUtilisateur.jsp</result>
 			<result name="input">/JSP/CreerUtilisateur.jsp</result>
 		</action>
 
