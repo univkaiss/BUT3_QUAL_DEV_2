@@ -77,8 +77,6 @@ public abstract class Utilisateur {
 
 
 	public void setUserId(String userId) throws IllegalFormatException {
-		// Ne pas valider si appelé depuis une sous-classe qui a sa propre validation
-		// La validation de base est simplement de vérifier que ce n'est pas null
 		if (userId == null) {
 			throw new IllegalFormatException("UserId invalide");
 		}

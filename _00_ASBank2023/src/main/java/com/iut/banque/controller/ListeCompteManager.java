@@ -70,8 +70,12 @@ public class ListeCompteManager extends ActionSupport {
 		return compte;
 	}
 
-	public void setCompte(Compte compte) {
-		this.compte = compte;
+	public void setCompte(Compte numeroCompte) {
+		this.compte = numeroCompte;
+	}
+
+	public void setCompte(String numeroCompte) {
+		this.compte = banque.getCompte(numeroCompte);
 	}
 
 	public Client getClient() {
@@ -80,6 +84,11 @@ public class ListeCompteManager extends ActionSupport {
 
 	public void setClient(Client client) {
 		this.client = client;
+	}
+
+	public void setClient(String numeroClient) {
+		banque.loadClients();
+		this.client = banque.getAllClients().get(numeroClient);
 	}
 
 	public String getUserInfo() {

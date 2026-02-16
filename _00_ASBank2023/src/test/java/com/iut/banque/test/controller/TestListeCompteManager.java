@@ -290,7 +290,7 @@ public class TestListeCompteManager {
 
     @Test
     public void setClient_null_shouldStoreNull() {
-        action.setClient(null);
+        action.setClient((Client)null);
         assertNull(action.getClient());
     }
 
@@ -302,7 +302,7 @@ public class TestListeCompteManager {
 
     @Test
     public void setCompte_null_shouldStoreNull() {
-        action.setCompte(null);
+        action.setCompte((Compte)null);
         assertNull(action.getCompte());
     }
 

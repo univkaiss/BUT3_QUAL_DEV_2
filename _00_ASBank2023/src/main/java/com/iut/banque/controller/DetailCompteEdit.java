@@ -34,7 +34,19 @@ public class DetailCompteEdit extends DetailCompte {
 		this.decouvertAutorise = decouvertAutorise;
 	}
 
-	public void setNumeroCompte(String numeroCompte) {this.compte = banque.getCompte(numeroCompte);
+	public void setNumeroCompte(String numeroCompte) {
+		this.compte = banque.getCompte(numeroCompte);
+	}
+
+	/**
+	 * Méthode execute() appelée par défaut pour charger le compte
+	 * Utilisée notamment lors du clic sur "éditer un compte"
+	 */
+	public String execute() {
+		if (compte != null) {
+			return "SUCCESS";
+		}
+		return "INPUT";
 	}
 
 	public String changementDecouvert() {

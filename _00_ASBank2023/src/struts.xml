@@ -146,21 +146,21 @@
 				method="changementDecouvert">
 			<result name="SUCCESS" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 			</result>
 			<result name="ERROR" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">TECHNICAL</param>
 			</result>
 			<result name="NEGATIVEOVERDRAFT" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">NEGATIVEOVERDRAFT</param>
 			</result>
 			<result name="INCOMPATIBLEOVERDRAFT" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">INCOMPATIBLEOVERDRAFT</param>
 			</result>
 			<result name="input">/JSP/DetailCompteEdit.jsp</result>
@@ -240,16 +240,16 @@
 				method="credit">
 			<result name="SUCCESS" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 			</result>
 			<result name="ERROR" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">TECHNICAL</param>
 			</result>
 			<result name="NEGATIVEAMOUNT" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">NEGATIVEAMOUNT</param>
 			</result>
 		</action>
@@ -259,21 +259,21 @@
 				method="debit">
 			<result name="SUCCESS" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 			</result>
 			<result name="ERROR" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">TECHNICAL</param>
 			</result>
 			<result name="NOTENOUGHFUNDS" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">BUSINESS</param>
 			</result>
 			<result name="NEGATIVEAMOUNT" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">NEGATIVEAMOUNT</param>
 			</result>
 		</action>

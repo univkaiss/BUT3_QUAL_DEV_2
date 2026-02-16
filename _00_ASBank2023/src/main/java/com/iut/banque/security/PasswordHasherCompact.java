@@ -76,7 +76,7 @@ public final class PasswordHasherCompact {
         return matches;
     }
 
-    // Petit utilitaire de test local (optionnel)
+
     public static void main(String[] args) throws Exception {
         char[] pw = "MonMotDePasse123!".toCharArray();
         String stored = createHashString(pw);
