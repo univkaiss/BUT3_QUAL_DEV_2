@@ -1,76 +1,331 @@
-body
-{
-	font-family : 'Segoe UI', Arial, sans-serif;
-	text-align : center;
-}
-h1
-{
-	text-align : center;
-	border : 5px outset blue;
-	margin-left: 20px;
-	margin-right: 20px;
-}
-table
-{
-	margin-right: auto;
-	margin-left: auto;
-	padding : 5px;
-	text-align: center;
-	border: 3px outset blue;
-}
-td
-{
-	border : 1px solid black;
-	text-align: center
+/* --- Variables CSS --- */
+:root {
+	--primary-color: #4a3dbf;
+	--primary-hover: #3a2d9f;
+	--success-color: #28a745;
+	--error-color: #dc3545;
+	--bg-color: #f5f5f5;
+	--text-color: #333;
+	--border-color: #9370db;
+	--border-radius: 4px;
 }
 
-table>thead
-{
-	background-color: rgb(0,255,255);
-	/* Ajout explicite de la couleur noire pour assurer le contraste sur le cyan */
-	color: black;
+/* --- Reset & Base --- */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
-table>thead>tr>td
-{
-	padding: 5px;
-	border: 5px double blue;
+
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background-color: var(--bg-color);
+	color: var(--text-color);
+	line-height: 1.5;
+	padding: 20px;
+}
+
+/* --- Titres --- */
+h1 {
+	text-align: center;
+	padding: 15px;
+	margin: 20px auto;
+	background: white;
+	border: 3px solid var(--border-color);
+	border-radius: var(--border-radius);
+	font-size: 1.8rem;
 	font-weight: bold;
-	font-size: 150%;
+	max-width: 800px;
 }
-table>tbody>tr>td
-{
-	padding:5px;
-	border: 1px solid blue;
+
+h2 {
+	font-size: 1.3rem;
+	margin: 20px 0 10px;
+	color: var(--text-color);
 }
-.success
-{
-	background-color: rgb(0,255,0);
-	/* CORRECTION : On force le texte en noir pour garantir le contraste sur le vert fluo */
-	color: black;
+
+/* --- Bouton Logout (coin supérieur gauche) --- */
+.btnLogout {
+	position: absolute;
+	top: 20px;
+	left: 20px;
 }
-.failure
-{
-	/* CORRECTION : On remplace 'red' par un rouge plus sombre (#b30000)
-       pour que le texte blanc soit lisible (Ratio > 4.5) */
-	background-color: #b30000;
+
+.btnLogout input[type="submit"] {
+	background-color: var(--primary-color);
 	color: white;
+	padding: 8px 16px;
+	border: 2px solid var(--border-color);
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 0.95rem;
+	font-weight: 600;
+	transition: all 0.2s ease;
 }
-.soldeNegatif
-{
-	font-weight: bold;
-	/* CORRECTION : Idem, on utilise un rouge plus sombre pour la lisibilité sur fond blanc */
-	color: #b30000;
+
+.btnLogout input[type="submit"]:hover {
+	background-color: var(--primary-hover);
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-footer
-{
-	margin-top: 10px;
-	font-style: italic;
-	border: 1px solid black;
-	box-shadow: 3px 3px 5px #888888;
+
+/* --- Formulaires compacts --- */
+form {
+	max-width: 600px;
+	margin: 20px auto;
+	background: white;
+	padding: 25px;
+	border: 3px solid var(--border-color);
+	border-radius: var(--border-radius);
 }
-.btnLogout
-{
-	position:absolute;
-	top : 90px;
-	left : 30px;
+
+/* --- Formulaires sans cadre (Retour, Mot de passe oublié) --- */
+form[action*="retour"],
+form[action*="Retour"],
+form[action*="reinitPwd"] {
+	background: transparent;
+	border: none;
+	padding: 0;
+	margin: 10px auto;
+}
+
+table.wwFormTable {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+table.wwFormTable td {
+	padding: 8px 10px;
+	border: none;
+}
+
+table.wwFormTable td.tdLabel {
+	text-align: right;
+	font-weight: 600;
+	width: 35%;
+	padding-right: 15px;
+}
+
+/* --- Champs de saisie --- */
+input[type="text"],
+input[type="password"],
+select {
+	width: 100%;
+	padding: 8px 10px;
+	border: 2px solid #ccc;
+	border-radius: var(--border-radius);
+	font-size: 0.95rem;
+	transition: border-color 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus {
+	border-color: var(--primary-color);
+	outline: none;
+	box-shadow: 0 0 0 2px rgba(74, 61, 191, 0.1);
+}
+
+/* --- Radio buttons --- */
+input[type="radio"] {
+	margin: 0 5px 0 15px;
+	cursor: pointer;
+}
+
+label {
+	cursor: pointer;
+	margin-right: 10px;
+}
+
+/* --- Boutons --- */
+input[type="submit"],
+button {
+	background-color: var(--primary-color);
+	color: white;
+	padding: 10px 20px;
+	border: 2px solid var(--border-color);
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-size: 0.95rem;
+	font-weight: 600;
+	margin: 10px 5px;
+	transition: all 0.2s ease;
+}
+
+input[type="submit"]:hover,
+button:hover {
+	background-color: var(--primary-hover);
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* --- Bouton Retour --- */
+form[action*="retour"] input[type="submit"],
+input[value="Retour"] {
+	background-color: #6c757d;
+	border-color: #5a6268;
+}
+
+form[action*="retour"] input[type="submit"]:hover,
+input[value="Retour"]:hover {
+	background-color: #5a6268;
+}
+
+/* --- Messages de succès/erreur --- */
+.success {
+	background-color: #d4edda;
+	border: 2px solid #28a745;
+	color: #155724;
+	padding: 12px 20px;
+	margin: 20px auto;
+	border-radius: var(--border-radius);
+	text-align: center;
+	font-weight: 600;
+	max-width: 800px;
+}
+
+.failure {
+	background-color: #f8d7da;
+	border: 2px solid #dc3545;
+	color: #721c24;
+	padding: 12px 20px;
+	margin: 20px auto;
+	border-radius: var(--border-radius);
+	text-align: center;
+	font-weight: 600;
+	max-width: 800px;
+}
+
+.errorMessage,
+.error {
+	color: #721c24;
+	background-color: #f8d7da;
+	border: 2px solid #dc3545;
+	padding: 10px 15px;
+	border-radius: var(--border-radius);
+	margin: 10px 0;
+}
+
+/* --- Tables de données --- */
+table:not(.wwFormTable) {
+	width: 100%;
+	max-width: 1000px;
+	margin: 20px auto;
+	border-collapse: collapse;
+	background: white;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+table:not(.wwFormTable) th {
+	background-color: var(--primary-color);
+	color: white;
+	padding: 12px;
+	text-align: left;
+	font-weight: 600;
+	border: 1px solid var(--border-color);
+}
+
+table:not(.wwFormTable) td {
+	padding: 10px 12px;
+	border: 1px solid #ddd;
+}
+
+table:not(.wwFormTable) tr:nth-child(even) {
+	background-color: #f9f9f9;
+}
+
+table:not(.wwFormTable) tr:hover {
+	background-color: #f0f0f0;
+}
+
+/* --- Footer --- */
+footer {
+	text-align: center;
+	margin-top: 40px;
+	padding: 15px;
+	color: #666;
+	font-size: 0.9rem;
+	border-top: 1px solid #ddd;
+}
+
+/* --- Centrage des formulaires d'action --- */
+div[style*="text-align: center"],
+.center {
+	text-align: center;
+	margin: 20px auto;
+}
+
+/* --- Phrases descriptives --- */
+body > p,
+body > div > p {
+	font-size: 1.1rem;
+	color: var(--text-color);
+	margin: 20px auto;
+	font-weight: 500;
+	text-align: center;
+	max-width: 800px;
+}
+
+/* --- Liens du tableau de bord --- */
+a {
+	color: var(--primary-color);
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 1.05rem;
+	transition: all 0.2s ease;
+	display: block;
+	text-align: center;
+	margin: 10px auto;
+}
+
+a:hover {
+	color: var(--primary-hover);
+	text-decoration: underline;
+}
+
+/* --- Page d'accueil --- */
+.accueil-container {
+	text-align: center;
+	max-width: 800px;
+	margin: 40px auto;
+}
+
+.accueil-container img {
+	display: block;
+	margin: 30px auto;
+	max-width: 500px;
+	height: auto;
+}
+
+.accueil-container a {
+	display: inline-block;
+	background-color: var(--primary-color);
+	color: white;
+	padding: 12px 30px;
+	margin: 10px;
+	border: 2px solid var(--border-color);
+	border-radius: var(--border-radius);
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 1.1rem;
+	transition: all 0.2s ease;
+}
+
+.accueil-container a:hover {
+	background-color: var(--primary-hover);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+	text-decoration: none;
+}
+
+/* --- Bouton Information --- */
+input[value="Information"],
+button[value="Information"] {
+	background-color: #17a2b8;
+	border-color: #138496;
+}
+
+input[value="Information"]:hover,
+button[value="Information"]:hover {
+	background-color: #138496;
 }

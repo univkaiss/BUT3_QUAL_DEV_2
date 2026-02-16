@@ -7,7 +7,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Page de connexion</title>
-	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="../style/style.css?v=3">
 
 </head>
 

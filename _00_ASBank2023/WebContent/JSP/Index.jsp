@@ -7,10 +7,10 @@
 <html lang="fr">
 <script type="text/javascript">
 	function DisplayMessage() {
-		alert('Ce TD a été donné pour les AS dans le cadre du cours de CO Avancé (Promotion 2017-2018)');
+		alert('Ce TD a été donné pour les AS dans le cadre du cours de CO Avancé (Promotion 2025-2026)');
 	}
 </script>
-<link rel="stylesheet" href="../style/style.css">
+<link rel="stylesheet" href="../style/style.css?v=3">
 <link href="../style/favicon.ico" rel="icon"
 	type="image/x-icon" />
 <head>
@@ -18,20 +18,21 @@
 <title>Application IUT Bank</title>
 </head>
 <body>
-	<h1>Bienvenue sur l'application IUT Bank 2023</h1>
-	<p>
+	<div class="accueil-container">
+		<h1>Bienvenue sur l'application IUT Bank 2026</h1>
 
 		<img src="<c:url value='../images/LogoIUT.png' />" alt="logo" />
 
-	</p>
-	<input type="button" value="Information" name="info"
-		onClick="DisplayMessage()" />
-	<p style="font-size: 2em">
-		<s:url value="/redirectionLogin.action" var="goLogin" />
-		<a href="${goLogin}">Page de Login</a>
+		<div>
+			<input type="button" value="Information" name="info"
+				onClick="DisplayMessage()" />
+		</div>
 
-
-	</p>
+		<div>
+			<s:url value="/redirectionLogin.action" var="goLogin" />
+			<a href="${goLogin}">Page de Login</a>
+		</div>
+	</div>
 </body>
 <jsp:include page="/JSP/Footer.jsp" />
 </html>

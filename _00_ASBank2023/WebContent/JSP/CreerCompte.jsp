@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Formulaire de création d'un compte</title>
-	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="../style/style.css?v=3">
 <script src="/_00_ASBank2023/js/jquery.js"></script>
 <script src="/_00_ASBank2023/js/jsCreerCompte.js"></script>
 </head>

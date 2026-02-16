@@ -7,13 +7,13 @@
 <s:if test="%{#bool_val == true}">
 	TRUE</s:if>
 <s:else>
-	FALSE</s:else>-->
+	</s:else>
 
 <html lang="fr">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Liste des comptes de la banque</title>
-	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="../style/style.css?v=3">
 </head>
 <body>
 <div class="btnLogout">

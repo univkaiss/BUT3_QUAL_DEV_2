@@ -7,7 +7,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Formulaire de création d'utilisateur</title>
-	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="../style/style.css?v=3">
 <script src="../js/jquery.js"></script>
 <script src="../js/jsCreerUtilisateur.js"></script>
 </head>
@@ -39,16 +39,15 @@
 		<s:submit name="Retour" value="Retour" />
 	</s:form>
 
-	<s:if test="(result == \"SUCCESS\")">
+	<s:if test="result == 'SUCCESS' && message != null && !message.isEmpty()">
 		<div class="success">
 			<s:property value="message" />
 		</div>
 	</s:if>
-	<s:else>
+	<s:elseif test="result == 'ERROR' && message != null && !message.isEmpty()">
 		<div class="failure">
 			<s:property value="message" />
 		</div>
-	</s:else>
-</body>
+	</s:elseif>
 <jsp:include page="/JSP/Footer.jsp" />
 </html>

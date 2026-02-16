@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Mot de passe oublié</title>
+    <link rel="stylesheet" href="../style/style.css?v=3">
 </head>
 <body>
 <h1>Réinitialiser le mot de passe</h1>

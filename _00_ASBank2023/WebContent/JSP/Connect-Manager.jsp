@@ -6,7 +6,7 @@
 <head>
 <title>Tableau de bord - Gestionnaire</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="../style/style.css?v=3">
 </head>
 <body>
 	<div class="btnLogout">
@@ -16,7 +16,7 @@
 	</div>
 	<h1>Tableau de bord - Gestionnaire</h1>
 	
-	<p>Bienvenue <b><s:property value="connectedUser.prenom" /> <s:property value="connectedUser.nom" /></b> !</p>
+	<p>Bienvenue <b><s:property value="connectedUser.prenom" /> <s:property value="connectedUser.nom" /></b> </p>
 	<p>Que voulez vous faire ?</p>
 	<p>
 		<s:url action="listeCompteManager" var="urlListeCompteManager" >

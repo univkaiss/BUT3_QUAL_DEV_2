@@ -7,7 +7,7 @@
 <head>
 	<title>Résultat de la suppression</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link rel="stylesheet" href="../style/style.css">
+		<link rel="stylesheet" href="../style/style.css?v=3">
 
 </head>
 <body>

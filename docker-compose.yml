@@ -11,6 +11,8 @@ services:
       - mysql-db                  # Attend que la BDD soit prête
     networks:
       - banque-network
+    volumes:
+      - ./_00_ASBank2023/WebContent/style:/usr/local/tomcat/webapps/_00_ASBank2023/style
 
   # 2. La base de données MySQL
   mysql-db:
