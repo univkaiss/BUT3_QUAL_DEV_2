@@ -71,31 +71,48 @@
 							<td class="soldeNegatif"><s:property value="value.solde" /></td>
 						</s:else>
 						<s:if test="(!aDecouvert)">
-							<s:url action="editAccount" var="editAccount">
-								<s:param name="numeroCompte">
-									<s:property value="value.numeroCompte" />
+							<td>
+								<s:url action="editAccount" var="editAccount">
+									<s:param name="numeroCompte">
+										<s:property value="value.numeroCompte" />
+									</s:param>
+								</s:url>
+								<s:a href="%{editAccount}">
+									<img src="../images/pen.png"
+										 style="width: 20px; height: 20px"
+										 alt="Editer ce compte"
+										 title="Editer ce compte" />
+								</s:a>
+							</td>
+
+							<td>
+								<s:url action="deleteAccount" var="deleteAccount">
+									<s:param name="numeroCompte">
+										<s:property value="value.numeroCompte" />
+									</s:param>
+									<s:param name="numeroClient">
+										<s:property value="value.owner.userId" />
+									</s:param>
+								</s:url>
+								<s:a href="%{deleteAccount}" onclick="return confirm('Voulez-vous vraiment supprimer ce compte ?')">
+									<img src="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/512/trash-.png"
+										 style="width: 20px; height: 20px"
+										 alt="Supprimer ce compte"
+										 title="Supprimer ce compte" />
+								</s:a>
+							</td>
+						</s:if>
+					</tr>
+					<tr>
+						<td colspan="5">
+
+							<s:url action="urlAddAccount" var="urlAddAccount">
+								<s:param name="numeroClient">
+									<s:property value="value.userId" />
 								</s:param>
 							</s:url>
-							<td><s:a href="%{editAccount}">
-								<img
-										src="http://freeflaticons.com/wp-content/uploads/2014/10/write-copy-14138051958gn4k.png"
-										style="width: 20px; height: 20px" alt="Editer ce compte"
-										title="Editer ce compte" />
-							</s:a></td>
-							<td><s:url action="deleteAccount" var="deleteAccount">
-								<s:param name="compte">
-									<s:property value="value.numeroCompte" />
-								</s:param>
-								<s:param name="client">
-									<s:property value="value.owner.userId" />
-								</s:param>
-							</s:url> <s:a href="%{deleteAccount}" onclick="return confirm('Voulez-vous vraiment supprimer ce compte ?')">
-								<img
-										src="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/512/trash-.png"
-										style="width: 20px; height: 20px" alt="Supprimer ce compte"
-										title="Supprimer ce compte" />
-							</s:a></td>
-						</s:if>
+							<s:a href="%{urlAddAccount}">[ + Ajouter un compte ]</s:a>
+						</td>
 					</tr>
 				</s:if>
 			</s:iterator>

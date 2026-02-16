@@ -137,7 +137,7 @@ public class TestDetailCompte {
     @Test
     public void getCompte_asClientWithNullCompte_shouldReturnNull() {
         when(banqueFacade.getConnectedUser()).thenReturn(client);
-        action.setCompte(null);
+        action.setCompte((Compte)null);
 
         Compte result = action.getCompte();
 
@@ -147,7 +147,7 @@ public class TestDetailCompte {
     @Test
     public void getCompte_asGestionnaireWithNullCompte_shouldReturnNull() {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(null);
+        action.setCompte((Compte)null);
         // Si compte est null, getCompte() renvoie null (ou crasherait s'il n'était pas protégé, mais on teste)
         Compte result = action.getCompte();
 

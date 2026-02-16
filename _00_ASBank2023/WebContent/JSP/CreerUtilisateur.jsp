@@ -5,49 +5,50 @@
 <html lang="fr">
 
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Formulaire de création d'utilisateur</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Formulaire de création d'utilisateur</title>
 	<link rel="stylesheet" href="../style/style.css?v=3">
-<script src="../js/jquery.js"></script>
-<script src="../js/jsCreerUtilisateur.js"></script>
+	<script src="../js/jquery.js"></script>
+	<script src="../js/jsCreerUtilisateur.js"></script>
 </head>
 
 <body>
 
-	<div class="btnLogout">
-		<s:form name="myForm" action="logout" method="POST">
-			<s:submit name="Retour" value="Logout" />
-		</s:form>
-	</div>
-	<h1>Créer un nouvel utilisateur</h1>
-	<s:form id="myForm" name="myForm" action="ajoutUtilisateur"
+<div class="btnLogout">
+	<s:form name="myForm" action="logout" method="POST">
+		<s:submit name="Retour" value="Logout" />
+	</s:form>
+</div>
+<h1>Créer un nouvel utilisateur</h1>
+<s:form id="myForm" name="myForm" action="ajoutUtilisateur"
 		method="POST">
-		<s:textfield label="Code utilisateur" name="userId" />
-		<s:textfield label="Nom" name="nom" />
-		<s:textfield label="Prenom" name="prenom" />
-		<s:textfield label="Adresse" name="adresse" />
-		<s:password label="Password" name="userPwd" />
-		<s:radio label="Sexe" name="male" list="#{true:'Homme',false:'Femme'}"
-			value="true" />
-		<s:radio label="Type" name="client"
-				 list="#{true:'Client',false:'Manager'}" value="true" />
-		<s:textfield label="Numéro de client" name="numClient" />
+	<s:textfield label="Code utilisateur" name="userId" />
+	<s:textfield label="Nom" name="nom" />
+	<s:textfield label="Prenom" name="prenom" />
+	<s:textfield label="Adresse" name="adresse" />
+	<s:password label="Password" name="userPwd" />
+	<s:radio label="Sexe" name="male" list="#{true:'Homme',false:'Femme'}"
+			 value="true" />
+	<s:radio label="Type" name="client"
+			 list="#{true:'Client',false:'Manager'}" value="true" />
+	<s:textfield label="Numéro de client" name="numClient" />
 
-		<s:submit name="submit" value="submit"/>
-	</s:form>
-	<s:form name="myForm" action="retourTableauDeBordManager" method="POST">
-		<s:submit name="Retour" value="Retour" />
-	</s:form>
+	<s:submit name="submit" value="submit"/>
+</s:form>
+<s:form name="myForm" action="retourTableauDeBordManager" method="POST">
+	<s:submit name="Retour" value="Retour" />
+</s:form>
 
-	<s:if test="result == 'SUCCESS' && message != null && !message.isEmpty()">
-		<div class="success">
-			<s:property value="message" />
-		</div>
-	</s:if>
-	<s:elseif test="result == 'ERROR' && message != null && !message.isEmpty()">
-		<div class="failure">
-			<s:property value="message" />
-		</div>
-	</s:elseif>
+<s:if test="result == 'SUCCESS' && message != null && !message.isEmpty()">
+	<div class="success">
+		<s:property value="message" />
+	</div>
+</s:if>
+<s:elseif test="result == 'ERROR' && message != null && !message.isEmpty()">
+	<div class="failure">
+		<s:property value="message" />
+	</div>
+</s:elseif>
+</body>
 <jsp:include page="/JSP/Footer.jsp" />
 </html>

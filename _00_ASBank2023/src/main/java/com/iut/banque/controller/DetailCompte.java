@@ -90,8 +90,16 @@ public class DetailCompte extends ActionSupport {
 		return null;
 	}
 
-	public void setCompte(Compte compte) {
-		this.compte = compte;
+	public void setCompte(Compte numeroCompte) {
+		this.compte = numeroCompte;
+	}
+
+	public void setCompte(String numeroCompte) {
+		this.compte = banque.getCompte(numeroCompte);
+	}
+
+	public void setNumeroCompte(String numeroCompte) {
+		this.compte = banque.getCompte(numeroCompte);
 	}
 
 	public String debit() {

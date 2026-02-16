@@ -30,23 +30,23 @@ public class ListeCompteManager extends ActionSupport {
 	/**
 	 * Constructeur de la classe ListeCompteManager
 	 */
-    public ListeCompteManager() {
-        LOGGER.info("In Constructor from ListeCompteManager class");
-        try {
-            ApplicationContext context = WebApplicationContextUtils
-                    .getRequiredWebApplicationContext(ServletActionContext.getServletContext());
-            this.banque = (BanqueFacade) context.getBean("banqueFacade");
-        } catch (Exception e) {
-            // Ignoré en test
-        }
-    }
+	public ListeCompteManager() {
+		LOGGER.info("In Constructor from ListeCompteManager class");
+		try {
+			ApplicationContext context = WebApplicationContextUtils
+					.getRequiredWebApplicationContext(ServletActionContext.getServletContext());
+			this.banque = (BanqueFacade) context.getBean("banqueFacade");
+		} catch (Exception e) {
+			// Ignoré en test
+		}
+	}
 
-    /**
-     * Constructeur pour les tests (Nouveau)
-     */
-    public ListeCompteManager(BanqueFacade banqueFacade) {
-        this.banque = banqueFacade;
-    }
+	/**
+	 * Constructeur pour les tests (Nouveau)
+	 */
+	public ListeCompteManager(BanqueFacade banqueFacade) {
+		this.banque = banqueFacade;
+	}
 
 	/**
 	 * Méthode qui va renvoyer la liste de tous les clients sous forme de hashmap
@@ -74,7 +74,7 @@ public class ListeCompteManager extends ActionSupport {
 		this.compte = numeroCompte;
 	}
 
-	public void setCompte(String numeroCompte) {
+	public void setNumeroCompte(String numeroCompte) {
 		this.compte = banque.getCompte(numeroCompte);
 	}
 
@@ -86,7 +86,7 @@ public class ListeCompteManager extends ActionSupport {
 		this.client = client;
 	}
 
-	public void setClient(String numeroClient) {
+	public void setNumeroClient(String numeroClient) {
 		banque.loadClients();
 		this.client = banque.getAllClients().get(numeroClient);
 	}

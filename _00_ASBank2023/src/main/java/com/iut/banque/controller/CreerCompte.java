@@ -52,9 +52,16 @@ public class CreerCompte extends ActionSupport implements Serializable {
 		this.error = error;
 	}
 
+	public void setNumeroClient(String numeroClient) {
+		banque.loadClients();
+		this.client = (Client) banque.getAllClients().get(numeroClient);
+	}
+
 	public void setClient(Client client) {
 		this.client = client;
 	}
+
+
 
     public CreerCompte() {
         LOGGER.info("In Constructor from CreerCompte class");

@@ -77,15 +77,15 @@
 			<result name="SUCCESS" type="redirectAction">
 				<param name="actionName">urlResultatSuppression</param>
 				<param name="compteInfo">%{compteInfo}</param>
-				<param name="client">%{client.userId}</param>
+				<param name="numeroClient">%{client.userId}</param>
 				<!-- Account est un boolean qui indique si la suppression est sur un 
 					compte ou un utilisateur -->
 				<param name="account">true</param>
 			</result>
 			<result name="ERROR" type="redirectAction">
 				<param name="actionName">urlResultatSuppression</param>
-				<param name="compte">%{compte}</param>
-				<param name="client">%{client.userId}</param>
+				<param name="compteInfo">%{compteInfo}</param>
+				<param name="numeroClient">%{client.userId}</param>
 				<param name="errorMessage">TECHNICAL</param>
 				<!-- Account est un boolean qui indique si la suppression est sur un 
 					compte ou un utilisateur -->
@@ -93,8 +93,8 @@
 			</result>
 			<result name="NONEMPTYACCOUNT" type="redirectAction">
 				<param name="actionName">urlResultatSuppression</param>
-				<param name="compte">%{compte}</param>
-				<param name="client">%{client.userId}</param>
+				<param name="compteInfo">%{compteInfo}</param>
+				<param name="numeroClient">%{client.userId}</param>
 				<param name="errorMessage">NONEMPTYACCOUNT</param>
 				<!-- Account est un boolean qui indique si la suppression est sur un 
 					compte ou un utilisateur -->
@@ -133,6 +133,7 @@
 
 		<action name="urlResultatSuppression" class="com.iut.banque.controller.ResultatSuppression">
 			<result>/JSP/ResultatSuppression.jsp</result>
+			<result name="input">/JSP/ResultatSuppression.jsp</result>
 		</action>
 
 		<!-- Modification d'un compte par un manager -->
@@ -146,7 +147,7 @@
 		<action name="changerDecouvertAutoriseAction" class="com.iut.banque.controller.DetailCompteEdit"
 			method="changementDecouvert">
 			<result name="SUCCESS" type="redirectAction">
-				<param name="actionName">editAccount</param>
+				<param name="actionName">listeCompteManager</param>
 				<param name="compte">%{compte}</param>
 			</result>
 			<result name="ERROR" type="redirectAction">
@@ -173,7 +174,7 @@
 			method="creationCompte">
 			<result name="SUCCESS" type="redirectAction">
 				<param name="actionName">urlAddAccount</param>
-				<param name="client">%{client.userId}</param>
+				<param name="numeroClient">%{client.userId}</param>
 				<param name="error">false</param>
 				<param name="result">true</param>
 				<param name="compte">%{compte}</param>
@@ -181,14 +182,14 @@
 			</result>
 			<result name="NONUNIQUEID" type="redirectAction">
 				<param name="actionName">urlAddAccount</param>
-				<param name="client">%{client.userId}</param>
+				<param name="numeroClient">%{client.userId}</param>
 				<param name="error">true</param>
 				<param name="result">true</param>
 				<param name="message">NONUNIQUEID</param>
 			</result>
 			<result name="INVALIDFORMAT" type="redirectAction">
 				<param name="actionName">urlAddAccount</param>
-				<param name="client">%{client.userId}</param>
+				<param name="numeroClient">%{client.userId}</param>
 				<param name="error">true</param>
 				<param name="result">true</param>
 				<param name="message">INVALIDFORMAT</param>
@@ -201,38 +202,43 @@
 
 		<!-- Opération sur les comptes -->
 
-		<action name="creditAction" class="com.iut.banque.controller.DetailCompte"
-			method="credit">
-			<result name="SUCCESS">/JSP/DetailCompte.jsp</result>
+		<action name="creditAction" class="com.iut.banque.controller.DetailCompte" method="credit">
+			<result name="SUCCESS" type="redirectAction">
+				<param name="actionName">urlDetail</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
+			</result>
+			<result name="input">/JSP/DetailCompte.jsp</result>
 			<result name="ERROR" type="redirectAction">
 				<param name="actionName">urlDetail</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">TECHNICAL</param>
 			</result>
 			<result name="NEGATIVEAMOUNT" type="redirectAction">
 				<param name="actionName">urlDetail</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">NEGATIVEAMOUNT</param>
 			</result>
 		</action>
 
-
-		<action name="debitAction" class="com.iut.banque.controller.DetailCompte"
-			method="debit">
-			<result name="SUCCESS">/JSP/DetailCompte.jsp</result>
+		<action name="debitAction" class="com.iut.banque.controller.DetailCompte" method="debit">
+			<result name="SUCCESS" type="redirectAction">
+				<param name="actionName">urlDetail</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
+			</result>
+			<result name="input">/JSP/DetailCompte.jsp</result>
 			<result name="ERROR" type="redirectAction">
 				<param name="actionName">urlDetail</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">TECHNICAL</param>
 			</result>
 			<result name="NOTENOUGHFUNDS" type="redirectAction">
 				<param name="actionName">urlDetail</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">BUSINESS</param>
 			</result>
 			<result name="NEGATIVEAMOUNT" type="redirectAction">
 				<param name="actionName">urlDetail</param>
-				<param name="compte">%{compte}</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 				<param name="error">NEGATIVEAMOUNT</param>
 			</result>
 		</action>
@@ -240,17 +246,18 @@
 		<action name="creditActionEdit" class="com.iut.banque.controller.DetailCompteEdit"
 			method="credit">
 			<result name="SUCCESS" type="redirectAction">
-				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="actionName">listeCompteManager</param>
+				<param name="numero.Compte">%{numero.Compte}</param>
 			</result>
+			<result name="input">/JSP/DetailCompteEdit.jsp</result>
 			<result name="ERROR" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numero.Compte">%{numero.Compte}</param>
 				<param name="error">TECHNICAL</param>
 			</result>
 			<result name="NEGATIVEAMOUNT" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numero.Compte">%{numero.Compte}</param>
 				<param name="error">NEGATIVEAMOUNT</param>
 			</result>
 		</action>
@@ -259,22 +266,23 @@
 		<action name="debitActionEdit" class="com.iut.banque.controller.DetailCompteEdit"
 			method="debit">
 			<result name="SUCCESS" type="redirectAction">
-				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="actionName">listeCompteManager</param>
+				<param name="numero.Compte">%{numero.Compte}</param>
 			</result>
+			<result name="input">/JSP/DetailCompteEdit.jsp</result>
 			<result name="ERROR" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numero.Compte">%{numero.Compte}</param>
 				<param name="error">TECHNICAL</param>
 			</result>
 			<result name="NOTENOUGHFUNDS" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numero.Compte">%{numero.Compte}</param>
 				<param name="error">BUSINESS</param>
 			</result>
 			<result name="NEGATIVEAMOUNT" type="redirectAction">
 				<param name="actionName">editAccount</param>
-				<param name="compte">%{compte}</param>
+				<param name="numero.Compte">%{numero.Compte}</param>
 				<param name="error">NEGATIVEAMOUNT</param>
 			</result>
 		</action>
@@ -299,6 +307,7 @@
 		</action>
 
 		<action name="urlAjoutUtilisateur" class="com.iut.banque.controller.CreerUtilisateur">
+			<result name="SUCCESS">/JSP/CreerUtilisateur.jsp</result>
 			<result>/JSP/CreerUtilisateur.jsp</result>
 			<result name="ERROR">/JSP/CreerUtilisateur.jsp</result>
 		</action>

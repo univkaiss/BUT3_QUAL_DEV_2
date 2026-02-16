@@ -14,17 +14,17 @@ public class DetailCompteEdit extends DetailCompte {
 	private static final String RESULT_ERROR = "ERROR";
 
 
-    // --- CONSTRUCTEUR 1 : Pour l'application Web ---
-    public DetailCompteEdit() {
-        super();
-        LOGGER.info("======================================");
-        LOGGER.info("Dans le constructeur DetailCompteEdit");
-    }
+	// --- CONSTRUCTEUR 1 : Pour l'application Web ---
+	public DetailCompteEdit() {
+		super();
+		LOGGER.info("======================================");
+		LOGGER.info("Dans le constructeur DetailCompteEdit");
+	}
 
-    // --- CONSTRUCTEUR 2 : Pour les Tests ---
-    public DetailCompteEdit(BanqueFacade banqueFacade) {
-        super(banqueFacade);
-    }
+	// --- CONSTRUCTEUR 2 : Pour les Tests ---
+	public DetailCompteEdit(BanqueFacade banqueFacade) {
+		super(banqueFacade);
+	}
 
 	public String getDecouvertAutorise() {
 		return decouvertAutorise;
@@ -42,11 +42,12 @@ public class DetailCompteEdit extends DetailCompte {
 	 * Méthode execute() appelée par défaut pour charger le compte
 	 * Utilisée notamment lors du clic sur "éditer un compte"
 	 */
+	@Override
 	public String execute() {
 		if (compte != null) {
 			return "SUCCESS";
 		}
-		return "INPUT";
+		return "input";
 	}
 
 	public String changementDecouvert() {

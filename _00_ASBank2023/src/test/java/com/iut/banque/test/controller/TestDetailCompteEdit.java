@@ -129,7 +129,7 @@ public class TestDetailCompteEdit {
     @Test
     public void changementDecouvert_compteNull_shouldReturnError() throws Exception {
         when(banqueFacade.getConnectedUser()).thenReturn(gestionnaire);
-        action.setCompte(null);
+        action.setCompte((Compte)null);
         action.setDecouvertAutorise("100");
 
         String res = action.changementDecouvert();

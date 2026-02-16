@@ -19,8 +19,7 @@
 		<s:property value="client" />
 	</p>
 	<s:form id="myForm" name="myForm" action="addAccount" method="POST">
-		<input type="hidden" name="client"
-			value="<s:property value='client.userId' />">
+		<input type="hidden" name="numeroClient" value="<s:property value='client.userId' />">
 		<s:textfield label="Numéro de compte" name="numeroCompte" />
 		<s:radio label="Type" name="avecDecouvert"
 			list="#{false:'Compte sans découvert',true:'Compte avec découvert'}"

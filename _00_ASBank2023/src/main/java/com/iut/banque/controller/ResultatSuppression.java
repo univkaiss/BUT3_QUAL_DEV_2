@@ -61,6 +61,11 @@ public class ResultatSuppression extends ActionSupport {
 		this.client = client;
 	}
 
+	public void setNumeroClient(String numeroClient) {
+		// client juste affiché
+	}
+
+
 	/**
 	 * @return the compteInfo
 	 */

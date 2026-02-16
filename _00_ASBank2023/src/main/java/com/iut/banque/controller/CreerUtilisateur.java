@@ -80,8 +80,13 @@ public class CreerUtilisateur extends ActionSupport {
 	 * @return le status de l'action
 
 	 */
+
 	@Override
-	public String execute() {
+	public String execute(){
+		return creerUtilisateur();
+	}
+
+	public String creerUtilisateur(){
 		try {
 
 			if (client) {

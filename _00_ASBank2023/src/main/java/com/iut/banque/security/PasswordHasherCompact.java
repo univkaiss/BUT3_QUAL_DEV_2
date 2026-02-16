@@ -61,19 +61,24 @@ public final class PasswordHasherCompact {
         String[] parts = stored.split(":");
         if (parts.length != 3) return false;
 
-        int iterations = Integer.parseInt(parts[0]);
-        byte[] salt = Base64.getDecoder().decode(parts[1]);
-        byte[] storedHash = Base64.getDecoder().decode(parts[2]);
+        try {
+            int iterations = Integer.parseInt(parts[0]);
+            byte[] salt = Base64.getDecoder().decode(parts[1]);
+            byte[] storedHash = Base64.getDecoder().decode(parts[2]);
 
-        byte[] attemptedHash = pbkdf2(attemptedPassword, salt, iterations, storedHash.length * 8);
+            byte[] attemptedHash = pbkdf2(attemptedPassword, salt, iterations, storedHash.length * 8);
 
-        boolean matches = MessageDigest.isEqual(storedHash, attemptedHash);
+            boolean matches = MessageDigest.isEqual(storedHash, attemptedHash);
 
-        Arrays.fill(salt, (byte)0);
-        Arrays.fill(storedHash, (byte)0);
-        Arrays.fill(attemptedHash, (byte)0);
+            Arrays.fill(salt, (byte)0);
+            Arrays.fill(storedHash, (byte)0);
+            Arrays.fill(attemptedHash, (byte)0);
 
-        return matches;
+            return matches;
+        } catch (IllegalArgumentException e) {
+            // Erreur de décodage Base64 ou de parsing d'entier
+            return false;
+        }
     }
 
 
