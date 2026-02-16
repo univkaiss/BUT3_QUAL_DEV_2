@@ -17,6 +17,9 @@ public final class PasswordHasherCompact {
 
     private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
 
+
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     public static final int SALT_LENGTH = 6;
     public static final int ITERATIONS = 20000;
     public static final int KEY_LENGTH = 160;
@@ -24,9 +27,8 @@ public final class PasswordHasherCompact {
     private PasswordHasherCompact() {}
 
     private static byte[] generateSalt() {
-        SecureRandom sr = new SecureRandom();
         byte[] salt = new byte[SALT_LENGTH];
-        sr.nextBytes(salt);
+        SECURE_RANDOM.nextBytes(salt);
         return salt;
     }
 
@@ -76,11 +78,9 @@ public final class PasswordHasherCompact {
 
             return matches;
         } catch (IllegalArgumentException e) {
-            // Erreur de décodage Base64 ou de parsing d'entier
             return false;
         }
     }
-
 
     public static void main(String[] args) throws Exception {
         char[] pw = "MonMotDePasse123!".toCharArray();

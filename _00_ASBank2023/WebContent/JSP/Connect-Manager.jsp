@@ -35,11 +35,6 @@
 		</s:url>
 		<s:a href="%{urlAjoutUtilisateur}">Ajout d'un utilisateur</s:a>
 	</p>
-	<p>
-		<s:url action="urlAddAccount" var="urlAddAccount" >
-		</s:url>
-		<s:a href="%{urlAddAccount}">Ajout d'un compte</s:a>
-	</p>
 </body>
 <jsp:include page="/JSP/Footer.jsp" />
 </html>

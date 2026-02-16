@@ -238,7 +238,6 @@ public class BanqueFacade {
 
 	/**
 	 * L'utilisateur connecté doit être un getstionnaire
-	 *
 	 * Charge la banqueManager avec une map de tous les clients
 	 */
 	public void loadClients() {
@@ -256,6 +255,10 @@ public class BanqueFacade {
 	 */
 	public Compte getCompte(String idCompte) {
 		return banqueManager.getAccountById(idCompte);
+	}
+
+	public Map<String, Compte> getAccountsByClientId(String userId) {
+		return banqueManager.getAccountsByClientId(userId);
 	}
 
 	/**

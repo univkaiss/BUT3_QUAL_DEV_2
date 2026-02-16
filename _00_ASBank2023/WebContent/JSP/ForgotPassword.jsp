@@ -17,8 +17,8 @@
     <s:submit value="Appliquer" />
 </s:form>
 
-<form action="controller.Connect.login.action" method="get">
-    <input type="submit" value="Retour connexion" />
-</form>
+<s:form action="redirectionLogin" method="POST">
+    <s:submit value="Retour connexion" />
+</s:form>
 </body>
 </html>

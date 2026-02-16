@@ -68,6 +68,7 @@
 
 		<action name="listeCompteManager" class="com.iut.banque.controller.ListeCompteManager">
 			<result>/JSP/ListeCompteManager.jsp</result>
+			<result name="input">/JSP/ListeCompteManager.jsp</result>
 		</action>
 
 		<!-- Suppression de compte et d'utilisateur -->
@@ -147,8 +148,8 @@
 		<action name="changerDecouvertAutoriseAction" class="com.iut.banque.controller.DetailCompteEdit"
 			method="changementDecouvert">
 			<result name="SUCCESS" type="redirectAction">
-				<param name="actionName">listeCompteManager</param>
-				<param name="compte">%{compte}</param>
+				<param name="actionName">editAccount</param>
+				<param name="numeroCompte">%{compte.numeroCompte}</param>
 			</result>
 			<result name="ERROR" type="redirectAction">
 				<param name="actionName">editAccount</param>
@@ -197,6 +198,8 @@
 		</action>
 
 		<action name="urlAddAccount" class="com.iut.banque.controller.CreerCompte">
+			<result name="SUCCESS">/JSP/CreerCompte.jsp</result>
+			<result name="input">/JSP/CreerCompte.jsp</result>
 			<result>/JSP/CreerCompte.jsp</result>
 		</action>
 
@@ -304,12 +307,14 @@
 				<param name="actionName">urlAjoutUtilisateur</param>
 				<param name="result">VANILLA</param>
 			</result>
+			<result name="input">/JSP/CreerUtilisateur.jsp</result>
 		</action>
 
 		<action name="urlAjoutUtilisateur" class="com.iut.banque.controller.CreerUtilisateur">
 			<result name="SUCCESS">/JSP/CreerUtilisateur.jsp</result>
 			<result>/JSP/CreerUtilisateur.jsp</result>
 			<result name="ERROR">/JSP/CreerUtilisateur.jsp</result>
+			<result name="input">/JSP/CreerUtilisateur.jsp</result>
 		</action>
 
 		<action name="reinitPwd" class="com.iut.banque.controller.ReinitialiserMotDePasse" method="input">

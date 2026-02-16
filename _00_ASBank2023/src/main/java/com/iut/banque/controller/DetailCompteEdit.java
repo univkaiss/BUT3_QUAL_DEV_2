@@ -34,6 +34,7 @@ public class DetailCompteEdit extends DetailCompte {
 		this.decouvertAutorise = decouvertAutorise;
 	}
 
+	@Override
 	public void setNumeroCompte(String numeroCompte) {
 		this.compte = banque.getCompte(numeroCompte);
 	}

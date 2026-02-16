@@ -90,12 +90,25 @@ public class Connect extends ActionSupport {
 	}
 
 	public Map<String, Compte> getAccounts() {
-		return ((Client) banque.getConnectedUser()).getAccounts();
+		Client client = (Client) banque.getConnectedUser();
+		try {
+			Map<String, Compte> accountsFromDB = banque.getAccountsByClientId(client.getUserId());
+			if (accountsFromDB != null && !accountsFromDB.isEmpty()) {
+				return accountsFromDB;
+			}
+		} catch (Exception e) {
+			LOGGER.warning("Impossible de recharger les comptes depuis la DB : " + e.getMessage());
+		}
+		return client.getAccounts();
 	}
 
 	public String logout() {
 		LOGGER.info("Logging out");
 		banque.logout();
 		return "SUCCESS";
+	}
+
+	public String retourTableauBord() {
+		return SUCCESS;
 	}
 }

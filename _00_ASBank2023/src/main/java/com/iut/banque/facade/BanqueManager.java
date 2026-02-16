@@ -124,6 +124,10 @@ public class BanqueManager {
 		dao.updateAccount(compte);
 	}
 
+	public Map<String, Compte> getAccountsByClientId(String userId) {
+		return dao.getAccountsByClientId(userId);
+	}
+
 
 	public void updatePassword(String userId, String hashedPassword) throws IllegalArgumentException, TechnicalException {
 		try {

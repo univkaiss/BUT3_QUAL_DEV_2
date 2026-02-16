@@ -74,6 +74,14 @@ public class CreerUtilisateur extends ActionSupport {
 	public String getResult() { return result; }
 	public void setResult(String result) { this.result = result; }
 
+
+	@Override
+	public String input() {
+		this.message = null;
+		this.result = null;
+		return INPUT;
+	}
+
 	/**
 	 * Création d'un utilisateur
 	 *
@@ -87,6 +95,8 @@ public class CreerUtilisateur extends ActionSupport {
 	}
 
 	public String creerUtilisateur(){
+		this.result = null;
+		this.message = null;
 		try {
 
 			if (client) {

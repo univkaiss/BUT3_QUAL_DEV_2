@@ -11,12 +11,16 @@ import com.iut.banque.facade.BanqueFacade;
 import com.iut.banque.modele.Client;
 import com.iut.banque.modele.Compte;
 import java.io.Serializable;
-import java.util.logging.Logger;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CreerCompte extends ActionSupport implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = Logger.getLogger(CreerCompte.class.getName());
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CreerCompte.class);
+
 
 	private static final String NON_UNIQUE_ID = "NONUNIQUEID";
 	private static final String INVALID_FORMAT = "INVALIDFORMAT";
@@ -52,9 +56,17 @@ public class CreerCompte extends ActionSupport implements Serializable {
 		this.error = error;
 	}
 
+
+
+	@SuppressWarnings("unused")
 	public void setNumeroClient(String numeroClient) {
+		LOGGER.info("setNumeroClient appelé avec : {}", numeroClient);
+		LOGGER.info("Utilisateur connecté : {}", banque.getConnectedUser());
 		banque.loadClients();
-		this.client = (Client) banque.getAllClients().get(numeroClient);
+		Map<String, Client> clients = banque.getAllClients();
+		LOGGER.info("Clients disponibles : {}", clients != null ? clients.keySet() : "NULL");
+		this.client = clients != null ? clients.get(numeroClient) : null;
+		LOGGER.info("Client chargé : {}", this.client != null ? this.client.getUserId() : "NULL");
 	}
 
 	public void setClient(Client client) {
@@ -134,6 +146,11 @@ public class CreerCompte extends ActionSupport implements Serializable {
 		this.result = result;
 	}
 
+	@Override
+	public String execute() {
+		return SUCCESS;
+	}
+
 	public String creationCompte() {
 		try {
 			if (avecDecouvert) {
@@ -144,10 +161,10 @@ public class CreerCompte extends ActionSupport implements Serializable {
 			this.compte = banque.getCompte(numeroCompte);
 			return SUCCESS;
 		} catch (TechnicalException e) {
-			LOGGER.severe("TechnicalException: " + e.getMessage());
+			LOGGER.info("TechnicalException: {}", e.getMessage());
 			return NON_UNIQUE_ID;
 		} catch (IllegalFormatException e) {
-			LOGGER.severe("IllegalFormatException: " + e.getMessage());
+			LOGGER.info("IllegalFormatException: {}", e.getMessage());
 			return INVALID_FORMAT;
 		}
 	}
@@ -157,13 +174,13 @@ public class CreerCompte extends ActionSupport implements Serializable {
 			banque.createAccount(numeroCompte, client, decouvertAutorise);
 			return SUCCESS;
 		} catch (IllegalOperationException e) {
-			LOGGER.severe("Erreur lors de la création du compte avec découvert : " + e.getMessage());
+			LOGGER.info("Erreur lors de la création du compte avec découvert : {}", e.getMessage());
 			return "ERROR";
 		} catch (TechnicalException e) {
-			LOGGER.severe("TechnicalException: " + e.getMessage());
+			LOGGER.info("TechnicalException: {}", e.getMessage());
 			return NON_UNIQUE_ID;
 		} catch (IllegalFormatException e) {
-			LOGGER.severe("IllegalFormatException: " + e.getMessage());
+			LOGGER.info("IllegalFormatException: {}", e.getMessage());
 			return INVALID_FORMAT;
 		}
 	}

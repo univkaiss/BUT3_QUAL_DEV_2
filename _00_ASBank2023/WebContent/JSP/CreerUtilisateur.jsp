@@ -39,12 +39,12 @@
 	<s:submit name="Retour" value="Retour" />
 </s:form>
 
-<s:if test="result == 'SUCCESS' && message != null && !message.isEmpty()">
+<s:if test="result != null && result == 'SUCCESS' && message != null && !message.isEmpty()">
 	<div class="success">
 		<s:property value="message" />
 	</div>
 </s:if>
-<s:elseif test="result == 'ERROR' && message != null && !message.isEmpty()">
+<s:elseif test="result != null && result == 'ERROR' && message != null && !message.isEmpty()">
 	<div class="failure">
 		<s:property value="message" />
 	</div>

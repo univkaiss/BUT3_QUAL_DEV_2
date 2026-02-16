@@ -3,12 +3,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
-<s:set var="aDecouvertTag" value="aDecouvert" />
-<s:if test="%{#bool_val == true}">
-	TRUE</s:if>
-<s:else>
-	FALSE</s:else>-->
-
 <html lang="fr">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -32,7 +26,7 @@
 </s:form>
 
 <s:if test="aDecouvert">
-	<p>Voici les comptes a découvert de la banque :</p>
+	<p>Voici les comptes à découvert de la banque :</p>
 </s:if>
 <s:else>
 	<p>Voici l'état des comptes de la banque :</p>
@@ -55,7 +49,7 @@
 			</tr>
 
 			<s:iterator value="value.accounts">
-				<s:if test="(value.solde <0 || !aDecouvert)">
+				<s:if test="(value.solde < 0 || !aDecouvert)">
 					<tr>
 						<td><s:property value="key" /></td>
 						<s:if test="%{value.className == \"CompteAvecDecouvert\"}">
@@ -84,7 +78,6 @@
 										 title="Editer ce compte" />
 								</s:a>
 							</td>
-
 							<td>
 								<s:url action="deleteAccount" var="deleteAccount">
 									<s:param name="numeroCompte">
@@ -103,19 +96,21 @@
 							</td>
 						</s:if>
 					</tr>
-					<tr>
-						<td colspan="5">
-
-							<s:url action="urlAddAccount" var="urlAddAccount">
-								<s:param name="numeroClient">
-									<s:property value="value.userId" />
-								</s:param>
-							</s:url>
-							<s:a href="%{urlAddAccount}">[ + Ajouter un compte ]</s:a>
-						</td>
-					</tr>
 				</s:if>
 			</s:iterator>
+			<s:if test="(!aDecouvert)">
+				<tr>
+					<td colspan="5">
+						<s:url action="urlAddAccount" var="urlAddAccount">
+							<s:param name="numeroClient">
+								<s:property value="key" />
+							</s:param>
+						</s:url>
+						<s:a href="%{urlAddAccount}">[ + Ajouter un compte ]</s:a>
+					</td>
+				</tr>
+			</s:if>
+
 		</s:if>
 	</s:iterator>
 </table>
