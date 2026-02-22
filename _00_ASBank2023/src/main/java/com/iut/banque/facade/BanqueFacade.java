@@ -7,11 +7,7 @@ import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.InsufficientFundsException;
 import com.iut.banque.exceptions.TechnicalException;
-import com.iut.banque.modele.Client;
-import com.iut.banque.modele.Compte;
-import com.iut.banque.modele.CompteAvecDecouvert;
-import com.iut.banque.modele.Gestionnaire;
-import com.iut.banque.modele.Utilisateur;
+import com.iut.banque.modele.*;
 
 public class BanqueFacade {
 
@@ -284,5 +280,44 @@ public class BanqueFacade {
 	public void updatePassword(String userId, String hashedPassword) throws IllegalArgumentException, TechnicalException {
 		// Pas de contrôle de rôle ici (réinitialisation depuis login)
 		banqueManager.updatePassword(userId, hashedPassword);
+	}
+
+	public Map<Long, CarteBancaire> getMesCartesBancaires() {
+		Utilisateur u = loginManager.getConnectedUser();
+		if (u == null) {
+			throw new IllegalArgumentException("Aucun utilisateur connecté");
+		}
+		return banqueManager.getCartesBancairesByUserId(u.getUserId());
+	}
+
+	/**
+	 * Récupère les cartes bancaires d'un utilisateur spécifique.
+	 * Utilisé par le gestionnaire pour voir les cartes d'un client.
+	 *
+	 * @param userId l'ID du client
+	 * @return Map des cartes du client
+	 */
+	public Map<Long, CarteBancaire> getMesCartesBancaires(String userId) {
+		if (loginManager.getConnectedUser() instanceof com.iut.banque.modele.Gestionnaire) {
+			return banqueManager.getCartesBancairesByUserId(userId);
+		}
+		throw new IllegalArgumentException("Seul un gestionnaire peut accéder aux cartes d'un autre client");
+	}
+
+	public CarteBancaire ajouterMaCarteBancaire(String label, String marque, String holderName,
+												int expMois, int expAnnee, String last4) {
+		Utilisateur u = loginManager.getConnectedUser();
+		if (u == null) {
+			throw new IllegalArgumentException("Aucun utilisateur connecté");
+		}
+		return banqueManager.createCarteBancaire(u.getUserId(), label, marque, holderName, expMois, expAnnee, last4);
+	}
+
+	public void supprimerMaCarteBancaire(long carteId) {
+		Utilisateur u = loginManager.getConnectedUser();
+		if (u == null) {
+			throw new IllegalArgumentException("Aucun utilisateur connecté");
+		}
+		banqueManager.deleteCarteBancaire(carteId, u.getUserId());
 	}
 }

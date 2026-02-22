@@ -5,12 +5,7 @@ import java.util.Map;
 import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.TechnicalException;
-import com.iut.banque.modele.Client;
-import com.iut.banque.modele.Compte;
-import com.iut.banque.modele.CompteAvecDecouvert;
-import com.iut.banque.modele.CompteSansDecouvert;
-import com.iut.banque.modele.Gestionnaire;
-import com.iut.banque.modele.Utilisateur;
+import com.iut.banque.modele.*;
 
 public interface IDao {
 
@@ -146,6 +141,39 @@ public interface IDao {
 	 * @return une map avec clé = ID gestionnaire et valeur = Gestionnaire
 	 */
 	Map<String, Gestionnaire> getAllGestionnaires();
+
+	/**
+	 * Récupère toutes les cartes bancaires d'un client.
+	 *
+	 * Clé de la map = id de la carte.
+	 *
+	 * @param userId : l'identifiant du client
+	 * @return map des cartes du client (vide si aucune)
+	 */
+	Map<Long, CarteBancaire> getCartesBancairesByUserId(String userId);
+
+	/**
+	 * Crée une carte bancaire rattachée à un client.
+	 *
+	 * @return la carte créée
+	 */
+	@SuppressWarnings("java:S107")
+	CarteBancaire createCarteBancaire(String userId, String label, String marque, String holderName,
+									  int expMois, int expAnnee, String last4);
+
+	/**
+	 * Supprime une carte bancaire appartenant à un client.
+	 *
+	 * @param carteId id de la carte
+	 * @param userId identifiant du client (sécurité)
+	 */
+	void deleteCarteBancaire(long carteId, String userId);
+
+	/**
+	 * (Optionnel) Récupère une carte bancaire par id.
+	 */
+	CarteBancaire getCarteBancaireById(long carteId);
+
 
 	/**
 	 * Termine la session de l'utilisateur courant.

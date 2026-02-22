@@ -12,7 +12,7 @@
 <body>
 	<div class="btnLogout">
 		<s:form name="myForm" action="logout" method="POST">
-			<s:submit name="Retour" value="Logout" />
+			<s:submit name="Retour" value="Déconnexion" />
 		</s:form>
 	</div>
 	<h1>

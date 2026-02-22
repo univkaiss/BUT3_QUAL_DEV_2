@@ -9,7 +9,7 @@
 	<!-- * Fichier de configuration du Framework STRUTS * -->
 	<!-- ************************************************ -->
 
-	<!-- Permet d'activer le mode de developpement. Celui-ci donne des informations 
+	<!-- Permet d'activer le mode de developpement. Celui-ci donne des informations
 		supplémentaires. -->
 	<constant name="struts.devMode" value="true" />
 
@@ -20,7 +20,7 @@
 		<!-- 2ème paramètre indique la class elle-même -->
 		<!-- 3ème paramètre indique la méthode à lancer -->
 		<!-- Un succès redirige vers une page comportant le nom de la class -->
-		<!-- Un echec redirige vers une page comportant le nom de la class prefixée 
+		<!-- Un echec redirige vers une page comportant le nom de la class prefixée
 			par '-error' -->
 		<!-- Toutes les combinaisons sont donc possibles -->
 
@@ -63,7 +63,7 @@
 
 		<action name="urlDetail" class="com.iut.banque.controller.DetailCompte">
 			<result name="input">/JSP/DetailCompte.jsp</result>
-			<result name="success">/JSP/DetailCompte.jsp</result>
+			<result name="SUCCESS">/JSP/DetailCompte.jsp</result>
 		</action>
 
 		<action name="listeCompteManager" class="com.iut.banque.controller.ListeCompteManager">
@@ -79,7 +79,7 @@
 				<param name="actionName">urlResultatSuppression</param>
 				<param name="compteInfo">%{compteInfo}</param>
 				<param name="numeroClient">%{client.userId}</param>
-				<!-- Account est un boolean qui indique si la suppression est sur un 
+				<!-- Account est un boolean qui indique si la suppression est sur un
 					compte ou un utilisateur -->
 				<param name="account">true</param>
 			</result>
@@ -88,7 +88,7 @@
 				<param name="compteInfo">%{compteInfo}</param>
 				<param name="numeroClient">%{client.userId}</param>
 				<param name="errorMessage">TECHNICAL</param>
-				<!-- Account est un boolean qui indique si la suppression est sur un 
+				<!-- Account est un boolean qui indique si la suppression est sur un
 					compte ou un utilisateur -->
 				<param name="account">true</param>
 			</result>
@@ -97,7 +97,7 @@
 				<param name="compteInfo">%{compteInfo}</param>
 				<param name="numeroClient">%{client.userId}</param>
 				<param name="errorMessage">NONEMPTYACCOUNT</param>
-				<!-- Account est un boolean qui indique si la suppression est sur un 
+				<!-- Account est un boolean qui indique si la suppression est sur un
 					compte ou un utilisateur -->
 				<param name="account">true</param>
 			</result>
@@ -109,7 +109,7 @@
 			<result name="SUCCESS" type="redirectAction">
 				<param name="actionName">urlResultatSuppression</param>
 				<param name="userInfo">%{userInfo}</param>
-				<!-- Account est un boolean qui indique si la suppression est sur un 
+				<!-- Account est un boolean qui indique si la suppression est sur un
 					compte ou un utilisateur -->
 				<param name="account">false</param>
 			</result>
@@ -117,7 +117,7 @@
 				<param name="actionName">urlResultatSuppression</param>
 				<param name="client">%{client.userId}</param>
 				<param name="errorMessage">TECHNICAL</param>
-				<!-- Account est un boolean qui indique si la suppression est sur un 
+				<!-- Account est un boolean qui indique si la suppression est sur un
 					compte ou un utilisateur -->
 				<param name="account">false</param>
 			</result>
@@ -125,7 +125,7 @@
 				<param name="actionName">urlResultatSuppression</param>
 				<param name="client">%{client.userId}</param>
 				<param name="errorMessage">NONEMPTYACCOUNT</param>
-				<!-- Account est un boolean qui indique si la suppression est sur un 
+				<!-- Account est un boolean qui indique si la suppression est sur un
 					compte ou un utilisateur -->
 				<param name="account">false</param>
 			</result>
@@ -169,7 +169,7 @@
 			<result name="input">/JSP/DetailCompteEdit.jsp</result>
 		</action>
 
-		
+
 		<!-- Création de compte -->
 		<action name="addAccount" class="com.iut.banque.controller.CreerCompte"
 			method="creationCompte">
@@ -245,7 +245,7 @@
 				<param name="error">NEGATIVEAMOUNT</param>
 			</result>
 		</action>
-		
+
 		<action name="creditActionEdit" class="com.iut.banque.controller.DetailCompteEdit"
 			method="credit">
 			<result name="SUCCESS" type="redirectAction">
@@ -313,6 +313,57 @@
 			<result name="success">/JSP/Login.jsp</result>
 			<result name="input">/JSP/ForgotPassword.jsp</result>
 			<result name="error">/JSP/ForgotPassword.jsp</result>
+		</action>
+
+		<!-- Ajout d'une carte bancaire -->
+
+		<action name="addCard" class="com.iut.banque.controller.CreerCarte" method="creationCarte">
+			<result name="SUCCESS" type="redirectAction">
+				<param name="actionName">urlAddCard</param>
+				<param name="error">false</param>
+				<param name="result">true</param>
+				<param name="message">SUCCESS</param>
+			</result>
+			<result name="INVALIDFORMAT" type="redirectAction">
+				<param name="actionName">urlAddCard</param>
+				<param name="error">true</param>
+				<param name="result">true</param>
+				<param name="message">INVALIDFORMAT</param>
+			</result>
+			<result name="ERROR" type="redirectAction">
+				<param name="actionName">urlAddCard</param>
+				<param name="error">true</param>
+				<param name="result">true</param>
+				<param name="message">ERROR</param>
+			</result>
+		</action>
+
+		<action name="urlAddCard" class="com.iut.banque.controller.CreerCarte">
+			<result name="SUCCESS">/JSP/CreerCarte.jsp</result>
+			<result name="input">/JSP/CreerCarte.jsp</result>
+			<result>/JSP/CreerCarte.jsp</result>
+		</action>
+
+		<!-- Liste des cartes de tout les clients -->
+		<action name="listeCarteManager" class="com.iut.banque.controller.ListeCarteManager">
+			<result>/JSP/ListeCarteManager.jsp</result>
+			<result name="input">/JSP/ListeCarteManager.jsp</result>
+		</action>
+
+		<!-- Liste des cartes d'un client -->
+		<action name="listeCartes" class="com.iut.banque.controller.ListeCartes">
+			<result>/JSP/ListeCartes.jsp</result>
+			<result name="input">/JSP/ListeCartes.jsp</result>
+		</action>
+
+		<!-- Suppression d'une carte depuis la liste -->
+		<action name="deleteCard" class="com.iut.banque.controller.ListeCartes" method="deleteCard">
+			<result name="SUCCESS" type="redirectAction">
+				<param name="actionName">listeCartes</param>
+			</result>
+			<result name="ERROR" type="redirectAction">
+				<param name="actionName">listeCartes</param>
+			</result>
 		</action>
 
 	</package>

@@ -11,12 +11,11 @@
 	<script src="../js/jquery.js"></script>
 	<script src="../js/jsCreerUtilisateur.js"></script>
 </head>
-
 <body>
 
 <div class="btnLogout">
 	<s:form name="myForm" action="logout" method="POST">
-		<s:submit name="Retour" value="Logout" />
+		<s:submit name="Retour" value="Déconnexion" />
 	</s:form>
 </div>
 <h1>Créer un nouvel utilisateur</h1>
@@ -27,10 +26,10 @@
 	<s:textfield label="Prenom" name="prenom" />
 	<s:textfield label="Adresse" name="adresse" />
 	<s:password label="Password" name="userPwd" />
-	<s:radio label="Sexe" name="male" list="#{true:'Homme',false:'Femme'}"
+	<s:select label="Sexe" name="male" list="#{'true':'Homme','false':'Femme'}" listValue="value" listKey="key"
 			 value="true" />
-	<s:radio label="Type" name="client"
-			 list="#{true:'Client',false:'Manager'}" value="true" />
+	<s:select label="Type" name="client"
+			 list="#{'true':'Client','false':'Manager'}" listValue="value" listKey="key" value="true" />
 	<s:textfield label="Numéro de client" name="numClient" />
 
 	<s:submit value="submit"/>
@@ -39,8 +38,11 @@
 	<s:submit name="Retour" value="Retour" />
 </s:form>
 
-<s:actionmessage cssClass="success" />
-<s:actionerror cssClass="failure" />
+
+			<s:actionmessage cssClass="success" />
+			<s:actionerror cssClass="error" />
+
+
 
 
 </body>

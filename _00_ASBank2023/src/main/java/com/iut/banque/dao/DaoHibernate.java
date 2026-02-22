@@ -1,11 +1,13 @@
 package com.iut.banque.dao;
 
+import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.iut.banque.modele.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,12 +16,6 @@ import com.iut.banque.exceptions.IllegalFormatException;
 import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.TechnicalException;
 import com.iut.banque.interfaces.IDao;
-import com.iut.banque.modele.Client;
-import com.iut.banque.modele.Compte;
-import com.iut.banque.modele.CompteAvecDecouvert;
-import com.iut.banque.modele.CompteSansDecouvert;
-import com.iut.banque.modele.Gestionnaire;
-import com.iut.banque.modele.Utilisateur;
 import com.iut.banque.security.PasswordHasherCompact;
 
 /**
@@ -213,6 +209,90 @@ public class DaoHibernate implements IDao {
 			ret.put(gestionnaire.getUserId(), gestionnaire);
 		}
 		return ret;
+	}
+
+	@Override
+	public Map<Long, CarteBancaire> getCartesBancairesByUserId(String userId) {
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("userId invalide");
+		}
+
+		Session session = sessionFactory.getCurrentSession();
+
+		org.hibernate.Query q = session.createQuery(
+				"from CarteBancaire cb where cb.owner.userId = :userId order by cb.id desc"
+		);
+		q.setParameter("userId", userId.trim());
+
+		@SuppressWarnings("unchecked")
+		List<CarteBancaire> list = q.list();
+
+		Map<Long, CarteBancaire> ret = new LinkedHashMap<>();
+		for (CarteBancaire cb : list) {
+			ret.put(cb.getId(), cb);
+		}
+		return ret;
+	}
+
+	@Override
+	public CarteBancaire createCarteBancaire(String userId, String label, String marque, String holderName,
+											 int expMois, int expAnnee, String last4) {
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("userId invalide");
+		}
+		if (expMois < 1 || expMois > 12) {
+			throw new IllegalArgumentException("expMois invalide (1-12)");
+		}
+		if (expAnnee < 1900) {
+			throw new IllegalArgumentException("expAnnee invalide");
+		}
+		if (last4 == null || !last4.matches("\\d{4}")) {
+			throw new IllegalArgumentException("last4 invalide (4 chiffres attendus)");
+		}
+
+		Session session = sessionFactory.getCurrentSession();
+
+		Client owner = session.get(Client.class, userId.trim());
+		if (owner == null) {
+			throw new IllegalArgumentException("Client introuvable pour userId=" + userId);
+		}
+
+		CarteBancaire cb = new CarteBancaire(owner, label, marque, holderName, expMois, expAnnee, last4);
+		session.save(cb);
+		return cb;
+	}
+
+	@Override
+	public void deleteCarteBancaire(long carteId, String userId) {
+		if (userId == null || userId.trim().isEmpty()) {
+			throw new IllegalArgumentException("userId invalide");
+		}
+		if (carteId <= 0) {
+			throw new IllegalArgumentException("carteId invalide");
+		}
+
+		Session session = sessionFactory.getCurrentSession();
+
+		CarteBancaire cb = session.get(CarteBancaire.class, carteId);
+		if (cb == null) {
+			return;
+		}
+
+		// Sécurité: la carte doit appartenir au client qui demande la suppression
+		if (cb.getOwner() == null || cb.getOwner().getUserId() == null
+				|| !cb.getOwner().getUserId().equals(userId.trim())) {
+			throw new IllegalArgumentException("Suppression refusée: carte n'appartient pas à l'utilisateur.");
+		}
+
+		session.delete(cb);
+	}
+
+	@Override
+	public CarteBancaire getCarteBancaireById(long carteId) {
+		if (carteId <= 0) {
+			throw new IllegalArgumentException("carteId invalide");
+		}
+		return sessionFactory.getCurrentSession().get(CarteBancaire.class, carteId);
 	}
 
 

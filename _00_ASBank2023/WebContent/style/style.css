@@ -171,39 +171,37 @@ input[value="Retour"]:hover {
 	background-color: #5a6268;
 }
 
-/* --- Messages de succès/erreur --- */
-.success {
+/* --- Messages de succès et d'erreur (Optimisé) --- */
+
+/* Styles communs pour les conteneurs */
+.success, .successMessage, .error, .errorMessage, .failure {
+	padding: 12px 20px;
+	margin: 20px auto;
+	border-radius: var(--border-radius);
+	text-align: center;
+	font-weight: 600;
+	max-width: 800px;
+	list-style: none;
+	padding-left: 0;
+}
+
+/* Supprimer les puces de listes générées par Struts */
+.success li, .successMessage li, .error li, .errorMessage li, .failure li {
+	list-style: none;
+}
+
+/* Couleurs spécifiques Succès */
+.success, .successMessage {
 	background-color: #d4edda;
-	border: 2px solid #28a745;
+	border: 2px solid var(--success-color);
 	color: #155724;
-	padding: 12px 20px;
-	margin: 20px auto;
-	border-radius: var(--border-radius);
-	text-align: center;
-	font-weight: 600;
-	max-width: 800px;
 }
 
-.failure {
+/* Couleurs spécifiques Erreur / Failure */
+.error, .errorMessage, .failure {
 	background-color: #f8d7da;
-	border: 2px solid #dc3545;
+	border: 2px solid var(--error-color);
 	color: #721c24;
-	padding: 12px 20px;
-	margin: 20px auto;
-	border-radius: var(--border-radius);
-	text-align: center;
-	font-weight: 600;
-	max-width: 800px;
-}
-
-.errorMessage,
-.error {
-	color: #721c24;
-	background-color: #f8d7da;
-	border: 2px solid #dc3545;
-	padding: 10px 15px;
-	border-radius: var(--border-radius);
-	margin: 10px 0;
 }
 
 /* --- Tables de données --- */
@@ -329,3 +327,15 @@ input[value="Information"]:hover,
 button[value="Information"]:hover {
 	background-color: #138496;
 }
+
+.form-row { margin: 8px 0; }
+.label { display:inline-block; width: 160px; }
+.error { color: #b00020; }
+.success { color: #0a7a0a; }
+.hint { color:#555; font-size: 0.9em; }
+
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ddd; padding: 8px; }
+th { background: #f2f2f2; }
+.actions { white-space: nowrap; }
+.empty { color:#666; }

@@ -8,12 +8,7 @@ import com.iut.banque.exceptions.IllegalOperationException;
 import com.iut.banque.exceptions.InsufficientFundsException;
 import com.iut.banque.exceptions.TechnicalException;
 import com.iut.banque.interfaces.IDao;
-import com.iut.banque.modele.Banque;
-import com.iut.banque.modele.Client;
-import com.iut.banque.modele.Compte;
-import com.iut.banque.modele.CompteAvecDecouvert;
-import com.iut.banque.modele.Gestionnaire;
-import com.iut.banque.modele.Utilisateur;
+import com.iut.banque.modele.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -145,5 +140,22 @@ public class BanqueManager {
 		} catch (Exception e) {
 			throw new TechnicalException("Erreur technique lors de la mise à jour du mot de passe", e);
 		}
+	}
+
+	public Map<Long, CarteBancaire> getCartesBancairesByUserId(String userId) {
+		return dao.getCartesBancairesByUserId(userId);
+	}
+
+	public CarteBancaire createCarteBancaire(String userId, String label, String marque, String holderName,
+											 int expMois, int expAnnee, String last4) {
+		return dao.createCarteBancaire(userId, label, marque, holderName, expMois, expAnnee, last4);
+	}
+
+	public void deleteCarteBancaire(long carteId, String userId) {
+		dao.deleteCarteBancaire(carteId, userId);
+	}
+
+	public CarteBancaire getCarteBancaireById(long carteId) {
+		return dao.getCarteBancaireById(carteId);
 	}
 }
